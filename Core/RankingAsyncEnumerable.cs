@@ -29,7 +29,12 @@ namespace Pixeval.Core
 {
     public class RankingAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
-        public override SortOption SortOption { get; } = SortOption.Popularity;
+        public RankingAsyncEnumerable(SortOption sortOption)
+        {
+            SortOption = sortOption;
+        }
+
+        public override SortOption SortOption { get; }
 
         public override int RequestedPages { get; protected set; }
 

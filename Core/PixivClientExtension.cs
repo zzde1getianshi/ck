@@ -67,13 +67,16 @@ namespace Pixeval.Core
         public static async void GetTrendingTags(this PixivClient _)
         {
             var result = await HttpClientFactory.AppApiService().GetTrendingTags();
-            foreach (var tag in result.TrendTags)
-                AppContext.TrendingTags.Add(new TrendingTag
-                {
-                    Tag = tag.TagStr,
-                    TranslatedName = tag.TranslatedName,
-                    Thumbnail = tag.Illust.ImageUrls.SquareMedium
-                });
+            if (result is { } res)
+            {
+                foreach (var tag in res.TrendTags)
+                    AppContext.TrendingTags.Add(new TrendingTag
+                    {
+                        Tag = tag.TagStr,
+                        TranslatedName = tag.TranslatedName,
+                        Thumbnail = tag.Illust.ImageUrls.SquareMedium
+                    });
+            }
         }
     }
 }

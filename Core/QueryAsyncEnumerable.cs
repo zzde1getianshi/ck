@@ -32,13 +32,14 @@ namespace Pixeval.Core
         private readonly int start;
         private readonly string tag;
 
-        public QueryAsyncEnumerable(string tag, int start = 1)
+        public QueryAsyncEnumerable(string tag, SortOption sortOption, int start = 1)
         {
             this.start = start < 1 ? 1 : start;
             this.tag = tag;
+            SortOption = sortOption;
         }
 
-        public override SortOption SortOption { get; } = SortOption.Popularity;
+        public override SortOption SortOption { get; }
 
         public override int RequestedPages { get; protected set; }
 
@@ -51,7 +52,7 @@ namespace Pixeval.Core
         {
             private readonly string keyword;
 
-            private int current;
+            private readonly int current;
 
             private QueryWorksResponse entity;
 
@@ -74,7 +75,7 @@ namespace Pixeval.Core
             {
                 if (entity == null)
                 {
-                    if (await TryGetResponse($"/v1/search/illust?search_target=partial_match_for_tags&sort=date_desc&word={keyword}&filter=for_android") is (true, var model))
+                    if (await TryGetResponse($"/v1/search/illust?search_target=partial_match_for_tags&sort=date_desc&word={keyword}&filter=for_android&offset={(current - 1) * 30}") is (true, var model))
                     {
                         entity = model;
                         UpdateEnumerator();

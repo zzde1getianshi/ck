@@ -188,7 +188,7 @@ namespace Pixeval.UI
         {
             QueryStartUp();
             AppContext.EnqueueSearchHistory(keyword);
-            PixivHelper.Iterate(new QueryAsyncEnumerable(keyword, Settings.Global.QueryStart), NewItemsSource<Illustration>(ImageListView), Settings.Global.QueryPages);
+            PixivHelper.Iterate(new QueryAsyncEnumerable(keyword, Settings.Global.SortOnInserting ? SortOption.Popularity : SortOption.PublishDate, Settings.Global.QueryStart), NewItemsSource<Illustration>(ImageListView), Settings.Global.QueryPages);
         }
 
         private void IllustrationContainer_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -408,7 +408,7 @@ namespace Pixeval.UI
             QueryStartUp();
             MessageQueue.Enqueue("正在获取每日推荐的作品...");
 
-            PixivHelper.Iterate(new RankingAsyncEnumerable(), ImageListViewNewItemSource(), 10);
+            PixivHelper.Iterate(new RankingAsyncEnumerable(Settings.Global.SortOnInserting ? SortOption.Popularity : SortOption.PublishDate), ImageListViewNewItemSource(), 10);
         }
 
         private void SpotlightTab_OnSelected(object sender, RoutedEventArgs e)
