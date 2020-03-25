@@ -62,7 +62,7 @@ A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](h
 
 **如有遇到任何问题请通过以下方式联系作者：**
 * 提交[issue](https://github.com/Rinacm/Pixeval/issues/new)
-* 向decem0730@gmail.com发送邮件
+* 向decem0730@hotmail.com发送邮件
 * 添加qq群815791942进行反馈
 
 **意见：**
