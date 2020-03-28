@@ -9,6 +9,7 @@ A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](h
 * 自版本1.4.0开始取消了自带的.NET Core 3.0 Runtime，因为有部分用户反馈体积太大，所以在使用之前请确保自己安装了.NET Core 3.0 Runtime（如果你选择下载[.NET Core Runtime 3.0.0](https://dotnet.microsoft.com/download/dotnet-core/3.0)则需要注意同时下载Desktop Runtime和.NET Core Runtime,如果你下载的是3.1+的版本，则可以选择只下载Desktop Runtime）
 * 自版本1.4.0开始不再使用单文件方式发布，由于单文件发布会导致一些奇怪的问题
 * 自版本1.4.0开始可以选择是否开启直连了，默认关闭，如果自己需要直连请在设置中手动开启
+* 自版本1.7.1起添加了runtime-installation.exe作为下载.NET Core Runtime的脚本，可以直接双击下载并安装
 
 **更新：**
 * 2020/1/9
@@ -33,6 +34,7 @@ A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](h
 * 2020/3/29
     - 添加了缓存系统
     - 搜图功能可以拖拽文件了
+    - 添加了自动下载Runtime的C++脚本
 
 
 **BUG修复：**
