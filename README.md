@@ -50,6 +50,8 @@ A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](h
     - 修复了下载时容易出现空文件夹的问题</br>
 * 2020/3/15
     - 修复了点击tag没有反应的bug
+* 2020/3/21
+    - 修复了排序选项和搜索起始页不起作用的BUG
     
 **下载：**
 * 前往[Release页面](https://github.com/Rinacm/Pixeval/releases)下载最新版本的Release
@@ -60,11 +62,11 @@ A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](h
 
 **如有遇到任何问题请通过以下方式联系作者：**
 * 提交[issue](https://github.com/Rinacm/Pixeval/issues/new)
-* 向decem0730@gmail.com发送邮件
+* 向decem0730@hotmail.com发送邮件
 * 添加qq群815791942进行反馈
 
 **意见：**
-如果你对于某一部分的设计有不同的见解，或者你希望增加某些功能，欢迎通过提交[issue](https://github.com/Rinacm/Pixeval/issues/new)/联系decem0730@gmail.com/添加qq群439964524来进行反馈，如果你对于WPF/C#有了解并希望为该项目尽一份力，欢迎通过提交[Pull Request](https://github.com/Rinacm/Pixeval/pulls)来为本项目目前只有我一人的开发者团队添砖加瓦，谢谢
+如果你对于某一部分的设计有不同的见解，或者你希望增加某些功能，欢迎通过提交[issue](https://github.com/Rinacm/Pixeval/issues/new)/联系decem0730@hotmail.com/添加qq群439964524来进行反馈，如果你对于WPF/C#有了解并希望为该项目尽一份力，欢迎通过提交[Pull Request](https://github.com/Rinacm/Pixeval/pulls)来为本项目目前只有我一人的开发者团队添砖加瓦，谢谢
 
 **鸣谢：**
 * [@Notsfsssf](https://github.com/Notsfsssf)
