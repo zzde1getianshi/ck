@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -52,6 +53,12 @@ namespace Pixeval
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            if (Process.GetProcessesByName(AppContext.AppIdentifier).Length > 1)
+            {
+                MessageBox.Show("已经有一个Pixeval实例在运行了", "不能同时运行两个Pixeval实例!", MessageBoxButton.OK);
+                Environment.Exit(0);
+            }
+
             await Settings.Restore();
             AppContext.DefaultCacheProvider = Settings.Global.CachingPolicy == CachingPolicy.Memory
                 ? (IWeakCacheProvider<BitmapImage, Illustration>) MemoryCache<BitmapImage, Illustration>.Shared
