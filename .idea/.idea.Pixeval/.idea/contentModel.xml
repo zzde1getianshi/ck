@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\NotSystem\Coding\projects\visualstudio\csharp\Pixeval" t="IncludeRecursive">
+      <e p=".gitignore" t="Include" />
+      <e p="Annotations.cs" t="Include" />
+      <e p="App.xaml" t="Include" />
+      <e p="App.xaml.cs" t="Include" />
+      <e p="AppContext.cs" t="Include" />
+      <e p="appveyor.yml" t="Include" />
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="Core" t="Include">
+        <e p="AbstractPixivAsyncEnumerable.cs" t="Include" />
+        <e p="AbstractPixivAsyncEnumerator.cs" t="Include" />
+        <e p="DefaultDownloadPathProvider.cs" t="Include" />
+        <e p="DefaultIllustrationFileNameFormatter.cs" t="Include" />
+        <e p="GalleryAsyncEnumerable.cs" t="Include" />
+        <e p="IDownloadPathProvider.cs" t="Include" />
+        <e p="IPixivAsyncEnumerable.cs" t="Include" />
+        <e p="PixivClient.cs" t="Include" />
+        <e p="PixivClientExtension.cs" t="Include" />
+        <e p="PixivHelper.cs" t="Include" />
+        <e p="PixivIO.cs" t="Include" />
+        <e p="QueryAsyncEnumerable.cs" t="Include" />
+        <e p="RankingAsyncEnumerable.cs" t="Include" />
+        <e p="RecommendIllustratorDeferrer.cs" t="Include" />
+        <e p="SpotlightQueryAsyncEnumerable.cs" t="Include" />
+        <e p="UploadAsyncEnumerable.cs" t="Include" />
+        <e p="UserFollowingAsyncEnumerable.cs" t="Include" />
+        <e p="UserPreviewAsyncEnumerable.cs" t="Include" />
+        <e p="UserUpdateAsyncEnumerable.cs" t="Include" />
+      </e>
+      <e p="Data" t="Include">
+        <e p="IParser.cs" t="Include" />
+        <e p="ViewModel" t="Include">
+          <e p="AutoCompletion.cs" t="Include" />
+          <e p="DownloadableIllustrationViewModel.cs" t="Include" />
+          <e p="Illustration.cs" t="Include" />
+          <e p="SpotlightArticle.cs" t="Include" />
+          <e p="TrendingTag.cs" t="Include" />
+          <e p="User.cs" t="Include" />
+        </e>
+        <e p="Web" t="Include">
+          <e p="Delegation" t="Include">
+            <e p="DnsResolvedHttpClientHandler.cs" t="Include" />
+            <e p="DnsResolver.cs" t="Include" />
+            <e p="HttpClientFactory.cs" t="Include" />
+            <e p="IHttpRequestHandler.cs" t="Include" />
+            <e p="PixivApiDnsResolver.cs" t="Include" />
+            <e p="PixivApiHttpClientHandler.cs" t="Include" />
+            <e p="PixivAuthenticationHttpRequestHandler.cs" t="Include" />
+            <e p="PixivImageHttpClientHandler.cs" t="Include" />
+          </e>
+          <e p="HttpResponse.cs" t="Include" />
+          <e p="Protocol" t="Include">
+            <e p="IAppApiProtocol.cs" t="Include" />
+            <e p="IResolveDnsProtocol.cs" t="Include" />
+            <e p="ISauceNAOProtocol.cs" t="Include" />
+            <e p="ITokenProtocol.cs" t="Include" />
+          </e>
+          <e p="ProtocolBase.cs" t="Include" />
+          <e p="Request" t="Include">
+            <e p="AddBookmarkRequest.cs" t="Include" />
+            <e p="AutoCompletionRequest.cs" t="Include" />
+            <e p="DeleteBookmarkRequest.cs" t="Include" />
+            <e p="DnsResolveRequest.cs" t="Include" />
+            <e p="FollowArtistRequest.cs" t="Include" />
+            <e p="RankingRequest.cs" t="Include" />
+            <e p="RecommendIllustratorRequest.cs" t="Include" />
+            <e p="TokenRequest.cs" t="Include" />
+            <e p="UnFollowArtistRequest.cs" t="Include" />
+            <e p="UserInformationRequest.cs" t="Include" />
+          </e>
+          <e p="Response" t="Include">
+            <e p="AutoCompletionResponse.cs" t="Include" />
+            <e p="DnsResolveResponse.cs" t="Include" />
+            <e p="FollowingResponse.cs" t="Include" />
+            <e p="GalleryResponse.cs" t="Include" />
+            <e p="QueryWorksResponse.cs" t="Include" />
+            <e p="RankingResponse.cs" t="Include" />
+            <e p="RecommendIllustratorResponse.cs" t="Include" />
+            <e p="SingleWorkResponse.cs" t="Include" />
+            <e p="SpotlightResponse.cs" t="Include" />
+            <e p="TokenResponse.cs" t="Include" />
+            <e p="TrendingTagResponse.cs" t="Include" />
+            <e p="UgoiraMetadataResponse.cs" t="Include" />
+            <e p="UploadResponse.cs" t="Include" />
+            <e p="UserInformationResponse.cs" t="Include" />
+            <e p="UserNavResponse.cs" t="Include" />
+            <e p="UserUpdateResponse.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="FodyWeavers.xml" t="Include" />
+      <e p="LICENSE" t="Include" />
+      <e p="obj" t="ExcludeRecursive">
+        <e p="Debug" t="Include">
+          <e p="netcoreapp3.0" t="Include">
+            <e p="win-x64" t="Include">
+              <e p="App.g.cs" t="Include" />
+              <e p="GeneratedInternalTypeHelper.g.cs" t="Include" />
+              <e p="Pixeval.AssemblyInfo.cs" t="Include" />
+              <e p="RefitStubs.g.cs" t="Include" />
+              <e p="UI" t="Include">
+                <e p="MainWindow.g.cs" t="Include" />
+                <e p="SignIn.g.cs" t="Include" />
+                <e p="UserControls" t="Include">
+                  <e p="DownloadQueue.g.cs" t="Include" />
+                  <e p="IllustPresenter.g.cs" t="Include" />
+                  <e p="IllustTransitioner.g.cs" t="Include" />
+                  <e p="PixevalSettingPage.g.cs" t="Include" />
+                  <e p="SauceNAOHomePage.g.cs" t="Include" />
+                  <e p="TrendingTagControl.g.cs" t="Include" />
+                </e>
+              </e>
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="Objects" t="Include">
+        <e p="AlignWrapPanel.cs" t="Include" />
+        <e p="AsyncLock.cs" t="Include" />
+        <e p="Caching" t="Include">
+          <e p="CachingPolicy.cs" t="Include" />
+          <e p="FileCache.cs" t="Include" />
+          <e p="IWeakCacheProvider.cs" t="Include" />
+          <e p="MemoryCache.cs" t="Include" />
+          <e p="WeakEntry.cs" t="Include" />
+        </e>
+        <e p="Cipher.cs" t="Include" />
+        <e p="Enumerates.cs" t="Include" />
+        <e p="Exceptions" t="Include">
+          <e p="Logger" t="Include">
+            <e p="ExceptionLogger.cs" t="Include" />
+          </e>
+          <e p="QueryNotRespondingException.cs" t="Include" />
+          <e p="TokenNotFoundException.cs" t="Include" />
+          <e p="TypeMismatchException.cs" t="Include" />
+        </e>
+        <e p="Externally.cs" t="Include" />
+        <e p="Functions.cs" t="Include" />
+        <e p="Tasks.cs" t="Include" />
+        <e p="Texts.cs" t="Include" />
+        <e p="UIHelper.cs" t="Include" />
+        <e p="ValueConverters" t="Include">
+          <e p="BoolToCachingPolicyConverter.cs" t="Include" />
+          <e p="DateTimeOffsetConverter.cs" t="Include" />
+          <e p="DoubleToPercentConverter.cs" t="Include" />
+          <e p="IllustSubscriptConverter.cs" t="Include" />
+          <e p="NumericConverter.cs" t="Include" />
+          <e p="QueryR18ToggleButtonIsCheckedConverter.cs" t="Include" />
+          <e p="StringSplitConverter.cs" t="Include" />
+          <e p="VisibilityConverter.cs" t="Include" />
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Persisting" t="Include">
+        <e p="Authentication.cs" t="Include" />
+        <e p="Identity.cs" t="Include" />
+        <e p="Settings.cs" t="Include" />
+      </e>
+      <e p="Pixeval.csproj" t="IncludeRecursive" />
+      <e p="Pixeval.sln" t="IncludeFlat" />
+      <e p="Pixeval.sln.DotSettings" t="Include" />
+      <e p="Pixeval.sln.licenseheader" t="Include" />
+      <e p="Properties" t="Include">
+        <e p="PublishProfiles" t="Include" />
+      </e>
+      <e p="README.md" t="Include" />
+      <e p="Resources" t="Include">
+        <e p="dqueue.ttf" t="Include" />
+        <e p="iconfont.ttf" t="Include" />
+        <e p="iconfontex.ttf" t="Include" />
+        <e p="pxlogo.ico" t="Include" />
+        <e p="pxlogo_large.png" t="Include" />
+        <e p="SauceNAO.png" t="Include" />
+      </e>
+      <e p="UI" t="Include">
+        <e p="MainWindow.xaml" t="Include" />
+        <e p="MainWindow.xaml.cs" t="Include" />
+        <e p="SignIn.xaml" t="Include" />
+        <e p="SignIn.xaml.cs" t="Include" />
+        <e p="UserControls" t="Include">
+          <e p="DownloadQueue.xaml" t="Include" />
+          <e p="DownloadQueue.xaml.cs" t="Include" />
+          <e p="IllustPresenter.xaml" t="Include" />
+          <e p="IllustPresenter.xaml.cs" t="Include" />
+          <e p="IllustTransitioner.xaml" t="Include" />
+          <e p="IllustTransitioner.xaml.cs" t="Include" />
+          <e p="PixevalSettingPage.xaml" t="Include" />
+          <e p="PixevalSettingPage.xaml.cs" t="Include" />
+          <e p="SauceNAOHomePage.xaml" t="Include" />
+          <e p="SauceNAOHomePage.xaml.cs" t="Include" />
+          <e p="TrendingTagControl.xaml" t="Include" />
+          <e p="TrendingTagControl.xaml.cs" t="Include" />
+        </e>
+      </e>
+    </e>
+    <e p="C:\Users\26532\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\26532\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_Pixeval.-137918890.00" t="ExcludeRecursive" />
+  </component>
+</project>

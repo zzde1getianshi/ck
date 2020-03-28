@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -41,6 +42,35 @@ namespace Pixeval.UI.UserControls
             InitializeComponent();
         }
 
+        private async void UploadFileAndQueryButton_OnDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                if (e.Data.GetData(DataFormats.FileDrop) is string[] fs)
+                {
+                    if (fs.Length > 1) MainWindow.MessageQueue.Enqueue("最多只允许上传一个文件");
+                    else
+                    {
+                        try
+                        {
+                            UploadFileAndQueryButton.IsEnabled = false;
+                            Searching.Visibility = Visibility.Visible;
+                            UploadFileTextBox.Text = fs[0];
+                            if ((await DoQuery(fs[0])).ToList() is { } sauceResults && sauceResults.Any())
+                                MainWindow.Instance.OpenIllustBrowser(await PixivHelper.IllustrationInfo(sauceResults[0]));
+                            else MainWindow.MessageQueue.Enqueue("找不到结果TAT");
+                        }
+                        finally
+                        {
+                            UploadFileAndQueryButton.IsEnabled = true;
+                            Searching.Visibility = Visibility.Hidden;
+                            UploadFileTextBox.Text = "";
+                        }
+                    }
+                }
+            }
+        }
+
         private async void UploadFileAndQueryButton_OnClick(object sender, RoutedEventArgs e)
         {
             using var fileDialog = new CommonOpenFileDialog("选择文件")
@@ -51,21 +81,29 @@ namespace Pixeval.UI.UserControls
             {
                 if (fileDialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
+                    UploadFileAndQueryButton.IsEnabled = false;
                     Searching.Visibility = Visibility.Visible;
                     UploadFileTextBox.Text = fileDialog.FileName;
-                    await using var memoryStream = new MemoryStream(await File.ReadAllBytesAsync(UploadFileTextBox.Text), false);
-                    var sauceResponse = await RestService.For<ISauceNAOProtocol>(ProtocolBase.SauceNAOUrl)
-                        .GetSauce(new StreamPart(memoryStream, Path.GetFileName(fileDialog.FileName), Texts.AssumeImageContentType(fileDialog.FileName)));
-                    var content = await sauceResponse.Content.ReadAsStringAsync();
-                    if ((await ParseSauce(content)).ToList() is { } sauceResults && sauceResults.Any())
+                    if ((await DoQuery(fileDialog.FileName)).ToList() is { } sauceResults && sauceResults.Any())
                         MainWindow.Instance.OpenIllustBrowser(await PixivHelper.IllustrationInfo(sauceResults[0]));
                     else MainWindow.MessageQueue.Enqueue("找不到结果TAT");
                 }
             }
             finally
             {
+                UploadFileAndQueryButton.IsEnabled = true;
                 Searching.Visibility = Visibility.Hidden;
+                UploadFileTextBox.Text = "";
             }
+        }
+
+        private async Task<IEnumerable<string>> DoQuery(string fileName)
+        {
+            await using var memoryStream = new MemoryStream(await File.ReadAllBytesAsync(UploadFileTextBox.Text), false);
+            var sauceResponse = await RestService.For<ISauceNAOProtocol>(ProtocolBase.SauceNAOUrl)
+                .GetSauce(new StreamPart(memoryStream, Path.GetFileName(fileName), Texts.AssumeImageContentType(fileName)));
+            var content = await sauceResponse.Content.ReadAsStringAsync();
+            return await ParseSauce(content);
         }
 
         private static async Task<IEnumerable<string>> ParseSauce(string sauceResult)

@@ -87,7 +87,7 @@ namespace Pixeval.UI.UserControls
             var metadata = await HttpClientFactory.AppApiService().GetUgoiraMetadata(Illust.Id);
             var ugoiraZip = metadata.UgoiraMetadataInfo.ZipUrls.Medium;
             var delay = metadata.UgoiraMetadataInfo.Frames.Select(f => f.Delay / 10).ToArray();
-            var streams = PixivIO.ReadGifZipEntries(await PixivIO.FromUrlInternal(ugoiraZip)).ToArray();
+            var streams = PixivIO.ReadGifZipEntries(await PixivIO.GetBytes(ugoiraZip)).ToArray();
 
             ProcessingGif = false;
             PlayingGif = true;

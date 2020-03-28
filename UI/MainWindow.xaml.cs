@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -63,10 +64,11 @@ namespace Pixeval.UI
             IgnoreDuplicate = true
         };
 
+        private readonly Dictionary<object, Illustration> dataContextHolder = new Dictionary<object, Illustration>();
+
         public MainWindow()
         {
             Instance = this;
-
             InitializeComponent();
 
             AppContext.UpdateAvailable().ContinueWith(task =>
@@ -83,6 +85,9 @@ namespace Pixeval.UI
             MainWindowSnackBar.MessageQueue = MessageQueue;
 
             if (Dispatcher != null) Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+
+            var property = DependencyPropertyDescriptor.FromProperty(ItemsControl.ItemsSourceProperty, typeof(ListBox));
+            property?.AddValueChanged(ImageListView, (sender, args) => dataContextHolder.Clear());
 
             #pragma warning disable 4014
             AcquireRecommendUser();
@@ -435,7 +440,7 @@ namespace Pixeval.UI
         private void SignOutTab_OnSelected(object sender, RoutedEventArgs e)
         {
             Identity.Clear();
-            Settings.Global.Initialize();
+            Settings.Initialize();
             var login = new SignIn();
             login.Show();
             Close();
@@ -469,14 +474,30 @@ namespace Pixeval.UI
 
         #region 图片预览
 
-        private async void Thumbnail_OnLoaded(object sender, RoutedEventArgs e)
+        private void Thumbnail_OnLoaded(object sender, RoutedEventArgs e)
         {
             var dataContext = sender.GetDataContext<Illustration>();
 
             if (dataContext != null && Uri.IsWellFormedUriString(dataContext.Thumbnail, UriKind.Absolute))
-                SetImageSource(sender, await PixivIO.FromUrl(dataContext.Thumbnail));
+            {
+                dataContextHolder[sender] = dataContext;
+                dataContext.LoadAndCacheThumbnailImageToControl(sender);
+            }
 
             StartDoubleAnimationUseCubicEase(sender, "(Image.Opacity)", 0, 1, 500);
+        }
+
+        private void Thumbnail_OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (Settings.Global.UseCache)
+            {
+                if (dataContextHolder.TryGetValue(sender, out var illust))
+                {
+                    var bitmapImage = (BitmapImage) ((Image) sender).Source;
+                    AppContext.DefaultCacheProvider.Attach(ref bitmapImage, illust);
+                }
+            }
+            ReleaseImage(sender);
         }
 
         private void FavorButton_OnPreviewMouseLeftButtonDown(object sender, RoutedEventArgs e)

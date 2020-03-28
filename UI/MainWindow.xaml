@@ -122,15 +122,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                 To="0"
                 Duration="00:00:00.3" />
         </Storyboard>
-        <Style
-            x:Key="ReleaseImageStyle"
-            TargetType="Image">
-            <Style.Triggers>
-                <Trigger Property="IsVisible" Value="False">
-                    <Setter Property="Source" Value="{x:Null}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+
         <DataTemplate
             x:Key="IllustrationTemplate"
             DataType="viewModel:Illustration">
@@ -281,7 +273,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                         VerticalAlignment="Stretch"
                         Loaded="Thumbnail_OnLoaded"
                         Stretch="UniformToFill"
-                        Style="{StaticResource ReleaseImageStyle}">
+                        Unloaded="Thumbnail_OnUnloaded">
                         <Image.Effect>
                             <BlurEffect
                                 x:Name="IllustrationThumbnailBlurEffect"
@@ -784,10 +776,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
             x:Name="ContentContainer"
             Grid.ColumnSpan="2">
             <Grid.RenderTransform>
-                <ScaleTransform
-                    CenterX="{Binding ElementName=ContentContainer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    CenterY="{Binding ElementName=ContentContainer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    ScaleX="1" ScaleY="1" />
+                <ScaleTransform CenterX="{Binding ElementName=ContentContainer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" CenterY="{Binding ElementName=ContentContainer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" ScaleX="1" ScaleY="1" />
             </Grid.RenderTransform>
             <Grid
                 x:Name="NavigatorContainer"
@@ -1942,10 +1931,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
             HorizontalScrollBarVisibility="Disabled"
             Opacity="0">
             <ScrollViewer.RenderTransform>
-                <ScaleTransform
-                    CenterX="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    CenterY="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    ScaleX="0" ScaleY="0" />
+                <ScaleTransform CenterX="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" CenterY="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" ScaleX="0" ScaleY="0" />
             </ScrollViewer.RenderTransform>
             <ScrollViewer.Resources>
                 <system:Double

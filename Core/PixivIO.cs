@@ -31,7 +31,7 @@ namespace Pixeval.Core
     // ReSharper disable once InconsistentNaming
     public static class PixivIO
     {
-        public static async Task<byte[]> FromUrlInternal(string url)
+        public static async Task<byte[]> GetBytes(string url)
         {
             var client = HttpClientFactory.PixivImage();
 
@@ -50,13 +50,13 @@ namespace Pixeval.Core
 
         public static async Task<BitmapImage> FromUrl(string url)
         {
-            return FromByteArray(await FromUrlInternal(url));
+            return FromByteArray(await GetBytes(url));
         }
 
         public static BitmapImage FromByteArray(byte[] bArr)
         {
             if (bArr == null || bArr.Length == 0) return null;
-            using var memoryStream = new MemoryStream(bArr);
+            var memoryStream = new MemoryStream(bArr);
             return FromStream(memoryStream);
         }
 
@@ -72,9 +72,16 @@ namespace Pixeval.Core
             return bmp;
         }
 
-        public static Task<BitmapImage> FromStreamAsync(Stream stream)
+        public static async Task<byte[]> ToByteArrayAsync(this BitmapImage bitmapImage)
         {
-            return Task.Run(() => FromStream(stream));
+            if (bitmapImage.StreamSource is { } stream)
+            {
+                var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                ms.Position = 0L;
+                return ms.ToArray();
+            }
+            throw new ArgumentException(nameof(bitmapImage.StreamSource));
         }
 
         public static IReadOnlyList<Stream> ReadGifZipEntries(Stream stream)
@@ -95,7 +102,7 @@ namespace Pixeval.Core
             return dis;
         }
 
-        public static IReadOnlyList<Stream> ReadGifZipEntries(byte[] bArr)
+        public static IEnumerable<Stream> ReadGifZipEntries(byte[] bArr)
         {
             return ReadGifZipEntries(new MemoryStream(bArr));
         }
@@ -120,6 +127,15 @@ namespace Pixeval.Core
             mCollection.Quantize(settings);
             mCollection.Optimize();
             mCollection.Write(ms, MagickFormat.Gif);
+            return ms;
+        }
+
+        public static Stream ToStream(this BitmapImage bitmapImage)
+        {
+            var ms = new MemoryStream();
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
+            encoder.Save(ms);
             return ms;
         }
 

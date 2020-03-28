@@ -18,6 +18,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Microsoft.CSharp.RuntimeBinder;
+using Pixeval.Core;
+using Pixeval.Data.ViewModel;
+using Pixeval.Persisting;
 
 namespace Pixeval.Objects
 {
@@ -115,11 +119,6 @@ namespace Pixeval.Objects
             foreach (var control in controls) CloseControl(control);
         }
 
-        public static void OpenControls(params UIElement[] controls)
-        {
-            foreach (var control in controls) OpenControl(control);
-        }
-
         public static void CloseControl(this UIElement control)
         {
             try
@@ -156,6 +155,14 @@ namespace Pixeval.Objects
                 sender.LineDown();
                 sender.LineDown();
             }
+        }
+
+        public static async void LoadAndCacheThumbnailImageToControl(this Illustration illustration, object control)
+        {
+            if (Settings.Global.UseCache && await AppContext.DefaultCacheProvider.TryGet(illustration) is (true, var image))
+                SetImageSource(control, image);
+            else if (illustration.Thumbnail != null && Uri.IsWellFormedUriString(illustration.Thumbnail, UriKind.Absolute))
+                SetImageSource(control, await PixivIO.FromUrl(illustration.Thumbnail));
         }
     }
 

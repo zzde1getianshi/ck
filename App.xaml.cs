@@ -17,6 +17,10 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
+using Pixeval.Core;
+using Pixeval.Data.ViewModel;
+using Pixeval.Objects.Caching;
 using Pixeval.Persisting;
 using Refit;
 
@@ -48,15 +52,25 @@ namespace Pixeval
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-            await Settings.Global.Restore();
+            await Settings.Restore();
+            AppContext.DefaultCacheProvider = Settings.Global.CachingPolicy == CachingPolicy.Memory
+                ? (IWeakCacheProvider<BitmapImage, Illustration>) MemoryCache<BitmapImage, Illustration>.Shared
+                : new FileCache<BitmapImage, Illustration>(AppContext.CacheFolder, image => image.ToStream(), PixivIO.FromStream);
+            AppContext.DefaultCacheProvider.Clear();
             base.OnStartup(e);
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
             await Settings.Global.Store();
+            AppContext.DefaultCacheProvider.Clear();
             if (!AppContext.LogoutExit && Identity.Global.AccessToken != null) await Identity.Global.Store();
             base.OnExit(e);
+        }
+
+        private void EventSetter_OnHandler(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(sender.GetType().ToString());
         }
     }
 }

@@ -16,9 +16,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Pixeval.Core;
+using Pixeval.Data.ViewModel;
 using Pixeval.Objects;
+using Pixeval.Objects.Caching;
 using Pixeval.Persisting;
 
 namespace Pixeval.UI.UserControls
@@ -70,6 +75,19 @@ namespace Pixeval.UI.UserControls
         {
             var text = ContainsTagTextBox.Text.Split(" ");
             Settings.Global.ContainsTags = new HashSet<string>(text);
+        }
+
+        private void ChangeCachingPolicyToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            AppContext.DefaultCacheProvider.Clear();
+            AppContext.DefaultCacheProvider = new FileCache<BitmapImage, Illustration>(AppContext.CacheFolder,
+                image => image.ToStream(), PixivIO.FromStream);
+        }
+
+        private void ChangeCachingPolicyToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            AppContext.DefaultCacheProvider.Clear();
+            AppContext.DefaultCacheProvider = MemoryCache<BitmapImage, Illustration>.Shared;
         }
     }
 }

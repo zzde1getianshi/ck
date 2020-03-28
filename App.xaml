@@ -54,6 +54,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                 x:Key="DateTimeOffsetConverter" />
             <valueConverters:DoubleDivisionConverter
                 x:Key="DoubleDivisionConverter" />
+            <valueConverters:BoolToCachingPolicyConverter 
+                x:Key="BoolToCachingPolicyConverter" />
             <Style
                 x:Key="ScrollThumbs"
                 TargetType="{x:Type Thumb}">
@@ -168,12 +170,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Style
-                x:Key="ReleaseImageStyle"
-                TargetType="Image">
+            <Style x:Key="ReleaseImageStyle" TargetType="Image">
                 <Style.Triggers>
                     <Trigger Property="IsVisible" Value="False">
-                        <Setter Property="Source" Value="{x:Null}" />
+                        <Setter Property="Source" Value="{x:Null}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>

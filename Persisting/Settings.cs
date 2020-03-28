@@ -18,7 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Pixeval.Objects;
+using Pixeval.Objects.Caching;
 using PropertyChanged;
 
 namespace Pixeval.Persisting
@@ -42,6 +45,11 @@ namespace Pixeval.Persisting
             set => downloadLocation = value;
         }
 
+        public bool UseCache { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CachingPolicy CachingPolicy { get; set; }
+        
         public int QueryPages { get; set; } = 1;
 
         public int QueryStart { get; set; } = 1;
@@ -64,16 +72,15 @@ namespace Pixeval.Persisting
             await File.WriteAllTextAsync(Path.Combine(AppContext.SettingsFolder, "settings.json"), Global.ToString());
         }
 
-        public async Task<Settings> Restore()
+        public static async Task Restore()
         {
             if (File.Exists(Path.Combine(AppContext.SettingsFolder, "settings.json")))
                 Global = (await File.ReadAllTextAsync(Path.Combine(AppContext.SettingsFolder, "settings.json"))).FromJson<Settings>();
             else
                 Initialize();
-            return Global;
         }
 
-        public void Initialize()
+        public static void Initialize()
         {
             if (File.Exists(Path.Combine(AppContext.SettingsFolder, "settings.json")))
                 File.Delete(Path.Combine(AppContext.SettingsFolder, "settings.json"));
@@ -89,6 +96,8 @@ namespace Pixeval.Persisting
             Global.QueryStart = 1;
             Global.SpotlightQueryStart = 1;
             Global.RecommendIllustrator = false;
+            Global.UseCache = false;
+            Global.CachingPolicy = CachingPolicy.Memory;
         }
     }
 }

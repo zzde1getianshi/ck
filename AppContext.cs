@@ -20,8 +20,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using Pixeval.Core;
 using Pixeval.Data.ViewModel;
+using Pixeval.Objects.Caching;
 
 namespace Pixeval
 {
@@ -29,10 +31,12 @@ namespace Pixeval
     {
         public const string AppIdentifier = "Pixeval";
 
-        public const string CurrentVersion = "1.6.3";
+        public const string CurrentVersion = "1.7.0";
 
         public static bool LogoutExit = false;
 
+        public const string ConfigurationFileName = "pixeval_conf.json";
+        
         public static readonly string ProjectFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppIdentifier.ToLower());
 
         public static readonly string ConfFolder = ProjectFolder;
@@ -41,13 +45,15 @@ namespace Pixeval
 
         public static readonly string ExceptionReportFolder = Path.Combine(ProjectFolder, "crash-reports");
 
-        public static readonly string ConfigurationFileName = "pixeval_conf.json";
+        public static readonly string CacheFolder = Path.Combine(ProjectFolder, "cache");
 
-        public static IDownloadPathProvider DownloadPathProvider = new DefaultDownloadPathProvider();
+        public static IWeakCacheProvider<BitmapImage, Illustration> DefaultCacheProvider;
+        
+        public static readonly IDownloadPathProvider DownloadPathProvider = new DefaultDownloadPathProvider();
 
-        public static IIllustrationFileNameFormatter FileNameFormatter = new DefaultIllustrationFileNameFormatter();
+        public static readonly IIllustrationFileNameFormatter FileNameFormatter = new DefaultIllustrationFileNameFormatter();
 
-        public static ObservableCollection<DownloadableIllustrationViewModel> Downloading = new ObservableCollection<DownloadableIllustrationViewModel>();
+        public static readonly ObservableCollection<DownloadableIllustrationViewModel> Downloading = new ObservableCollection<DownloadableIllustrationViewModel>();
 
         public static readonly ObservableCollection<TrendingTag> TrendingTags = new ObservableCollection<TrendingTag>();
 
@@ -66,7 +72,7 @@ namespace Pixeval
             SearchingHistory.Insert(0, keyword);
         }
 
-        public static IReadOnlyCollection<string> GetSearchingHistory()
+        public static IEnumerable<string> GetSearchingHistory()
         {
             return SearchingHistory;
         }
