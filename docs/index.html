@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Pixeval | A Strong, Fast and Flexible Third-Party Pixiv Client</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css"/>
+    <link rel="stylesheet" href="style/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+    <div id="logo-container">
+        <p id="logo" class="black-text">PIXEVAL</p>
+    </div>
+    <div class="parallax-container">
+        <div class="section no-pad-bot">
+            <div class="container intro">
+                <h5>&nbsp;</h5>
+                <h1 class="header center red-text text-lighten-3" style="font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;">Pixeval</h1>
+                <h5 class="header col s12 light white-text">
+                    STRONG · BEAUTIFUL · LIGHTSPEED，一个强大的Pixiv第三方客户端，由C#编写，基于.NET Core与WPF
+                </h5>
+            </div>
+            <div class="row center">
+                <a href="https://github.com/Rinacm/Pixeval" class="btn-large waves-effect waves-light red lighten-3" target="_blank">查看Github项目</a>
+            </div>
+        </div>
+        <div class="parallax">
+            <img src="images/pixeval-showcase.png" style="bottom: 0; display: block;" alt="pixeval-showcase">
+        </div>
+    </div>
+    <div class="container intro">
+        <h5>&nbsp;</h5>
+        <h4 class="red-text text-lighten-3">WHAT CAN PIXEVAL DO?</h4>
+    </div>
+    <div class="container">
+        <div class="section">
+            <div class="center row browse">
+                <div class="col s12 m4">
+                    <h2 class="center red-text text-lighten-3">
+                        <i class="material-icons" style="font-size: 50px">speed</i>
+                    </h2>
+                    <h5 class="center">快速且流畅的用户体验</h5>
+                    <p class="light">
+                        Pixeval是基于.NET Core 3.0开发的WPF项目，其中使用到了诸多.NET的强大特性，所有的请求均使用.NET的异步架构并发处理，同时依赖C# 8.0的异步流来流畅的将图片加载至UI，所有的UI容器均使用了WPF
+                        的虚拟化技术，最大程度的减少内存占用，使得加载3000张图片的内存占用仅仅有300M，您可以尽情的体验高速浏览美图的快感
+                    </p>
+                </div>
+                <div class="col s12 m4">
+                    <h2 class="center red-text text-lighten-3">
+                        <i class="material-icons" style="font-size: 50px;">burst_mode</i>
+                    </h2>
+                    <h5 class="center">特辑浏览</h5>
+                    <p class="light">
+                        许多用户都希望能够快速的浏览并收藏特辑——也就是Pixiv官方精心准备的集锦，但无论是Pixiv网页端还是App端都无法做到方便快捷的浏览特辑，而使用Pixeval，您可以在片刻之间获取到数百个特辑集锦并且随时都可以通过
+                        一次鼠标点击来全部下载
+                    </p>
+                </div>
+                <div class="col s12 m4">
+                    <h2 class="center red-text text-lighten-3">
+                        <i class="material-icons" style="font-size: 50px;">file_copy</i>
+                    </h2>
+                    <h5 class="center">批量下载</h5>
+                    <p class="light">
+                        一张一张的点开大图，等待加载后再去右键保存，遇到网络波动还可能会前功尽弃，您是否曾经有过这种体验？在Pixeval里，所有的下载任务都被集中并且可视化，只需要轻点鼠标，您钟爱的作品就会被添加到下载列表
+                        ，并且随时可以在下载列表里查看当前的下载进度，无论作品是只有一张，还是一个图集，抑或是一张GIF动态图片，Pixeval都可以轻松的为您处理完善，下载文件夹的格式经过统一，您一眼就能够分辨出自己刚刚下载的作品
+                        位于哪里
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="center row browse">
+                <div class="col s12 m4">
+                    <h2 class="center red-text text-lighten-3">
+                        <i class="material-icons" style="font-size: 50px;">sort</i>
+                    </h2>
+                    <h5 class="center">按照热门度实时排序</h5>
+                    <p class="light">
+                        虽然Pixiv Premium的价格并非不能承受，但是还是有很多用户因为语言不通或购买渠道太过复杂等等各种各样的问题而无法体验到它，Pixeval实现了Pixiv Premium的
+                        核心功能：按照热门程度排序，您无需等待结果加载完成，图片会根据其热门程度自动的"插入"到属于他们的位置里，您只需滚动滚轮便可以轻松的按照热度浏览图片，同时，在
+                        热门排序功能关闭时，将会默认按照作品上传日期进行排序
+                    </p>
+                </div>
+                <div class="col s12 m4">
+                    <h2 class="center red-text text-lighten-3">
+                        <i class="material-icons" style="font-size: 50px">gif</i>
+                    </h2>
+                    <h5 class="center">GIF在线预览</h5>
+                    <p class="light">
+                        您可以流畅的预览任何Pixiv上面的动态图片，使用体验与查看普通的图片没有任何区别，您同样也可以选择下载GIF，Pixeval将会自动为您合成动态图片
+                    </p>
+                </div>
+                <div class="col s12 m4">
+                    <h2 class="center red-text text-lighten-3">
+                        <i class="material-icons" style="font-size: 50px;">not_interested</i>
+                    </h2>
+                    <h5 class="center">自定义过滤</h5>
+                    <p class="light">
+                        除了选择过滤R-18/R-18G内容以外，Pixeval准备了多种的过滤方案，您可以选择需要排除(Exclude)的标签，也可以选择需要包含(Include)的标签，除此之外，您甚至可以
+                        自定义作品的最低收藏数以满足您挑剔的口味，而这些方案结合起来相信可以为您带来最舒适的浏览体验
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container intro">
+        <h5>&nbsp;</h5>
+        <h4 class="red-text text-lighten-3">只有这些了吗?</h4>
+        <p class="light">不！Pixeval集成了诸多便于使用的特性，除了上面提到的之外还有<strong>免代理访问</strong>，随时查看关注画师的新作，应用内关注/取关用户，获取推荐作者等等便于使用的功能。
+            不管您是苦于无法直连p站，代理速度又十分感人；还是身在国外，只是希望获得更好的浏览体验。Pixeval都能为您带来绝佳的用户体验！</p>
+    </div>
+    <div class="parallax-container">
+        <div class="section no-pad-bot">
+            <div class="container intro">
+                <h5>&nbsp;</h5>
+                <h2 class="header center red-text text-lighten-3">Open Source</h2>
+                <h5 class="header col s12 light white-text">本项目已经在Github上基于AGPL协议开源，并且已经收获了450+的star</h5>
+                <h5 class="header col s12 light white-text">Pixeval的年龄并不大，仅仅有4个月，作为作者我有信心继续开发并维护下去</h5>
+                <h5 class="header col s12 light white-text">
+                    如果大家使用时遇到了问题，或者对本项目有什么意见和建议，欢迎通过Github的
+                    <a href="https://github.com/Rinacm/Pixeval/issues">issues</a>
+                    和<a href="https://github.com/Rinacm/Pixeval/pulls">pull requests</a>
+                    模块进行反馈，如果您在使用github上有困难，也欢迎通过向<a href="mailto:decem0730@hotmail.com"></a>
+                    发邮件来进行反馈
+                </h5>
+            </div>
+        </div>
+        <div class="parallax">
+            <img src="images/source.jpg" style="bottom: 0; display: block; filter: blur(5px)" alt="alternative">
+        </div>
+    </div>
+    <div class="container intro">
+        <h5>&nbsp;</h5>
+        <h4 class="red-text text-lighten-3">使用前你需要知道...</h4>
+        <h5>&nbsp;</h5>
+        <h5 class="black-text light">本项目需要运行环境支持!</h5>
+        <p class="light" style="font-size: 15px; line-height: 30px">
+            本项目基于.NET Core，所以在使用前请确保自己安装了.NET Core Runtime，如果没有请前往
+            <a href="https://dotnet.microsoft.com/download/dotnet-core/">msdn</a>下载，
+            并确保自己下载的版本号>=3.0，如果下载的版本是3.0，那么需要同时下载Desktop Runtime与
+            .NET Core Runtime，如果下载的版本>=3.1，那么只需要下载Desktop Runtime即可
+        </p>
+        <h5>&nbsp;</h5>
+        <h5 class="black-text light">本项目不支持32位电脑!</h5>
+        <p class="light" style="font-size: 15px; line-height: 30px">
+            都0202年了，快点尽早升级成64位吧...
+        </p>
+    </div>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <script type="text/javascript" src="script/init.js"></script>
+</body>
+</html>
