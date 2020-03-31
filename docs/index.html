@@ -15,23 +15,50 @@
     <div class="parallax-container">
         <div class="section no-pad-bot">
             <div class="container intro">
-                <h5>&nbsp;</h5>
-                <h1 class="header center red-text text-lighten-3" style="font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;">Pixeval</h1>
-                <h5 class="header col s12 light white-text">
-                    STRONG · BEAUTIFUL · LIGHTSPEED，一个强大的Pixiv第三方客户端，由C#编写，基于.NET Core与WPF
+                <h1 class="header center red-text text-lighten-3" id="banner-logo">Pixeval</h1>
+                <hr color="white" size="1">
+                <h5 class="header col s12 light white-text" id="banner-intro">
+                    A Powerful | Strong | Beautiful Third-Party Pixiv Client，Written in C#, Based on .NET Core and WPF
                 </h5>
+            </div>
+            <div class="row">
+                <div class="col l3"></div>
+                <div class="col l6 s12">
+                    <ul id="badges">
+                        <li>
+                            <img src="https://img.shields.io/github/forks/Rinacm/Pixeval?color=yellow&style=flat-square" alt="forks">
+                        </li>
+                        <li>
+                            <img src="https://img.shields.io/badge/platform-win--x64-blue?style=flat-square" alt="platform">
+                        </li>
+                        <li>
+                            <img src="https://img.shields.io/github/stars/Rinacm/Pixeval?color=red&style=flat-square" alt="stars">
+                        </li>
+                        <li>
+                            <a href="http://47.95.218.243/Pixeval.zip">
+                                <img src="https://img.shields.io/github/downloads/Rinacm/Pixeval/1.7.1/total?style=flat-square" alt="downloads">
+                            </a>
+                        </li>
+                        <li>
+                            <img src="https://img.shields.io/github/watchers/Rinacm/Pixeval?color=ff69b4&style=flat-square" alt="watchers">
+                        </li>
+                        <li>
+                            <img src="https://img.shields.io/github/issues-closed/Rinacm/Pixeval?color=66ccff&style=flat-square" alt="issues-closed">
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="row center">
                 <a href="https://github.com/Rinacm/Pixeval" class="btn-large waves-effect waves-light red lighten-3" target="_blank">查看Github项目</a>
             </div>
         </div>
         <div class="parallax">
-            <img src="images/pixeval-showcase.png" style="bottom: 0; display: block;" alt="pixeval-showcase">
+            <img src="https://s1.ax1x.com/2020/04/01/GlcnnP.png" style="bottom: 0; display: block;" alt="pixeval-showcase">
         </div>
     </div>
     <div class="container intro">
         <h5>&nbsp;</h5>
-        <h4 class="red-text text-lighten-3">WHAT CAN PIXEVAL DO?</h4>
+        <h4 class="red-text text-lighten-3" style="font-family: ChakraPetch, serif">What can Pixeval do?</h4>
     </div>
     <div class="container">
         <div class="section">
@@ -115,10 +142,9 @@
             <div class="container intro">
                 <h5>&nbsp;</h5>
                 <h2 class="header center red-text text-lighten-3">Open Source</h2>
-                <h5 class="header col s12 light white-text">本项目已经在Github上基于AGPL协议开源，并且已经收获了450+的star</h5>
-                <h5 class="header col s12 light white-text">Pixeval的年龄并不大，仅仅有4个月，作为作者我有信心继续开发并维护下去</h5>
-                <h5 class="header col s12 light white-text">
-                    如果大家使用时遇到了问题，或者对本项目有什么意见和建议，欢迎通过Github的
+                <h5 class="header col s12 light white-text" style="line-height: 1.5">本项目已经在Github上基于AGPL协议开源，并且已经收获了500+的star，从发布至今过去了4月有余，我会继续开发并维护下去</h5>
+                <h5 class="header col s12 light white-text" style="line-height: 1.5">
+                    如果您使用时遇到了问题，或者对本项目有什么意见和建议，欢迎通过Github的
                     <a href="https://github.com/Rinacm/Pixeval/issues">issues</a>
                     和<a href="https://github.com/Rinacm/Pixeval/pulls">pull requests</a>
                     模块进行反馈，如果您在使用github上有困难，也欢迎通过向<a href="mailto:decem0730@hotmail.com"></a>
@@ -127,26 +153,116 @@
             </div>
         </div>
         <div class="parallax">
-            <img src="images/source.jpg" style="bottom: 0; display: block; filter: blur(5px)" alt="alternative">
+            <img src="https://s1.ax1x.com/2020/04/01/GlckfH.jpg" style="bottom: 0; display: block; filter: blur(5px)" alt="alternative">
         </div>
     </div>
     <div class="container intro">
         <h5>&nbsp;</h5>
-        <h4 class="red-text text-lighten-3">使用前你需要知道...</h4>
+        <h4 class="red-text text-lighten-3">使用前你需要知道/常见问题...</h4>
         <h5>&nbsp;</h5>
-        <h5 class="black-text light">本项目需要运行环境支持!</h5>
+        <h5 class="black-text light">为什么我打不开Pixeval.exe!/本项目需要运行环境支持!</h5>
         <p class="light" style="font-size: 15px; line-height: 30px">
-            本项目基于.NET Core，所以在使用前请确保自己安装了.NET Core Runtime，如果没有请前往
-            <a href="https://dotnet.microsoft.com/download/dotnet-core/">msdn</a>下载，
-            并确保自己下载的版本号>=3.0，如果下载的版本是3.0，那么需要同时下载Desktop Runtime与
-            .NET Core Runtime，如果下载的版本>=3.1，那么只需要下载Desktop Runtime即可
+            本项目基于.NET Core，所以在使用前请确保自己安装了.NET Core Runtime，
+            如果没有请双击压缩包内的runtime-installation.exe下载并安装(该exe的源代码同样在<a href="https://github.com/Rinacm/Pixeval.RuntimeInstallation" target="_blank">Github</a>开源)，
+            如果您<strong>不信任</strong>该exe程序，也可以选择前往<a href="https://dotnet.microsoft.com/download/dotnet-core/" target="_blank">官方渠道</a>下载，
+            并确保自己下载的版本号>=3.1
         </p>
         <h5>&nbsp;</h5>
-        <h5 class="black-text light">本项目不支持32位电脑!</h5>
+        <h5 class="black-text light">为什么我打不开Pixeval.exe!/本项目不支持32位操作系统!</h5>
         <p class="light" style="font-size: 15px; line-height: 30px">
-            都0202年了，快点尽早升级成64位吧...
+            如果您是32位操作系统将无法体验到Pixeval带来的服务，都0202年了，快点尽早升级成64位吧...
+        </p>
+        <h5>&nbsp;</h5>
+        <h5 class="black-text light">为什么我没法安装.NET Core Runtime!/本项目的操作系统要求至少是Windows 7 SP1</h5>
+        <p class="light" style="font-size: 15px; line-height: 30px">
+            如果您是Windows 10操作系统，尽可以放心的使用Pixeval，如果您是Windows 7用户，<strong>请确保自己的系统至少是Windows 7 Service Pack 1</strong>，否则将无法安装.NET Core Runtime 3.1
+        </p>
+        <h5>&nbsp;</h5>
+        <h5 class="black-text light">为什么我打开Pixeval后搜索不到作品!/请确保在设置中打开了直连选项!</h5>
+        <p class="light" style="font-size: 15px; line-height: 30px">
+            在您打开Pixeval后，请确保设置中的各个选项正确无误，其中直连选项默认关闭，关闭时<strong>您将无法在不走代理(不挂梯子)的情况下使用</strong>，如果您想要免代理使用Pixeval，请确保打开直连选项，
+            如果您本身有质量过硬的代理，则可以在直连模式访问速度过慢时关闭直连并使用自己的代理节点
+        </p>
+        <h5>&nbsp;</h5>
+        <h5 class="black-text light">为什么我只能搜索到很少的作品!/请确保在设置中正确的设置了搜索页数!</h5>
+        <p class="light" style="font-size: 15px; line-height: 30px">
+            在您打开Pixeval后，请确保设置中的各个选项正确无误，其中搜索页数选项默认为1，该选项每增加1就会多搜索30幅作品，最高可以搜索100页
+        </p>
+        <h5>&nbsp;</h5>
+        <h5 class="black-text light">为什么我的内存占用高得不正常!/Pixeval不推荐开启缓存!</h5>
+        <p class="light" style="font-size: 15px; line-height: 30px">
+            在您打开Pixeval后，请确保设置中的各个选项正确无误，其中缓存选项决定了是否缓存缩略图，如果开启后则可能导致内存占用直线上升，
+            因此在开启此选项之前<strong>请认真确认自己的电脑是否有足够的内存</strong>
         </p>
     </div>
+    <footer class="page-footer red lighten-3">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">赞助我/Becoming a sponsor</h5>
+                    <p class="gray-text text-lighten-3">
+                        作为一名高中生，我利用仅有的一点空余时间拿来开发Pixeval，本项目完全开源，不包含任何盈利性质，
+                        然而，如果它帮助到了您，欢迎您前往<a href="https://afdian.net/@dylech30th">爱发电</a>
+                        赞助我，您的支持是我开发维护的最大动力，谢谢
+                    </p>
+                    <a href="https://afdian.net/@dylech30th">
+                        <img src="https://img.shields.io/badge/afdian-%40Dylech30th-pink?style=flat-square" alt="funding">
+                    </a>
+                </div>
+                <div class="col l3 s12">
+                    <h5 class="white-text">项目相关</h5>
+                    <ul>
+                        <li>
+                            <a class="black-text light" href="https://github.com/Rinacm/Pixeval" target="_blank">项目地址</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/Rinacm" target="_blank">开发者Github主页</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="http://47.95.218.243/Pixeval.zip" target="_blank">更新版本下载地址</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/Rinacm/Pixeval/releases" target="_blank">Release</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/Rinacm/Pixeval/issues/new/choose" target="_blank">提交ISSUE</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/Rinacm/Pixeval/archive/master.zip" target="_blank">源代码</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col l3 s12">
+                    <h5 class="white-text">鸣谢</h5>
+                    <ul>
+                        <li>
+                            <a class="black-text light" href="https://github.com/ControlNet" target="_blank">@ControlNet</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/Notsfsssf" target="_blank">@Notsfsssf</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/wulunshijian" target="_blank">@无论时间</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/duiweiya" target="_blank">@对味</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/NanamiArihara" target="_blank">@Lasm_Gratel</a>
+                        </li>
+                        <li>
+                            <a class="black-text light" href="https://github.com/TheRealKamisama" target="_blank">@TheRealKamisama</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <footer class="footer-copyright">
+            <div class="container">
+                Made by <a class="cyan-text text-lighten-3" href="https://github.com/Rinacm" target="_blank">Dylech30th</a>
+            </div>
+        </footer>
+    </footer>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
     <script type="text/javascript" src="script/init.js"></script>
