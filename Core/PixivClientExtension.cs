@@ -68,7 +68,6 @@ namespace Pixeval.Core
         {
             var result = await HttpClientFactory.AppApiService().GetTrendingTags();
             if (result is { } res)
-            {
                 foreach (var tag in res.TrendTags)
                     AppContext.TrendingTags.Add(new TrendingTag
                     {
@@ -76,7 +75,6 @@ namespace Pixeval.Core
                         TranslatedName = tag.TranslatedName,
                         Thumbnail = tag.Illust.ImageUrls.SquareMedium
                     });
-            }
         }
     }
 }

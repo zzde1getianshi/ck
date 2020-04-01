@@ -490,13 +490,12 @@ namespace Pixeval.UI
         private void Thumbnail_OnUnloaded(object sender, RoutedEventArgs e)
         {
             if (Settings.Global.UseCache)
-            {
                 if (dataContextHolder.TryGetValue(sender, out var illust))
                 {
                     var bitmapImage = (BitmapImage) ((Image) sender).Source;
                     AppContext.DefaultCacheProvider.Attach(ref bitmapImage, illust);
                 }
-            }
+
             ReleaseImage(sender);
         }
 

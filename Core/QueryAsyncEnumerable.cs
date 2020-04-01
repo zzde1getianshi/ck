@@ -50,9 +50,8 @@ namespace Pixeval.Core
 
         private class QueryAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
         {
-            private readonly string keyword;
-
             private readonly int current;
+            private readonly string keyword;
 
             private QueryWorksResponse entity;
 

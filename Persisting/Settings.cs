@@ -49,7 +49,7 @@ namespace Pixeval.Persisting
 
         [JsonConverter(typeof(StringEnumConverter))]
         public CachingPolicy CachingPolicy { get; set; }
-        
+
         public int QueryPages { get; set; } = 1;
 
         public int QueryStart { get; set; } = 1;

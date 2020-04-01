@@ -81,6 +81,7 @@ namespace Pixeval.Core
                 ms.Position = 0L;
                 return ms.ToArray();
             }
+
             throw new ArgumentException(nameof(bitmapImage.StreamSource));
         }
 

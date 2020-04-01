@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,12 +45,10 @@ namespace Pixeval.UI.UserControls
         private async void UploadFileAndQueryButton_OnDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
                 if (e.Data.GetData(DataFormats.FileDrop) is string[] fs)
                 {
                     if (fs.Length > 1) MainWindow.MessageQueue.Enqueue("最多只允许上传一个文件");
                     else
-                    {
                         try
                         {
                             UploadFileAndQueryButton.IsEnabled = false;
@@ -66,9 +64,7 @@ namespace Pixeval.UI.UserControls
                             Searching.Visibility = Visibility.Hidden;
                             UploadFileTextBox.Text = "";
                         }
-                    }
                 }
-            }
         }
 
         private async void UploadFileAndQueryButton_OnClick(object sender, RoutedEventArgs e)
@@ -108,6 +104,7 @@ namespace Pixeval.UI.UserControls
 
         private static async Task<IEnumerable<string>> ParseSauce(string sauceResult)
         {
+            Debug.WriteLine(sauceResult);
             var doc = await new HtmlParser().ParseDocumentAsync(sauceResult);
             var results = doc.QuerySelectorAll("div.result")
                 .Where(div => div.Attributes.Length == 1)
@@ -116,7 +113,7 @@ namespace Pixeval.UI.UserControls
                 .Where(i => i.Length == 1)
                 .Select(i => i[0])
                 .Select(i => i.QuerySelectorAll("div > a"));
-            return results.Select(r => r[0].Text());
+            return results.Where(r => r.Any()).Select(r => r[0].Text());
         }
     }
 }

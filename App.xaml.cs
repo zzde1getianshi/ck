@@ -74,10 +74,5 @@ namespace Pixeval
             if (!AppContext.LogoutExit && Identity.Global.AccessToken != null) await Identity.Global.Store();
             base.OnExit(e);
         }
-
-        private void EventSetter_OnHandler(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(sender.GetType().ToString());
-        }
     }
 }

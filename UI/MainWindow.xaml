@@ -13,7 +13,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
 
 <!--  ReSharper disable Xaml.RedundantResource  -->
 <Window
@@ -47,21 +48,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
             x:Key="Divide">
             2
         </system:Double>
-        <CubicEase
-            x:Key="CubicEase"
-            EasingMode="EaseOut" />
-        <valueConverters:VisibleIfTrueConverter
-            x:Key="VisibleIfTrueConverter" />
-        <valueConverters:VisibleIfFalseConverter
-            x:Key="VisibleIfFalseConverter" />
-        <valueConverters:DoublePlusConverter
-            x:Key="DoublePlusConverter" />
-        <valueConverters:IllustSubscriptConverter
-            x:Key="IllustSubscriptConverter" />
-        <valueConverters:DateTimeOffsetConverter
-            x:Key="DateTimeOffsetConverter" />
-        <valueConverters:DoubleDivisionConverter
-            x:Key="DoubleDivisionConverter" />
         <Storyboard
             x:Key="UserBrowserOpacityIncreaseAnimation"
             TargetProperty="(ScrollViewer.Opacity)"
@@ -776,7 +762,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
             x:Name="ContentContainer"
             Grid.ColumnSpan="2">
             <Grid.RenderTransform>
-                <ScaleTransform CenterX="{Binding ElementName=ContentContainer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" CenterY="{Binding ElementName=ContentContainer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" ScaleX="1" ScaleY="1" />
+                <ScaleTransform
+                    CenterX="{Binding ElementName=ContentContainer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
+                    CenterY="{Binding ElementName=ContentContainer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
+                    ScaleX="1" ScaleY="1" />
             </Grid.RenderTransform>
             <Grid
                 x:Name="NavigatorContainer"
@@ -911,7 +900,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                             </StackPanel>
                                         </ListViewItem>
                                         <ListViewItem
-                                            x:Name="GalleryTab"
                                             Height="55"
                                             Selected="GalleryTab_OnSelected">
                                             <StackPanel
@@ -975,7 +963,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                             </StackPanel>
                                         </ListViewItem>
                                         <ListViewItem
-                                            x:Name="RankingTab"
                                             Height="55"
                                             Selected="RankingTab_OnSelected">
                                             <StackPanel
@@ -996,7 +983,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                             </StackPanel>
                                         </ListViewItem>
                                         <ListViewItem
-                                            x:Name="UpdateIllustTab"
                                             Height="55"
                                             Selected="UpdateIllustTab_OnSelected">
                                             <StackPanel
@@ -1788,7 +1774,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                             FontSize="12">
                             <Hyperlink
                                 Foreground="Black"
-                                NavigateUri="http://47.95.218.243/Pixeval/index.html"
+                                NavigateUri="http://rinacm.github.io/Pixeval"
                                 RequestNavigate="Hyperlink_OnRequestNavigate">
                                 关于项目
                             </Hyperlink>
@@ -1796,7 +1782,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                     </StackPanel>
                 </Grid>
                 <Grid
-                    x:Name="QueryDisplayContainer"
                     Background="#FAFAFC">
                     <ListView
                         x:Name="SpotlightListView"
@@ -1925,13 +1910,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                 </Grid>
             </Grid>
         </Grid>
+        <userControls:SauceNAOHomePage
+            Margin="250,0,0,0"
+            Background="#FAFAFC"
+            Visibility="{Binding ElementName=SauceNaoTab, Path=IsSelected, Converter={StaticResource VisibleIfTrueConverter}}" />
         <ScrollViewer
             x:Name="UserBrowserPageScrollViewer"
             Grid.Column="0"
             HorizontalScrollBarVisibility="Disabled"
             Opacity="0">
             <ScrollViewer.RenderTransform>
-                <ScaleTransform CenterX="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" CenterY="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" ScaleX="0" ScaleY="0" />
+                <ScaleTransform
+                    CenterX="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
+                    CenterY="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
+                    ScaleX="0" ScaleY="0" />
             </ScrollViewer.RenderTransform>
             <ScrollViewer.Resources>
                 <system:Double
@@ -2324,10 +2316,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                 </Grid>
             </StackPanel>
         </ScrollViewer>
-        <userControls:SauceNAOHomePage
-            Margin="250,0,0,0"
-            Background="#FAFAFC"
-            Visibility="{Binding ElementName=SauceNaoTab, Path=IsSelected, Converter={StaticResource VisibleIfTrueConverter}}" />
         <materialDesign:DialogHost
             x:Name="PixevalSettingDialog"
             materialDesign:TransitionAssist.DisableTransitions="True"

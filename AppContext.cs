@@ -31,12 +31,12 @@ namespace Pixeval
     {
         public const string AppIdentifier = "Pixeval";
 
-        public const string CurrentVersion = "1.7.1";
+        public const string CurrentVersion = "1.7.2";
+
+        public const string ConfigurationFileName = "pixeval_conf.json";
 
         public static bool LogoutExit = false;
 
-        public const string ConfigurationFileName = "pixeval_conf.json";
-        
         public static readonly string ProjectFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), AppIdentifier.ToLower());
 
         public static readonly string ConfFolder = ProjectFolder;
@@ -48,7 +48,7 @@ namespace Pixeval
         public static readonly string CacheFolder = Path.Combine(ProjectFolder, "cache");
 
         public static IWeakCacheProvider<BitmapImage, Illustration> DefaultCacheProvider;
-        
+
         public static readonly IDownloadPathProvider DownloadPathProvider = new DefaultDownloadPathProvider();
 
         public static readonly IIllustrationFileNameFormatter FileNameFormatter = new DefaultIllustrationFileNameFormatter();

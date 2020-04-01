@@ -1,4 +1,20 @@
-﻿using System;
+﻿// Pixeval - A Strong, Fast and Flexible Pixiv Client
+// Copyright (C) 2019 Dylech30th
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,9 +27,9 @@ namespace Pixeval.Objects.Caching
     public class FileCache<T, THash> : IWeakCacheProvider<T, THash>, IEnumerable<KeyValuePair<THash, string>> where T : class
     {
         private readonly Func<T, Stream> cachingPolicy;
-        private readonly Func<Stream, T> restorePolicy;
-        private readonly string initDirectory;
         private readonly ConcurrentDictionary<THash, string> fileMapping = new ConcurrentDictionary<THash, string>();
+        private readonly string initDirectory;
+        private readonly Func<Stream, T> restorePolicy;
 
         public FileCache(string initDirectory, Func<T, Stream> cachingPolicy, Func<Stream, T> restorePolicy)
         {
@@ -23,7 +39,17 @@ namespace Pixeval.Objects.Caching
 
             Directory.CreateDirectory(initDirectory);
         }
-        
+
+        public IEnumerator<KeyValuePair<THash, string>> GetEnumerator()
+        {
+            return fileMapping.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public void Attach(ref T key, THash associateWith)
         {
             if (associateWith == null || key == null) return;
@@ -38,13 +64,6 @@ namespace Pixeval.Objects.Caching
                     WriteFile(path, s);
                 });
             }
-        }
-
-        private static async void WriteFile(string path, Stream src)
-        {
-            await using var fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
-            src.Position = 0L;
-            await src.CopyToAsync(fileStream);
         }
 
         public void Detach(THash associateWith)
@@ -71,24 +90,18 @@ namespace Pixeval.Objects.Caching
 
             return (false, null);
         }
-        
+
         public void Clear()
         {
             using var sem = new SemaphoreSlim(1);
-            foreach (var file in Directory.GetFiles(initDirectory))
-            {
-                File.Delete(file);
-            }
+            foreach (var file in Directory.GetFiles(initDirectory)) File.Delete(file);
         }
 
-        public IEnumerator<KeyValuePair<THash, string>> GetEnumerator()
+        private static async void WriteFile(string path, Stream src)
         {
-            return fileMapping.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            await using var fileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            src.Position = 0L;
+            await src.CopyToAsync(fileStream);
         }
     }
 }
