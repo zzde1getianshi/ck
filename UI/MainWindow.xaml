@@ -13,8 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
+along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
 
 <!--  ReSharper disable Xaml.RedundantResource  -->
 <Window
@@ -762,10 +761,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             x:Name="ContentContainer"
             Grid.ColumnSpan="2">
             <Grid.RenderTransform>
-                <ScaleTransform
-                    CenterX="{Binding ElementName=ContentContainer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    CenterY="{Binding ElementName=ContentContainer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    ScaleX="1" ScaleY="1" />
+                <ScaleTransform CenterX="{Binding ElementName=ContentContainer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" CenterY="{Binding ElementName=ContentContainer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" ScaleX="1" ScaleY="1" />
             </Grid.RenderTransform>
             <Grid
                 x:Name="NavigatorContainer"
@@ -1352,562 +1348,568 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                 Margin="250,0,0,0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
-                <Grid
-                    x:Name="HomeDisplayContainer"
-                    Background="#FAFAFC"
-                    ZIndex="1">
-                    <Grid.Resources>
-                        <Storyboard
-                            x:Key="MoveUpAnimation"
-                            TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
-                            TargetName="HomeDisplayContainer">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource CubicEase}"
-                                From="{Binding ElementName=ContentDisplay, Path=ActualHeight}"
-                                To="0"
-                                Duration="00:00:00.3" />
-                        </Storyboard>
-                        <Storyboard
-                            x:Key="MoveDownAnimation"
-                            TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
-                            TargetName="HomeDisplayContainer">
-                            <DoubleAnimation
-                                EasingFunction="{StaticResource CubicEase}"
-                                From="0"
-                                To="5000"
-                                Duration="00:00:01.50" />
-                        </Storyboard>
-                    </Grid.Resources>
-                    <Grid.RenderTransform>
-                        <TranslateTransform Y="0" />
-                    </Grid.RenderTransform>
-                    <Grid.RowDefinitions>
-                        <RowDefinition
-                            Height="*" />
-                        <RowDefinition
-                            Height="*" />
-                        <RowDefinition
-                            Height="*" />
-                    </Grid.RowDefinitions>
-                    <Image
-                        Grid.Row="0"
-                        Width="100"
-                        Height="100"
-                        Margin="0,0,0,20"
-                        VerticalAlignment="Bottom"
-                        Source="/Resources/pxlogo_large.png">
-                        <Image.Triggers>
-                            <EventTrigger
-                                RoutedEvent="Mouse.MouseEnter">
-                                <BeginStoryboard>
-                                    <Storyboard
-                                        TargetProperty="(RotateTransform.Angle)"
-                                        TargetName="PixivLogoTransform">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource CubicEase}"
-                                            From="0"
-                                            To="360"
-                                            Duration="00:00:01" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                            <EventTrigger
-                                RoutedEvent="Mouse.MouseLeave">
-                                <BeginStoryboard>
-                                    <Storyboard
-                                        TargetProperty="(RotateTransform.Angle)"
-                                        TargetName="PixivLogoTransform">
-                                        <DoubleAnimation
-                                            EasingFunction="{StaticResource CubicEase}"
-                                            From="360"
-                                            To="0"
-                                            Duration="00:00:01" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Image.Triggers>
-                        <Image.RenderTransform>
-                            <RotateTransform x:Name="PixivLogoTransform" Angle="0" CenterX="50" CenterY="50" />
-                        </Image.RenderTransform>
-                        <Image.Clip>
-                            <EllipseGeometry
-                                Center="50 50"
-                                RadiusX="50"
-                                RadiusY="50" />
-                        </Image.Clip>
-                    </Image>
-                    <StackPanel
-                        Grid.Row="1"
-                        Height="50"
-                        Margin="0,20,0,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Orientation="Horizontal">
-                        <TextBox
-                            x:Name="KeywordTextBox"
-                            Width="800"
-                            materialDesign:HintAssist.Hint="请输入要搜索的内容~(￣▽￣)~*"
-                            GotFocus="KeywordTextBox_OnGotFocus"
-                            PreviewKeyDown="KeywordTextBox_OnPreviewKeyDown"
-                            Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
-                            TextChanged="KeywordTextBox_OnTextChanged" />
-                        <TextBox
-                            x:Name="ToLoseFocus"
-                            Width="0"
-                            Height="0" />
-                        <Button
-                            x:Name="DoQueryButton"
-                            Width="50"
-                            Height="40"
-                            Margin="10,15,0,0"
-                            Click="DoQueryButton_OnClick"
-                            IsDefault="False"
-                            Style="{DynamicResource MaterialDesignToolButton}">
-                            <Viewbox
-                                Width="34"
-                                Height="30">
-                                <Canvas
-                                    Width="24"
-                                    Height="24">
-                                    <Path
-                                        Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
-                                        Fill="Black"
-                                        Opacity="0.6" />
-                                </Canvas>
-                            </Viewbox>
-                        </Button>
-                    </StackPanel>
-                    <Popup
-                        x:Name="TrendingTagPopup"
-                        Grid.Row="1"
-                        Width="800"
-                        objects:PopupHelper.PopupPlacementTarget="{Binding ElementName=KeywordTextBox}"
-                        AllowsTransparency="True"
-                        Placement="Bottom"
-                        PlacementTarget="{Binding ElementName=KeywordTextBox}"
-                        StaysOpen="True">
-                        <materialDesign:Card
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid
+                            x:Name="HomeDisplayContainer"
                             Background="#FAFAFC"
-                            UniformCornerRadius="10">
-                            <StackPanel>
-                                <StackPanel
-                                    Height="40"
-                                    HorizontalAlignment="Center"
-                                    Orientation="Horizontal">
-                                    <ToggleButton
-                                        x:Name="QueryArtistToggleButton"
-                                        Width="30"
-                                        Height="30"
-                                        Margin="0,0,5,0"
-                                        Checked="QueryArtistToggleButton_OnChecked"
-                                        Style="{DynamicResource MaterialDesignFlatToggleButton}"
-                                        ToolTip="搜索用户"
-                                        Unchecked="QueryArtistToggleButton_OnUnchecked">
-                                        <Viewbox
-                                            Width="24"
-                                            Height="24">
-                                            <Canvas
-                                                Width="24"
-                                                Height="24">
-                                                <Path
-                                                    Data="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"
-                                                    Fill="Gray" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </ToggleButton>
-                                    <ToggleButton
-                                        x:Name="QuerySingleArtistToggleButton"
-                                        Width="30"
-                                        Height="30"
-                                        Margin="5,0,5,0"
-                                        Checked="QuerySingleArtistToggleButton_OnChecked"
-                                        Style="{DynamicResource MaterialDesignFlatToggleButton}"
-                                        ToolTip="搜索单个用户">
-                                        <Viewbox
-                                            Width="24"
-                                            Height="24">
-                                            <Canvas
-                                                Width="24"
-                                                Height="24">
-                                                <Path
-                                                    Data="M19,21V19H15V17H19V15L22,18L19,21M10,4A4,4 0 0,1 14,8A4,4 0 0,1 10,12A4,4 0 0,1 6,8A4,4 0 0,1 10,4M10,14C11.15,14 12.25,14.12 13.24,14.34C12.46,15.35 12,16.62 12,18C12,18.7 12.12,19.37 12.34,20H2V18C2,15.79 5.58,14 10,14Z"
-                                                    Fill="Gray" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </ToggleButton>
-                                    <ToggleButton
-                                        x:Name="QuerySingleWorkToggleButton"
-                                        Width="30"
-                                        Height="30"
-                                        Margin="5,0,0,0"
-                                        Checked="QuerySingleWorkToggleButton_OnChecked"
-                                        Style="{DynamicResource MaterialDesignFlatToggleButton}"
-                                        ToolTip="搜索单个作品">
-                                        <Viewbox
-                                            Width="24"
-                                            Height="24">
-                                            <Canvas
-                                                Width="24"
-                                                Height="24">
-                                                <Path
-                                                    Data="M10,7V9H12V17H14V7H10M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"
-                                                    Fill="Gray" />
-                                            </Canvas>
-                                        </Viewbox>
-                                    </ToggleButton>
-                                </StackPanel>
-                                <userControls:TrendingTagControl />
-                            </StackPanel>
-                        </materialDesign:Card>
-                    </Popup>
-                    <Popup
-                        x:Name="AutoCompletionPopup"
-                        Grid.Row="1"
-                        Width="800"
-                        objects:PopupHelper.PopupPlacementTarget="{Binding ElementName=KeywordTextBox}"
-                        AllowsTransparency="True"
-                        Placement="Bottom"
-                        PlacementTarget="{Binding ElementName=KeywordTextBox}"
-                        StaysOpen="False">
-                        <materialDesign:Card
-                            Width="800"
-                            Background="#FAFAFC"
-                            UniformCornerRadius="15">
-                            <ListBox
-                                x:Name="AutoCompletionListBox"
-                                Width="800"
-                                MaxHeight="400"
-                                ScrollViewer.CanContentScroll="False">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate
-                                        DataType="viewModel:AutoCompletion">
-                                        <ListBoxItem
-                                            x:Name="AutoCompletionElement"
-                                            Width="{Binding ElementName=AutoCompletionListBox, Path=Width}"
-                                            HorizontalAlignment="Stretch"
-                                            PreviewMouseLeftButtonDown="AutoCompletionElement_OnPreviewMouseLeftButtonDown">
-                                            <StackPanel
-                                                HorizontalAlignment="Stretch">
-                                                <TextBlock
-                                                    Margin="0,0,0,5"
-                                                    HorizontalAlignment="Left"
-                                                    FontSize="12"
-                                                    Text="{Binding Tag}"
-                                                    TextTrimming="WordEllipsis"
-                                                    TextWrapping="NoWrap" />
-                                                <TextBlock
-                                                    HorizontalAlignment="Left"
-                                                    FontSize="10"
-                                                    Text="{Binding TranslatedName}"
-                                                    TextTrimming="WordEllipsis"
-                                                    TextWrapping="NoWrap" />
-                                            </StackPanel>
-                                        </ListBoxItem>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </materialDesign:Card>
-                    </Popup>
-                    <Grid
-                        Grid.Row="2">
-                        <StackPanel
-                            Height="120"
-                            HorizontalAlignment="Center"
-                            FlowDirection="LeftToRight"
-                            Orientation="Horizontal"
-                            Visibility="{Binding Source={x:Static persisting:Settings.Global}, Path=RecommendIllustrator, Converter={StaticResource VisibleIfTrueConverter}}">
-                            <ListBox
-                                x:Name="RecommendIllustratorListBox">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel
-                                            CanHorizontallyScroll="False"
-                                            CanVerticallyScroll="False"
-                                            FlowDirection="LeftToRight"
-                                            IsItemsHost="True"
-                                            Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate
-                                        DataType="viewModel:User">
-                                        <materialDesign:TransitioningContent>
-                                            <materialDesign:TransitioningContent.OpeningEffects>
-                                                <materialDesign:TransitionEffect
-                                                    Kind="FadeIn" />
-                                            </materialDesign:TransitioningContent.OpeningEffects>
-                                            <Grid
-                                                x:Name="RecommendIllustratorContainer"
-                                                MouseLeftButtonDown="RecommendIllustratorContainer_OnMouseLeftButtonDown">
-                                                <materialDesign:Card
-                                                    Width="120"
-                                                    Height="100"
-                                                    Margin="5,0"
-                                                    UniformCornerRadius="10">
-                                                    <StackPanel
-                                                        Margin="10,15,10,0">
-                                                        <Image
-                                                            x:Name="RecommendIllustratorAvatar"
-                                                            Width="40"
-                                                            Height="40"
-                                                            Loaded="RecommendIllustratorAvatar_OnLoaded">
-                                                            <Image.Clip>
-                                                                <EllipseGeometry
-                                                                    Center="20 20"
-                                                                    RadiusX="20"
-                                                                    RadiusY="20" />
-                                                            </Image.Clip>
-                                                        </Image>
-                                                        <TextBlock
-                                                            Margin="0,15,0,0"
-                                                            HorizontalAlignment="Center"
-                                                            FontSize="13"
-                                                            Text="{Binding Name}"
-                                                            TextTrimming="CharacterEllipsis" />
-                                                    </StackPanel>
-                                                </materialDesign:Card>
-                                                <Popup
-                                                    Width="480"
-                                                    Height="160"
-                                                    HorizontalAlignment="Center"
-                                                    objects:PopupHelper.PopupPlacementTarget="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
-                                                    AllowsTransparency="True"
-                                                    HorizontalOffset="-180"
-                                                    IsOpen="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=IsMouseOver, Mode=OneWay}"
-                                                    Placement="Top"
-                                                    PlacementTarget="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
-                                                    PopupAnimation="Fade"
-                                                    StaysOpen="True">
-                                                    <Grid>
-                                                        <materialDesign:Card
-                                                            Margin="5"
-                                                            UniformCornerRadius="15">
-                                                            <StackPanel
-                                                                x:Name="IllustratorIllustsStackPanel"
-                                                                Loaded="IllustratorIllustsStackPanel_OnLoaded"
-                                                                Orientation="Horizontal">
-                                                                <Image
-                                                                    Width="160"
-                                                                    Height="160"
-                                                                    Stretch="UniformToFill" />
-                                                                <Image
-                                                                    Width="160"
-                                                                    Height="160"
-                                                                    Stretch="UniformToFill" />
-                                                                <Image
-                                                                    Width="160"
-                                                                    Height="160"
-                                                                    Stretch="UniformToFill" />
-                                                            </StackPanel>
-                                                        </materialDesign:Card>
-                                                    </Grid>
-                                                </Popup>
-                                            </Grid>
-                                        </materialDesign:TransitioningContent>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <Grid
-                                Width="25"
-                                Margin="20,0,0,0">
-                                <Grid.Triggers>
+                            ZIndex="1">
+                            <Grid.Resources>
+                                <Storyboard
+                                    x:Key="MoveUpAnimation"
+                                    TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
+                                    TargetName="HomeDisplayContainer">
+                                    <DoubleAnimation
+                                        EasingFunction="{StaticResource CubicEase}"
+                                        From="{Binding ElementName=ContentDisplay, Path=ActualHeight}"
+                                        To="0"
+                                        Duration="00:00:00.3" />
+                                </Storyboard>
+                                <Storyboard
+                                    x:Key="MoveDownAnimation"
+                                    TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
+                                    TargetName="HomeDisplayContainer">
+                                    <DoubleAnimation
+                                        EasingFunction="{StaticResource CubicEase}"
+                                        From="0"
+                                        To="5000"
+                                        Duration="00:00:01.50" />
+                                </Storyboard>
+                            </Grid.Resources>
+                            <Grid.RenderTransform>
+                                <TranslateTransform Y="0" />
+                            </Grid.RenderTransform>
+                            <Grid.RowDefinitions>
+                                <RowDefinition
+                                    Height="*" />
+                                <RowDefinition
+                                    Height="*" />
+                                <RowDefinition
+                                    Height="*" />
+                            </Grid.RowDefinitions>
+                            <Image
+                                Grid.Row="0"
+                                Width="100"
+                                Height="100"
+                                Margin="0,0,0,20"
+                                VerticalAlignment="Bottom"
+                                Source="/Resources/pxlogo_large.png">
+                                <Image.Triggers>
                                     <EventTrigger
-                                        RoutedEvent="Grid.MouseEnter">
+                                        RoutedEvent="Mouse.MouseEnter">
                                         <BeginStoryboard>
                                             <Storyboard
-                                                TargetProperty="(Grid.Opacity)"
-                                                TargetName="ReloadRecommendIllustratorButton">
+                                                TargetProperty="(RotateTransform.Angle)"
+                                                TargetName="PixivLogoTransform">
                                                 <DoubleAnimation
                                                     EasingFunction="{StaticResource CubicEase}"
                                                     From="0"
-                                                    To="1"
-                                                    Duration="00:00:00.3" />
+                                                    To="360"
+                                                    Duration="00:00:01" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </EventTrigger>
                                     <EventTrigger
-                                        RoutedEvent="Grid.MouseLeave">
+                                        RoutedEvent="Mouse.MouseLeave">
                                         <BeginStoryboard>
                                             <Storyboard
-                                                TargetProperty="(Grid.Opacity)"
-                                                TargetName="ReloadRecommendIllustratorButton">
+                                                TargetProperty="(RotateTransform.Angle)"
+                                                TargetName="PixivLogoTransform">
                                                 <DoubleAnimation
                                                     EasingFunction="{StaticResource CubicEase}"
-                                                    From="1"
+                                                    From="360"
                                                     To="0"
-                                                    Duration="00:00:00.3" />
+                                                    Duration="00:00:01" />
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </EventTrigger>
-                                </Grid.Triggers>
-                                <TextBlock
-                                    x:Name="ReloadRecommendIllustratorButton"
-                                    VerticalAlignment="Center"
-                                    Cursor="Hand"
-                                    FontFamily="/Resources/#iconfontex"
-                                    FontSize="25"
-                                    MouseLeftButtonDown="ReloadRecommendIllustratorButton_OnMouseLeftButtonDown"
-                                    Opacity="0"
-                                    Text="&#xe696;"
-                                    ToolTip="换一批" />
+                                </Image.Triggers>
+                                <Image.RenderTransform>
+                                    <RotateTransform x:Name="PixivLogoTransform" Angle="0" CenterX="50" CenterY="50" />
+                                </Image.RenderTransform>
+                                <Image.Clip>
+                                    <EllipseGeometry
+                                        Center="50 50"
+                                        RadiusX="50"
+                                        RadiusY="50" />
+                                </Image.Clip>
+                            </Image>
+                            <StackPanel
+                                Grid.Row="1"
+                                Height="50"
+                                Margin="0,20,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                Orientation="Horizontal">
+                                <TextBox
+                                    x:Name="KeywordTextBox"
+                                    Width="800"
+                                    materialDesign:HintAssist.Hint="请输入要搜索的内容~(￣▽￣)~*"
+                                    GotFocus="KeywordTextBox_OnGotFocus"
+                                    PreviewKeyDown="KeywordTextBox_OnPreviewKeyDown"
+                                    Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                                    TextChanged="KeywordTextBox_OnTextChanged" />
+                                <TextBox
+                                    x:Name="ToLoseFocus"
+                                    Width="0"
+                                    Height="0" />
+                                <Button
+                                    x:Name="DoQueryButton"
+                                    Width="50"
+                                    Height="40"
+                                    Margin="10,15,0,0"
+                                    Click="DoQueryButton_OnClick"
+                                    IsDefault="False"
+                                    Style="{DynamicResource MaterialDesignToolButton}">
+                                    <Viewbox
+                                        Width="34"
+                                        Height="30">
+                                        <Canvas
+                                            Width="24"
+                                            Height="24">
+                                            <Path
+                                                Data="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
+                                                Fill="Black"
+                                                Opacity="0.6" />
+                                        </Canvas>
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+                            <Popup
+                                x:Name="TrendingTagPopup"
+                                Grid.Row="1"
+                                Width="800"
+                                objects:PopupHelper.PopupPlacementTarget="{Binding ElementName=KeywordTextBox}"
+                                AllowsTransparency="True"
+                                Placement="Bottom"
+                                PlacementTarget="{Binding ElementName=KeywordTextBox}"
+                                StaysOpen="True">
+                                <materialDesign:Card
+                                    Background="#FAFAFC"
+                                    UniformCornerRadius="10">
+                                    <StackPanel>
+                                        <StackPanel
+                                            Height="40"
+                                            HorizontalAlignment="Center"
+                                            Orientation="Horizontal">
+                                            <ToggleButton
+                                                x:Name="QueryArtistToggleButton"
+                                                Width="30"
+                                                Height="30"
+                                                Margin="0,0,5,0"
+                                                Checked="QueryArtistToggleButton_OnChecked"
+                                                Style="{DynamicResource MaterialDesignFlatToggleButton}"
+                                                ToolTip="搜索用户"
+                                                Unchecked="QueryArtistToggleButton_OnUnchecked">
+                                                <Viewbox
+                                                    Width="24"
+                                                    Height="24">
+                                                    <Canvas
+                                                        Width="24"
+                                                        Height="24">
+                                                        <Path
+                                                            Data="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"
+                                                            Fill="Gray" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </ToggleButton>
+                                            <ToggleButton
+                                                x:Name="QuerySingleArtistToggleButton"
+                                                Width="30"
+                                                Height="30"
+                                                Margin="5,0,5,0"
+                                                Checked="QuerySingleArtistToggleButton_OnChecked"
+                                                Style="{DynamicResource MaterialDesignFlatToggleButton}"
+                                                ToolTip="搜索单个用户">
+                                                <Viewbox
+                                                    Width="24"
+                                                    Height="24">
+                                                    <Canvas
+                                                        Width="24"
+                                                        Height="24">
+                                                        <Path
+                                                            Data="M19,21V19H15V17H19V15L22,18L19,21M10,4A4,4 0 0,1 14,8A4,4 0 0,1 10,12A4,4 0 0,1 6,8A4,4 0 0,1 10,4M10,14C11.15,14 12.25,14.12 13.24,14.34C12.46,15.35 12,16.62 12,18C12,18.7 12.12,19.37 12.34,20H2V18C2,15.79 5.58,14 10,14Z"
+                                                            Fill="Gray" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </ToggleButton>
+                                            <ToggleButton
+                                                x:Name="QuerySingleWorkToggleButton"
+                                                Width="30"
+                                                Height="30"
+                                                Margin="5,0,0,0"
+                                                Checked="QuerySingleWorkToggleButton_OnChecked"
+                                                Style="{DynamicResource MaterialDesignFlatToggleButton}"
+                                                ToolTip="搜索单个作品">
+                                                <Viewbox
+                                                    Width="24"
+                                                    Height="24">
+                                                    <Canvas
+                                                        Width="24"
+                                                        Height="24">
+                                                        <Path
+                                                            Data="M10,7V9H12V17H14V7H10M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"
+                                                            Fill="Gray" />
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </ToggleButton>
+                                        </StackPanel>
+                                        <userControls:TrendingTagControl />
+                                    </StackPanel>
+                                </materialDesign:Card>
+                            </Popup>
+                            <Popup
+                                x:Name="AutoCompletionPopup"
+                                Grid.Row="1"
+                                Width="800"
+                                objects:PopupHelper.PopupPlacementTarget="{Binding ElementName=KeywordTextBox}"
+                                AllowsTransparency="True"
+                                Placement="Bottom"
+                                PlacementTarget="{Binding ElementName=KeywordTextBox}"
+                                StaysOpen="False">
+                                <materialDesign:Card
+                                    Width="800"
+                                    Background="#FAFAFC"
+                                    UniformCornerRadius="15">
+                                    <ListBox
+                                        x:Name="AutoCompletionListBox"
+                                        Width="800"
+                                        MaxHeight="400"
+                                        ScrollViewer.CanContentScroll="False">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate
+                                                DataType="viewModel:AutoCompletion">
+                                                <ListBoxItem
+                                                    x:Name="AutoCompletionElement"
+                                                    Width="{Binding ElementName=AutoCompletionListBox, Path=Width}"
+                                                    HorizontalAlignment="Stretch"
+                                                    PreviewMouseLeftButtonDown="AutoCompletionElement_OnPreviewMouseLeftButtonDown">
+                                                    <StackPanel
+                                                        HorizontalAlignment="Stretch">
+                                                        <TextBlock
+                                                            Margin="0,0,0,5"
+                                                            HorizontalAlignment="Left"
+                                                            FontSize="12"
+                                                            Text="{Binding Tag}"
+                                                            TextTrimming="WordEllipsis"
+                                                            TextWrapping="NoWrap" />
+                                                        <TextBlock
+                                                            HorizontalAlignment="Left"
+                                                            FontSize="10"
+                                                            Text="{Binding TranslatedName}"
+                                                            TextTrimming="WordEllipsis"
+                                                            TextWrapping="NoWrap" />
+                                                    </StackPanel>
+                                                </ListBoxItem>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </materialDesign:Card>
+                            </Popup>
+                            <Grid
+                                Grid.Row="2">
+                                <StackPanel
+                                    Height="120"
+                                    HorizontalAlignment="Center"
+                                    FlowDirection="LeftToRight"
+                                    Orientation="Horizontal"
+                                    Visibility="{Binding Source={x:Static persisting:Settings.Global}, Path=RecommendIllustrator, Converter={StaticResource VisibleIfTrueConverter}}">
+                                    <ListBox
+                                        x:Name="RecommendIllustratorListBox">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel
+                                                    CanHorizontallyScroll="False"
+                                                    CanVerticallyScroll="False"
+                                                    FlowDirection="LeftToRight"
+                                                    IsItemsHost="True"
+                                                    Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate
+                                                DataType="viewModel:User">
+                                                <materialDesign:TransitioningContent>
+                                                    <materialDesign:TransitioningContent.OpeningEffects>
+                                                        <materialDesign:TransitionEffect
+                                                            Kind="FadeIn" />
+                                                    </materialDesign:TransitioningContent.OpeningEffects>
+                                                    <Grid
+                                                        x:Name="RecommendIllustratorContainer"
+                                                        MouseLeftButtonDown="RecommendIllustratorContainer_OnMouseLeftButtonDown">
+                                                        <materialDesign:Card
+                                                            Width="120"
+                                                            Height="100"
+                                                            Margin="5,0"
+                                                            UniformCornerRadius="10">
+                                                            <StackPanel
+                                                                Margin="10,15,10,0">
+                                                                <Image
+                                                                    x:Name="RecommendIllustratorAvatar"
+                                                                    Width="40"
+                                                                    Height="40"
+                                                                    Loaded="RecommendIllustratorAvatar_OnLoaded">
+                                                                    <Image.Clip>
+                                                                        <EllipseGeometry
+                                                                            Center="20 20"
+                                                                            RadiusX="20"
+                                                                            RadiusY="20" />
+                                                                    </Image.Clip>
+                                                                </Image>
+                                                                <TextBlock
+                                                                    Margin="0,15,0,0"
+                                                                    HorizontalAlignment="Center"
+                                                                    FontSize="13"
+                                                                    Text="{Binding Name}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                            </StackPanel>
+                                                        </materialDesign:Card>
+                                                        <Popup
+                                                            Width="480"
+                                                            Height="160"
+                                                            HorizontalAlignment="Center"
+                                                            objects:PopupHelper.PopupPlacementTarget="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
+                                                            AllowsTransparency="True"
+                                                            HorizontalOffset="-180"
+                                                            IsOpen="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}, Path=IsMouseOver, Mode=OneWay}"
+                                                            Placement="Top"
+                                                            PlacementTarget="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
+                                                            PopupAnimation="Fade"
+                                                            StaysOpen="True">
+                                                            <Grid>
+                                                                <materialDesign:Card
+                                                                    Margin="5"
+                                                                    UniformCornerRadius="15">
+                                                                    <StackPanel
+                                                                        x:Name="IllustratorIllustsStackPanel"
+                                                                        Loaded="IllustratorIllustsStackPanel_OnLoaded"
+                                                                        Orientation="Horizontal">
+                                                                        <Image
+                                                                            Width="160"
+                                                                            Height="160"
+                                                                            Stretch="UniformToFill" />
+                                                                        <Image
+                                                                            Width="160"
+                                                                            Height="160"
+                                                                            Stretch="UniformToFill" />
+                                                                        <Image
+                                                                            Width="160"
+                                                                            Height="160"
+                                                                            Stretch="UniformToFill" />
+                                                                    </StackPanel>
+                                                                </materialDesign:Card>
+                                                            </Grid>
+                                                        </Popup>
+                                                    </Grid>
+                                                </materialDesign:TransitioningContent>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <Grid
+                                        Width="25"
+                                        Margin="20,0,0,0">
+                                        <Grid.Triggers>
+                                            <EventTrigger
+                                                RoutedEvent="Grid.MouseEnter">
+                                                <BeginStoryboard>
+                                                    <Storyboard
+                                                        TargetProperty="(Grid.Opacity)"
+                                                        TargetName="ReloadRecommendIllustratorButton">
+                                                        <DoubleAnimation
+                                                            EasingFunction="{StaticResource CubicEase}"
+                                                            From="0"
+                                                            To="1"
+                                                            Duration="00:00:00.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <EventTrigger
+                                                RoutedEvent="Grid.MouseLeave">
+                                                <BeginStoryboard>
+                                                    <Storyboard
+                                                        TargetProperty="(Grid.Opacity)"
+                                                        TargetName="ReloadRecommendIllustratorButton">
+                                                        <DoubleAnimation
+                                                            EasingFunction="{StaticResource CubicEase}"
+                                                            From="1"
+                                                            To="0"
+                                                            Duration="00:00:00.3" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </Grid.Triggers>
+                                        <TextBlock
+                                            x:Name="ReloadRecommendIllustratorButton"
+                                            VerticalAlignment="Center"
+                                            Cursor="Hand"
+                                            FontFamily="/Resources/#iconfontex"
+                                            FontSize="25"
+                                            MouseLeftButtonDown="ReloadRecommendIllustratorButton_OnMouseLeftButtonDown"
+                                            Opacity="0"
+                                            Text="&#xe696;"
+                                            ToolTip="换一批" />
+                                    </Grid>
+                                </StackPanel>
                             </Grid>
-                        </StackPanel>
+                            <StackPanel
+                                Grid.Row="2"
+                                Margin="0,0,10,10"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="0,0,10,0"
+                                    FontSize="12">
+                                    <TextBlock.Text>
+                                        <MultiBinding
+                                            StringFormat="{}当前版本: {0}">
+                                            <Binding
+                                                Source="{x:Static pixeval:AppContext.CurrentVersion}" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <TextBlock
+                                    FontSize="12">
+                                    <Hyperlink
+                                        Foreground="Black"
+                                        NavigateUri="http://rinacm.github.io/Pixeval"
+                                        RequestNavigate="Hyperlink_OnRequestNavigate">
+                                        关于项目
+                                    </Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                        <Grid
+                            Background="#FAFAFC">
+                            <ListView
+                                x:Name="SpotlightListView"
+                                ItemTemplate="{StaticResource SpotlightDataTemplate}"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                VirtualizingPanel.CacheLength="0 0"
+                                VirtualizingPanel.CacheLengthUnit="Pixel"
+                                VirtualizingPanel.ScrollUnit="Pixel"
+                                VirtualizingPanel.VirtualizationMode="Standard"
+                                Visibility="{Binding ElementName=SpotlightTab, Path=IsSelected, Converter={StaticResource VisibleIfTrueConverter}}">
+                                <ListView.Style>
+                                    <Style
+                                        BasedOn="{StaticResource MaterialDesignListView}"
+                                        TargetType="ListView">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding ElementName=SpotlightTab, Path=IsSelected}"
+                                                Value="False">
+                                                <Setter Property="ItemsSource" Value="{x:Null}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.Style>
+                                <ListView.Template>
+                                    <ControlTemplate>
+                                        <ScrollViewer
+                                            VirtualizingStackPanel.IsVirtualizing="True"
+                                            VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </ListView.Template>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                            </ListView>
+                            <ListView
+                                x:Name="UserPreviewListView"
+                                ItemTemplate="{StaticResource UserPreviewTemplate}"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                VirtualizingPanel.CacheLength="0 0"
+                                VirtualizingPanel.CacheLengthUnit="Pixel"
+                                VirtualizingPanel.ScrollUnit="Pixel"
+                                VirtualizingPanel.VirtualizationMode="Standard">
+                                <ListView.Resources>
+                                    <valueConverters:UserPreviewListViewVisibilityConverter
+                                        x:Key="UserPreviewListViewVisibilityConverter" />
+                                </ListView.Resources>
+                                <ListView.Visibility>
+                                    <MultiBinding
+                                        Converter="{StaticResource UserPreviewListViewVisibilityConverter}">
+                                        <Binding
+                                            ElementName="SpotlightTab"
+                                            Path="IsSelected" />
+                                        <Binding
+                                            ElementName="QueryArtistToggleButton"
+                                            Path="IsChecked" />
+                                    </MultiBinding>
+                                </ListView.Visibility>
+                                <ListView.Template>
+                                    <ControlTemplate>
+                                        <ScrollViewer
+                                            VirtualizingStackPanel.IsVirtualizing="True"
+                                            VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </ControlTemplate>
+                                </ListView.Template>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                            </ListView>
+                            <ListView
+                                x:Name="ImageListView"
+                                Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}, AncestorLevel=1}}"
+                                Grid.ZIndex="1"
+                                ItemTemplate="{StaticResource IllustrationTemplate}"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                ScrollViewer.IsDeferredScrollingEnabled="True"
+                                VirtualizingPanel.CacheLength="0 0"
+                                VirtualizingPanel.CacheLengthUnit="Pixel"
+                                VirtualizingPanel.ScrollUnit="Pixel"
+                                VirtualizingPanel.VirtualizationMode="Standard">
+                                <ListView.Style>
+                                    <Style
+                                        BasedOn="{StaticResource MaterialDesignListView}"
+                                        TargetType="ListView">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding ElementName=MenuTab, Path=IsSelected}"
+                                                Value="True">
+                                                <Setter Property="ItemsSource" Value="{x:Null}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ListView.Style>
+                                <ListView.Resources>
+                                    <valueConverters:ImageListViewVisibilityConverter
+                                        x:Key="ImageListViewVisibilityConverter" />
+                                </ListView.Resources>
+                                <ListView.Visibility>
+                                    <MultiBinding
+                                        Converter="{StaticResource ImageListViewVisibilityConverter}">
+                                        <Binding
+                                            ElementName="SpotlightTab"
+                                            Path="IsSelected" />
+                                        <Binding
+                                            ElementName="FollowingTab"
+                                            Path="IsSelected" />
+                                        <Binding
+                                            ElementName="QueryArtistToggleButton"
+                                            Path="IsChecked" />
+                                    </MultiBinding>
+                                </ListView.Visibility>
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <controls:VirtualizingWrapPanel
+                                            Orientation="Vertical" />
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                            </ListView>
+                        </Grid>
                     </Grid>
-                    <StackPanel
-                        Grid.Row="2"
-                        Margin="0,0,10,10"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        Orientation="Horizontal">
-                        <TextBlock
-                            Margin="0,0,10,0"
-                            FontSize="12">
-                            <TextBlock.Text>
-                                <MultiBinding
-                                    StringFormat="{}当前版本: {0}">
-                                    <Binding
-                                        Source="{x:Static pixeval:AppContext.CurrentVersion}" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                        <TextBlock
-                            FontSize="12">
-                            <Hyperlink
-                                Foreground="Black"
-                                NavigateUri="http://rinacm.github.io/Pixeval"
-                                RequestNavigate="Hyperlink_OnRequestNavigate">
-                                关于项目
-                            </Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
-                </Grid>
-                <Grid
-                    Background="#FAFAFC">
-                    <ListView
-                        x:Name="SpotlightListView"
-                        ItemTemplate="{StaticResource SpotlightDataTemplate}"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        VirtualizingPanel.CacheLength="0 0"
-                        VirtualizingPanel.CacheLengthUnit="Pixel"
-                        VirtualizingPanel.ScrollUnit="Pixel"
-                        VirtualizingPanel.VirtualizationMode="Standard"
-                        Visibility="{Binding ElementName=SpotlightTab, Path=IsSelected, Converter={StaticResource VisibleIfTrueConverter}}">
-                        <ListView.Style>
-                            <Style
-                                BasedOn="{StaticResource MaterialDesignListView}"
-                                TargetType="ListView">
-                                <Style.Triggers>
-                                    <DataTrigger
-                                        Binding="{Binding ElementName=SpotlightTab, Path=IsSelected}"
-                                        Value="False">
-                                        <Setter Property="ItemsSource" Value="{x:Null}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ListView.Style>
-                        <ListView.Template>
-                            <ControlTemplate>
-                                <ScrollViewer
-                                    VirtualizingStackPanel.IsVirtualizing="True"
-                                    VirtualizingStackPanel.VirtualizationMode="Recycling">
-                                    <ItemsPresenter />
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ListView.Template>
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                    </ListView>
-                    <ListView
-                        x:Name="UserPreviewListView"
-                        ItemTemplate="{StaticResource UserPreviewTemplate}"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        VirtualizingPanel.CacheLength="0 0"
-                        VirtualizingPanel.CacheLengthUnit="Pixel"
-                        VirtualizingPanel.ScrollUnit="Pixel"
-                        VirtualizingPanel.VirtualizationMode="Standard">
-                        <ListView.Resources>
-                            <valueConverters:UserPreviewListViewVisibilityConverter
-                                x:Key="UserPreviewListViewVisibilityConverter" />
-                        </ListView.Resources>
-                        <ListView.Visibility>
-                            <MultiBinding
-                                Converter="{StaticResource UserPreviewListViewVisibilityConverter}">
-                                <Binding
-                                    ElementName="SpotlightTab"
-                                    Path="IsSelected" />
-                                <Binding
-                                    ElementName="QueryArtistToggleButton"
-                                    Path="IsChecked" />
-                            </MultiBinding>
-                        </ListView.Visibility>
-                        <ListView.Template>
-                            <ControlTemplate>
-                                <ScrollViewer
-                                    VirtualizingStackPanel.IsVirtualizing="True"
-                                    VirtualizingStackPanel.VirtualizationMode="Recycling">
-                                    <ItemsPresenter />
-                                </ScrollViewer>
-                            </ControlTemplate>
-                        </ListView.Template>
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                    </ListView>
-                    <ListView
-                        x:Name="ImageListView"
-                        Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}, AncestorLevel=1}}"
-                        Grid.ZIndex="1"
-                        ItemTemplate="{StaticResource IllustrationTemplate}"
-                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.IsDeferredScrollingEnabled="True"
-                        VirtualizingPanel.CacheLength="0 0"
-                        VirtualizingPanel.CacheLengthUnit="Pixel"
-                        VirtualizingPanel.ScrollUnit="Pixel"
-                        VirtualizingPanel.VirtualizationMode="Standard">
-                        <ListView.Style>
-                            <Style
-                                BasedOn="{StaticResource MaterialDesignListView}"
-                                TargetType="ListView">
-                                <Style.Triggers>
-                                    <DataTrigger
-                                        Binding="{Binding ElementName=MenuTab, Path=IsSelected}"
-                                        Value="True">
-                                        <Setter Property="ItemsSource" Value="{x:Null}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ListView.Style>
-                        <ListView.Resources>
-                            <valueConverters:ImageListViewVisibilityConverter
-                                x:Key="ImageListViewVisibilityConverter" />
-                        </ListView.Resources>
-                        <ListView.Visibility>
-                            <MultiBinding
-                                Converter="{StaticResource ImageListViewVisibilityConverter}">
-                                <Binding
-                                    ElementName="SpotlightTab"
-                                    Path="IsSelected" />
-                                <Binding
-                                    ElementName="FollowingTab"
-                                    Path="IsSelected" />
-                                <Binding
-                                    ElementName="QueryArtistToggleButton"
-                                    Path="IsChecked" />
-                            </MultiBinding>
-                        </ListView.Visibility>
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <controls:VirtualizingWrapPanel
-                                    Orientation="Vertical" />
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                    </ListView>
-                </Grid>
+                </ScrollViewer>
             </Grid>
         </Grid>
         <userControls:SauceNAOHomePage
@@ -1920,10 +1922,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             HorizontalScrollBarVisibility="Disabled"
             Opacity="0">
             <ScrollViewer.RenderTransform>
-                <ScaleTransform
-                    CenterX="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    CenterY="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}"
-                    ScaleX="0" ScaleY="0" />
+                <ScaleTransform CenterX="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualWidth, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" CenterY="{Binding ElementName=UserBrowserPageScrollViewer, Path=ActualHeight, Converter={StaticResource DoubleDivisionConverter}, ConverterParameter={StaticResource Divide}}" ScaleX="0" ScaleY="0" />
             </ScrollViewer.RenderTransform>
             <ScrollViewer.Resources>
                 <system:Double
