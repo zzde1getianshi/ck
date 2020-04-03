@@ -1,5 +1,9 @@
+<div align="center">
+    <img src="https://s1.ax1x.com/2020/04/03/GUMZjS.png" alt="logo">
+</div>
+
 # Pixeval
-A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](https://rinacm.github.io/Pixeval)查看项目网址
+A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](http://47.95.218.243/index/index.html)查看项目网址
 
 ##### 500个star了还是没有自己的图标，如果你有一些不错的图标点子或者有一些方案，欢迎通过decem0730@hotmail.com联系我
 
@@ -59,6 +63,8 @@ A Strong, Fast and Flexible Pixiv Client based on .NET Core and WPF，[点击](h
     - 修复了点击tag没有反应的bug
 * 2020/3/21
     - 修复了排序选项和搜索起始页不起作用的BUG
+* 2020/4/3
+    - 优化了适配
     
 **下载：**
 * 前往[Release页面](https://github.com/Rinacm/Pixeval/releases)下载最新版本的Release
