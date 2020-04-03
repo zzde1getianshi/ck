@@ -8,7 +8,7 @@
     <Description>A Strong, Fast and Flexible Pixiv Client</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <StartupObject>Pixeval.App</StartupObject>
-    <ApplicationIcon>Resources\pxlogo.ico</ApplicationIcon>
+    <ApplicationIcon>pxlogo.ico</ApplicationIcon>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
     <Win32Resource />
   </PropertyGroup>
@@ -25,8 +25,9 @@
     <None Remove="Resources\dqueue.ttf" />
     <None Remove="Resources\iconfont.ttf" />
     <None Remove="Resources\iconfontex.ttf" />
+    <None Remove="Resources\logo-only.svg" />
+    <None Remove="Resources\logo-with-text.svg" />
     <None Remove="Resources\pxlogo.ico" />
-    <None Remove="Resources\pxlogo_large.png" />
     <None Remove="Resources\SauceNAO.png" />
   </ItemGroup>
 
@@ -41,6 +42,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="PropertyChanged.Fody" Version="3.2.1" />
     <PackageReference Include="refit" Version="5.0.23" />
+    <PackageReference Include="SharpVectors" Version="1.0.0" />
     <PackageReference Include="System.Interactive.Async" Version="4.0.0" />
     <PackageReference Include="VirtualizingWrapPanel.NETCore" Version="1.4.0" />
     <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
@@ -56,8 +58,8 @@
     <Resource Include="Resources\iconfontex.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\logo-only.svg" />
     <Resource Include="Resources\pxlogo.ico" />
-    <Resource Include="Resources\pxlogo_large.png" />
     <Resource Include="Resources\SauceNAO.png" />
   </ItemGroup>
 

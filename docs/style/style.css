@@ -13,9 +13,13 @@
     src: url("../fonts/ChakraPetch-Regular.ttf");
 }
 
-#banner-logo { font-family: Grenze, serif; }
+#banner-logo {
+    font-family: Grenze, serif;
+}
 
-#banner-intro { font-family: ChakraPetch, serif; }
+#banner-intro {
+    font-family: ChakraPetch, serif;
+}
 
 #logo-container {
     margin: 0 auto;
@@ -23,22 +27,29 @@
 }
 
 #logo {
-    font-size: 20px;
     text-align: center;
+    font-size: 20px;
 }
 
 .intro {
-    margin-bottom: 30px;
-    margin-top: 7px;
     text-align: center;
+    margin-top: 7px;
+    margin-bottom: 30px;
 }
 
 .browse {
-    margin-bottom: 10px;
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-.parallax-container { height: 380px; }
+.parallax-container {
+    height: 380px;
+}
+
+.download {
+    height: 100%;
+    text-align: center;
+}
 
 #badges {
     display: table;
@@ -46,8 +57,8 @@
 }
 
 #badges li {
-    display: inline;
-    float: none;
-    margin-right: 5px;
     text-align: center;
+    float: none;
+    display: inline;
+    margin-right: 5px;
 }

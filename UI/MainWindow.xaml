@@ -27,6 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
     xmlns:objects="clr-namespace:Pixeval.Objects"
     xmlns:persisting="clr-namespace:Pixeval.Persisting"
     xmlns:pixeval="clr-namespace:Pixeval"
+    xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:userControls="clr-namespace:Pixeval.UI.UserControls"
     xmlns:valueConverters="clr-namespace:Pixeval.Objects.ValueConverters"
@@ -1389,14 +1390,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                 <RowDefinition
                                     Height="*" />
                             </Grid.RowDefinitions>
-                            <Image
+                            <svgc:SvgViewbox
                                 Grid.Row="0"
                                 Width="100"
                                 Height="100"
                                 Margin="0,0,0,20"
                                 VerticalAlignment="Bottom"
-                                Source="/Resources/pxlogo_large.png">
-                                <Image.Triggers>
+                                Source="/Resources/logo-only.svg">
+                                <svgc:SvgViewbox.Triggers>
                                     <EventTrigger
                                         RoutedEvent="Mouse.MouseEnter">
                                         <BeginStoryboard>
@@ -1425,17 +1426,17 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </EventTrigger>
-                                </Image.Triggers>
-                                <Image.RenderTransform>
+                                </svgc:SvgViewbox.Triggers>
+                                <svgc:SvgViewbox.RenderTransform>
                                     <RotateTransform x:Name="PixivLogoTransform" Angle="0" CenterX="50" CenterY="50" />
-                                </Image.RenderTransform>
-                                <Image.Clip>
+                                </svgc:SvgViewbox.RenderTransform>
+                                <svgc:SvgViewbox.Clip>
                                     <EllipseGeometry
                                         Center="50 50"
                                         RadiusX="50"
                                         RadiusY="50" />
-                                </Image.Clip>
-                            </Image>
+                                </svgc:SvgViewbox.Clip>
+                            </svgc:SvgViewbox>
                             <StackPanel
                                 Grid.Row="1"
                                 Height="50"
