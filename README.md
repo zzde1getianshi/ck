@@ -85,7 +85,8 @@
 * 自版本1.7.1起添加了runtime-installation.exe作为下载.NET Core Runtime的脚本，可以直接双击下载并安装
 
 **下载：**
-前往[Release页面](https://github.com/Rinacm/Pixeval/releases)下载最新版本的Release或者在项目[主页](http://47.95.218.243/index/index.html)下载
+</br>
+前往[Release页面](https://github.com/Rinacm/Pixeval/releases)下载最新版本的Release或者在项目[主页](http://47.95.218.243/index/index.html)下载，为统一考虑，将不再开放Google Drive, Onedrive与百度网盘的下载渠道
 
 **如有遇到任何问题/有任何建议请通过以下方式联系作者：**
 * 提交[issue](https://github.com/Rinacm/Pixeval/issues/new)
