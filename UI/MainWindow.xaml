@@ -1775,7 +1775,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                     FontSize="12">
                                     <Hyperlink
                                         Foreground="Black"
-                                        NavigateUri="http://rinacm.github.io/Pixeval"
+                                        NavigateUri="http://47.95.218.243/index/index.html"
                                         RequestNavigate="Hyperlink_OnRequestNavigate">
                                         关于项目
                                     </Hyperlink>
