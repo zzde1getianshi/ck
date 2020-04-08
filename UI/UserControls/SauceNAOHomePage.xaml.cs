@@ -42,7 +42,7 @@ namespace Pixeval.UI.UserControls
             InitializeComponent();
         }
 
-        private async void UploadFileAndQueryButton_OnDrop(object sender, DragEventArgs e)
+        private async void SauceNaoPage_OnDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 if (e.Data.GetData(DataFormats.FileDrop) is string[] fs)
@@ -104,7 +104,6 @@ namespace Pixeval.UI.UserControls
 
         private static async Task<IEnumerable<string>> ParseSauce(string sauceResult)
         {
-            Debug.WriteLine(sauceResult);
             var doc = await new HtmlParser().ParseDocumentAsync(sauceResult);
             var results = doc.QuerySelectorAll("div.result")
                 .Where(div => div.Attributes.Length == 1)

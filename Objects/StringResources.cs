@@ -20,7 +20,7 @@ using Pixeval.Persisting;
 
 namespace Pixeval.Objects
 {
-    public sealed class Externally
+    public sealed class StringResources
     {
         public const string EmailOrPasswordIsWrong = "用户名或密码错误";
 

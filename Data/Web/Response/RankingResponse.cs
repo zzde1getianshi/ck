@@ -124,6 +124,7 @@ namespace Pixeval.Data.Web.Response
                 }.Apply(i =>
                 {
                     if (i.IsManga)
+                    {
                         i.MangaMetadata = MetaPages.Select(p =>
                         {
                             var page = (Illustration) i.Clone();
@@ -132,6 +133,11 @@ namespace Pixeval.Data.Web.Response
                             page.Large = p.ImageUrls.Large;
                             return page;
                         }).ToArray();
+                        foreach (var illustration in i.MangaMetadata)
+                        {
+                            illustration.MangaMetadata = i.MangaMetadata;
+                        }
+                    }
                 });
             }
         }

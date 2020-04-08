@@ -18,7 +18,7 @@ using Refit;
 
 namespace Pixeval.Data.Web.Request
 {
-    public class TokenRequest
+    public class PasswordTokenRequest
     {
         [AliasAs("username")]
         public string Name { get; set; }

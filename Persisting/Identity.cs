@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -101,7 +102,13 @@ namespace Pixeval.Persisting
         {
             if (Global == null) await Restore();
 
-            if (await RefreshRequired()) await Authentication.Authenticate(Global?.MailAddress, Global?.Password);
+            if (await RefreshRequired())
+            {
+                if (Global?.RefreshToken.IsNullOrEmpty() is true)
+                    await Authentication.Authenticate(Global?.MailAddress, Global?.Password);
+                else
+                    await Authentication.Authenticate(Global?.RefreshToken);
+            }
         }
 
         public static void Clear()

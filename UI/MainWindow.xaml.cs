@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -64,7 +65,7 @@ namespace Pixeval.UI
             IgnoreDuplicate = true
         };
 
-        private readonly Dictionary<object, Illustration> dataContextHolder = new Dictionary<object, Illustration>();
+        private readonly ConcurrentDictionary<object, Illustration> dataContextHolder = new ConcurrentDictionary<object, Illustration>();
 
         public MainWindow()
         {
@@ -75,11 +76,10 @@ namespace Pixeval.UI
             {
                 if (task.Result && MessageBox.Show("有更新可用, 是否现在更新?", "更新可用", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
                 {
-                    Process.Start("updater\\Pixeval.AutoUpdater.exe");
+                    Process.Start(@"updater\Pixeval.AutoUpdater.exe");
                     Environment.Exit(0);
                 }
             });
-
 
             NavigatorList.SelectedItem = MenuTab;
             MainWindowSnackBar.MessageQueue = MessageQueue;
@@ -100,10 +100,10 @@ namespace Pixeval.UI
             switch (e.Exception)
             {
                 case QueryNotRespondingException _:
-                    MessageQueue.Enqueue(Externally.QueryNotResponding);
+                    MessageQueue.Enqueue(StringResources.QueryNotResponding);
                     break;
                 case ApiException apiException:
-                    if (apiException.StatusCode == HttpStatusCode.BadRequest) MessageQueue.Enqueue(Externally.QueryNotResponding);
+                    if (apiException.StatusCode == HttpStatusCode.BadRequest) MessageQueue.Enqueue(StringResources.QueryNotResponding);
                     break;
                 case HttpRequestException _:
                     break;
@@ -122,7 +122,7 @@ namespace Pixeval.UI
 
             if (KeywordTextBox.Text.IsNullOrEmpty())
             {
-                MessageQueue.Enqueue(Externally.InputIsEmpty);
+                MessageQueue.Enqueue(StringResources.InputIsEmpty);
                 return;
             }
 
@@ -141,7 +141,7 @@ namespace Pixeval.UI
         {
             if (!userId.IsNumber())
             {
-                MessageQueue.Enqueue(Externally.InputIllegal("单个用户"));
+                MessageQueue.Enqueue(StringResources.InputIllegal("单个用户"));
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace Pixeval.UI
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    MessageQueue.Enqueue(Externally.CannotFindUser);
+                    MessageQueue.Enqueue(StringResources.CannotFindUser);
                     return;
                 }
             }
@@ -173,7 +173,7 @@ namespace Pixeval.UI
         {
             if (!int.TryParse(illustId, out _))
             {
-                MessageQueue.Enqueue(Externally.InputIllegal("单个作品"));
+                MessageQueue.Enqueue(StringResources.InputIllegal("单个作品"));
                 return;
             }
 
@@ -184,7 +184,7 @@ namespace Pixeval.UI
             catch (ApiException exception)
             {
                 if (exception.StatusCode == HttpStatusCode.NotFound || exception.StatusCode == HttpStatusCode.BadRequest)
-                    MessageQueue.Enqueue(Externally.IdDoNotExists);
+                    MessageQueue.Enqueue(StringResources.IdDoNotExists);
                 else throw;
             }
         }
@@ -453,7 +453,13 @@ namespace Pixeval.UI
             {
                 var translateTransform = (TranslateTransform) HomeDisplayContainer.RenderTransform;
                 if (current == MenuTab && !translateTransform.Y.Equals(0))
+                {
+                    ReleaseItemsSource(SpotlightListView);
+                    ReleaseItemsSource(ImageListView);
+                    ReleaseItemsSource(UserPreviewListView);
+                    IteratingSchedule.CancelCurrent();
                     HomeContainerMoveUp();
+                }
                 else if (current != MenuTab && translateTransform.Y.Equals(0)) HomeContainerMoveDown();
             }
         }
@@ -480,7 +486,7 @@ namespace Pixeval.UI
 
             if (dataContext != null && Uri.IsWellFormedUriString(dataContext.Thumbnail, UriKind.Absolute))
             {
-                dataContextHolder[sender] = dataContext;
+                dataContextHolder.TryAdd(sender, dataContext);
                 dataContext.LoadAndCacheThumbnailImageToControl(sender);
             }
 
@@ -706,28 +712,23 @@ namespace Pixeval.UI
 
             if (context.IsManga)
             {
-                if (context.MangaMetadata.IsNullOrEmpty()) context = await PixivHelper.IllustrationInfo(context.Id);
-
-                var tasks = await Tasks<Illustration, (BitmapImage image, Illustration illust)>.Of(context.MangaMetadata)
-                    .Mapping(illustration => Task.Run(async () => (await PixivIO.FromUrl(illustration.Large), illustration)))
-                    .Construct()
-                    .WhenAll();
-
-                list.AddRange(tasks.Select(i => InitTransitionerSlide(i.image, i.illust)));
+                if (context.MangaMetadata.IsNullOrEmpty()) 
+                    context = await PixivHelper.IllustrationInfo(context.Id);
+                list.AddRange(context.MangaMetadata.Select(InitTransitionerSlide));
             }
             else
             {
-                list.Add(InitTransitionerSlide(await PixivIO.FromUrl(context.Large), context));
+                list.Add(InitTransitionerSlide(context));
             }
         }
 
-        private static TransitionerSlide InitTransitionerSlide(ImageSource imgSource, Illustration illust)
+        private static TransitionerSlide InitTransitionerSlide(Illustration illust)
         {
             return new TransitionerSlide
             {
-                ForwardWipe = new CircleWipe(),
-                BackwardWipe = new CircleWipe(),
-                Content = new IllustPresenter(imgSource, illust)
+                ForwardWipe = new FadeWipe(),
+                BackwardWipe = new FadeWipe(),
+                Content = new IllustPresenter(illust)
             };
         }
 

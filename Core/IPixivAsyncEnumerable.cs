@@ -43,6 +43,13 @@ namespace Pixeval.Core
             AppContext.DefaultCacheProvider.Clear();
             CurrentItr = itr as IPixivAsyncEnumerable<object>;
         }
+
+        public static void CancelCurrent()
+        {
+            CurrentItr?.Cancel();
+            GC.Collect();
+            AppContext.DefaultCacheProvider.Clear();
+        }
     }
 
     public enum SortOption

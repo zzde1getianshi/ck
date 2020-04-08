@@ -13,8 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
+along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
 <UserControl
     x:Class="Pixeval.UI.UserControls.IllustPresenter"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -29,11 +28,38 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     mc:Ignorable="d">
     <Grid
         HorizontalAlignment="Stretch">
-        <Image
-            x:Name="ContentImage"
-            Height="600"
-            Source="{Binding ImgSource}"
-            Stretch="Uniform" />
+        <Grid
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Opacity="1">
+            <Image
+                x:Name="ContentImage"
+                Height="600"
+                Source="{Binding ImgSource}"
+                Stretch="Uniform">
+                <Image.Effect>
+                    <BlurEffect
+                        KernelType="Gaussian"
+                        Radius="15" />
+                </Image.Effect>
+            </Image>
+            <Grid
+                x:Name="LoadingMask"
+                Visibility="{Binding LoadingOrigin, Converter={StaticResource VisibleIfTrueConverter}}">
+                <ProgressBar
+                    x:Name="OriginalLoadIndicator"
+                    Width="200"
+                    Height="10"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="#D4E5F9"
+                    BorderThickness="0"
+                    Foreground="#007CEE"
+                    Maximum="1"
+                    Style="{StaticResource RoundedCornerProgressBar}"
+                    Value="{Binding LoadingIndicator}" />
+            </Grid>
+        </Grid>
         <Grid
             x:Name="TransitionControllerGrid"
             Width="{Binding ElementName=ContentImage, Path=ActualWidth}"

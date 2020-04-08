@@ -46,13 +46,28 @@ namespace Pixeval.Persisting
             try
             {
                 var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
-                    .GetToken(new TokenRequest {Name = name, Password = pwd}, time, hash);
+                    .GetTokenByPassword(new PasswordTokenRequest {Name = name, Password = pwd}, time, hash);
 
                 Identity.Global = Identity.Parse(pwd, token);
             }
             catch (TaskCanceledException)
             {
                 throw new TokenNotFoundException("请求超时, 请仔细检查您的网络环境");
+            }
+        }
+
+        public static async Task Authenticate(string refreshToken)
+        {
+            try
+            {
+                var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
+                    .RefreshToken(new RefreshTokenRequest {RefreshToken = refreshToken});
+                Identity.Global = Identity.Parse(Identity.Global.Password, token);
+            }
+            catch (TaskCanceledException)
+            {
+                Console.WriteLine();
+                throw;
             }
         }
     }

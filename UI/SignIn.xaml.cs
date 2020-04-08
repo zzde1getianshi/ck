@@ -45,7 +45,7 @@ namespace Pixeval.UI
         {
             if (Email.Text.IsNullOrEmpty() || Password.Password.IsNullOrEmpty())
             {
-                ErrorMessage.Text = Externally.EmptyEmailOrPasswordIsNotAllowed;
+                ErrorMessage.Text = StringResources.EmptyEmailOrPasswordIsNotAllowed;
                 return;
             }
 
@@ -96,7 +96,7 @@ namespace Pixeval.UI
         private async void SetErrorHint(Exception exception)
         {
             ErrorMessage.Text = exception is ApiException aException && await IsPasswordOrAccountError(aException)
-                ? Externally.EmailOrPasswordIsWrong
+                ? StringResources.EmailOrPasswordIsWrong
                 : exception.Message;
         }
 

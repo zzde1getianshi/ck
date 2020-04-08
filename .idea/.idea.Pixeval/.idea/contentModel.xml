@@ -91,20 +91,6 @@
           </e>
         </e>
       </e>
-      <e p="docs" t="Include">
-        <e p="fonts" t="Include">
-          <e p="ChakraPetch-Regular.ttf" t="Include" />
-          <e p="Grenze-SemiBold.ttf" t="Include" />
-          <e p="JosefinSlab-SemiBold.ttf" t="Include" />
-        </e>
-        <e p="index.html" t="Include" />
-        <e p="script" t="Include">
-          <e p="init.js" t="Include" />
-        </e>
-        <e p="style" t="Include">
-          <e p="style.css" t="Include" />
-        </e>
-      </e>
       <e p="FodyWeavers.xml" t="Include" />
       <e p="LICENSE" t="Include" />
       <e p="obj" t="ExcludeRecursive">
@@ -180,13 +166,14 @@
       <e p="Properties" t="Include">
         <e p="PublishProfiles" t="Include" />
       </e>
+      <e p="pxlogo.ico" t="Include" />
       <e p="README.md" t="Include" />
       <e p="Resources" t="Include">
         <e p="dqueue.ttf" t="Include" />
         <e p="iconfont.ttf" t="Include" />
         <e p="iconfontex.ttf" t="Include" />
+        <e p="logo-only.svg" t="Include" />
         <e p="pxlogo.ico" t="Include" />
-        <e p="pxlogo_large.png" t="Include" />
         <e p="SauceNAO.png" t="Include" />
       </e>
       <e p="UI" t="Include">

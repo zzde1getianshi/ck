@@ -15,6 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using Pixeval.Core;
@@ -32,20 +34,54 @@ namespace Pixeval.UI.UserControls
         {
             InitializeComponent();
             ((INotifyCollectionChanged) DownloadItemsQueue.Items).CollectionChanged += (sender, args) =>
-                EmptyNotifier.Visibility = DownloadItemsQueue.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+                EmptyNotifier1.Visibility = DownloadItemsQueue.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
+            ((INotifyCollectionChanged) DownloadedItemsQueue.Items).CollectionChanged += (sender, args) =>
+                EmptyNotifier2.Visibility = DownloadedItemsQueue.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
             UiHelper.SetItemsSource(DownloadItemsQueue, AppContext.Downloading);
+            UiHelper.SetItemsSource(DownloadedItemsQueue, AppContext.Downloaded);
         }
 
         private async void DownloadItemThumbnail_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var url = sender.GetDataContext<DownloadableIllustrationViewModel>().DownloadContent.Thumbnail;
+            var url = sender.GetDataContext<DownloadableIllustration>().DownloadContent.Thumbnail;
             UiHelper.SetImageSource(sender, await PixivIO.FromUrl(url));
         }
 
         private void RetryButton_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var model = sender.GetDataContext<DownloadableIllustrationViewModel>();
+            var model = sender.GetDataContext<DownloadableIllustration>();
             model.Restart();
+        }
+
+        private void CancelButton_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var model = sender.GetDataContext<DownloadableIllustration>();
+            model.Cancel();
+        }
+
+        private void ViewDownloadLocationButton_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var model = sender.GetDataContext<DownloadableIllustration>();
+            if (!model.DownloadPath.IsNullOrEmpty() && Path.GetDirectoryName(model.DownloadPath) is var p)
+                Process.Start("explorer.exe", p);
+            else MainWindow.MessageQueue.Enqueue("找不到目录, 请检查文件是否已经被删除");
+        }
+
+        private void ShowDownloadIllustration(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Instance.DownloadQueueDialogHost.CloseControl();
+            var model = sender.GetDataContext<DownloadableIllustration>();
+            MainWindow.Instance.OpenIllustBrowser(model.IsFromManga ? model.DownloadContent.MangaMetadata[0] : model.DownloadContent);
+        }
+
+        private void RemoveFromDownloaded(object sender, RoutedEventArgs e)
+        {
+            AppContext.Downloaded.Remove(sender.GetDataContext<DownloadableIllustration>());
+        }
+
+        private void RemoveFromDownloading(object sender, RoutedEventArgs e)
+        {
+            AppContext.Downloading.Remove(sender.GetDataContext<DownloadableIllustration>());
         }
     }
 }

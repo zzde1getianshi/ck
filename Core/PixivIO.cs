@@ -62,6 +62,7 @@ namespace Pixeval.Core
 
         public static BitmapImage FromStream(Stream stream)
         {
+            stream.Seek(0, SeekOrigin.Begin);
             if (stream.Length == 0) return null;
             var bmp = new BitmapImage {CreateOptions = BitmapCreateOptions.DelayCreation};
             bmp.BeginInit();

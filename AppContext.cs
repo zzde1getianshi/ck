@@ -18,8 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using Pixeval.Core;
 using Pixeval.Data.ViewModel;
@@ -31,7 +33,7 @@ namespace Pixeval
     {
         public const string AppIdentifier = "Pixeval";
 
-        public const string CurrentVersion = "1.7.4";
+        public const string CurrentVersion = "1.7.5";
 
         public const string ConfigurationFileName = "pixeval_conf.json";
 
@@ -53,7 +55,9 @@ namespace Pixeval
 
         public static readonly IIllustrationFileNameFormatter FileNameFormatter = new DefaultIllustrationFileNameFormatter();
 
-        public static readonly ObservableCollection<DownloadableIllustrationViewModel> Downloading = new ObservableCollection<DownloadableIllustrationViewModel>();
+        public static readonly ObservableCollection<DownloadableIllustration> Downloading = new ObservableCollection<DownloadableIllustration>();
+
+        public static readonly ObservableCollection<DownloadableIllustration> Downloaded = new ObservableCollection<DownloadableIllustration>();
 
         public static readonly ObservableCollection<TrendingTag> TrendingTags = new ObservableCollection<TrendingTag>();
 
@@ -79,26 +83,45 @@ namespace Pixeval
 
         public static void EnqueueDownloadItem(Illustration illustration)
         {
-            static void RemoveAction(DownloadableIllustrationViewModel d)
+            if (Downloading.Any(i => illustration.Id == i.DownloadContent.Id))
+                return;
+
+            static DownloadableIllustration CreateDownloadableIllustration(Illustration downloadContent, bool isFromMange, int index = -1)
             {
-                Downloading.Remove(d);
+                var model = new DownloadableIllustration(downloadContent, isFromMange, index);
+                model.DownloadStat.ValueChanged += (sender, args) => Application.Current.Dispatcher.Invoke(() =>
+                {
+                    switch (args.NewValue)
+                    {
+                        case DownloadStatEnum.Finished:
+                            model.Freeze();
+                            Downloading.Remove(model);
+                            if (Downloaded.All(i => model.DownloadContent.GetDownloadUrl() != i.DownloadContent.GetDownloadUrl())) Downloaded.Add(model);
+                            break;
+                        case DownloadStatEnum.Downloading:
+                            Downloaded.Remove(model);
+                            Downloading.Add(model);
+                            break;
+                        case var stat when stat == DownloadStatEnum.Canceled || stat == DownloadStatEnum.Queue || stat == DownloadStatEnum.Exceptional:
+                            if (stat == DownloadStatEnum.Canceled)
+                                Downloading.Remove(model);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                });
+                return model;
             }
 
             if (illustration.IsManga)
             {
                 for (var j = 0; j < illustration.MangaMetadata.Length; j++)
-                {
-                    var model = new DownloadableIllustrationViewModel(illustration.MangaMetadata[j], true, j) {DownloadFinished = RemoveAction};
-                    Task.Run(() => model.Download());
-                    Downloading.Add(model);
+                { 
+                    var cpy = j;
+                    Task.Run(() => CreateDownloadableIllustration(illustration.MangaMetadata[cpy], true, cpy).Download());
                 }
             }
-            else
-            {
-                var model = new DownloadableIllustrationViewModel(illustration, false) {DownloadFinished = RemoveAction};
-                Task.Run(() => model.Download());
-                Downloading.Add(model);
-            }
+            else Task.Run(() => CreateDownloadableIllustration(illustration, false).Download());
         }
 
         public static async Task<bool> UpdateAvailable()
