@@ -37,8 +37,8 @@ namespace Pixeval.UI.UserControls
                 EmptyNotifier1.Visibility = DownloadItemsQueue.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
             ((INotifyCollectionChanged) DownloadedItemsQueue.Items).CollectionChanged += (sender, args) =>
                 EmptyNotifier2.Visibility = DownloadedItemsQueue.Items.Count == 0 ? Visibility.Visible : Visibility.Hidden;
-            UiHelper.SetItemsSource(DownloadItemsQueue, AppContext.Downloading);
-            UiHelper.SetItemsSource(DownloadedItemsQueue, AppContext.Downloaded);
+            UiHelper.SetItemsSource(DownloadItemsQueue, DownloadManager.Downloading);
+            UiHelper.SetItemsSource(DownloadedItemsQueue, DownloadManager.Downloaded);
         }
 
         private async void DownloadItemThumbnail_OnLoaded(object sender, RoutedEventArgs e)
@@ -76,12 +76,12 @@ namespace Pixeval.UI.UserControls
 
         private void RemoveFromDownloaded(object sender, RoutedEventArgs e)
         {
-            AppContext.Downloaded.Remove(sender.GetDataContext<DownloadableIllustration>());
+            DownloadManager.Downloaded.Remove(sender.GetDataContext<DownloadableIllustration>());
         }
 
         private void RemoveFromDownloading(object sender, RoutedEventArgs e)
         {
-            AppContext.Downloading.Remove(sender.GetDataContext<DownloadableIllustration>());
+            DownloadManager.Downloading.Remove(sender.GetDataContext<DownloadableIllustration>());
         }
     }
 }

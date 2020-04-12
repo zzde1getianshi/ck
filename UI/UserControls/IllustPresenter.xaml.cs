@@ -40,6 +40,8 @@ namespace Pixeval.UI.UserControls
     {
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
+        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         public IllustPresenter(Illustration illustration)
         {
             Illust = illustration;
@@ -61,8 +63,6 @@ namespace Pixeval.UI.UserControls
         public double LoadingIndicator { get; set; }
 
         public bool PlayButtonVisible => !ProcessingGif && !PlayingGif;
-
-        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         private async void LoadThumbnail()
         {
@@ -98,11 +98,8 @@ namespace Pixeval.UI.UserControls
             {
                 (Dispatcher ?? throw new InvalidOperationException()).Invoke(async () =>
                 {
-                    var userInfo = await HttpClientFactory.AppApiService().GetUserInformation(new UserInformationRequest { Id = Illust.UserId });
-                    if (Illust.UserId == MainWindow.Instance.IllustBrowserDialogHost.GetDataContext<Illustration>().UserId)
-                    {
-                        SetImageSource(MainWindow.Instance.IllustBrowserUserAvatar, await PixivIO.FromUrl(userInfo.UserEntity.ProfileImageUrls.Medium));
-                    }
+                    var userInfo = await HttpClientFactory.AppApiService().GetUserInformation(new UserInformationRequest {Id = Illust.UserId});
+                    if (Illust.UserId == MainWindow.Instance.IllustBrowserDialogHost.GetDataContext<Illustration>().UserId) SetImageSource(MainWindow.Instance.IllustBrowserUserAvatar, await PixivIO.FromUrl(userInfo.UserEntity.ProfileImageUrls.Medium));
                     MainWindow.Instance.IllustBrowserDialogHost.DataContext = Illust;
                 });
             });

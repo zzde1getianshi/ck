@@ -51,29 +51,29 @@ namespace Pixeval.UI.UserControls
         private void QueryR18_OnChecked(object sender, RoutedEventArgs e)
         {
             var set = new HashSet<string>();
-            if (Settings.Global.ExceptTags != null) set.AddRange(Settings.Global.ExceptTags);
+            if (Settings.Global.ExcludeTag != null) set.AddRange(Settings.Global.ExcludeTag);
             set.AddRange(new[] {"R-18", "R-18G"});
-            Settings.Global.ExceptTags = set;
+            Settings.Global.ExcludeTag = set;
         }
 
         private void QueryR18_OnUnchecked(object sender, RoutedEventArgs e)
         {
-            var set = new HashSet<string>(Settings.Global.ExceptTags);
+            var set = new HashSet<string>(Settings.Global.ExcludeTag);
             set.Remove("R-18");
             set.Remove("R-18G");
-            Settings.Global.ExceptTags = set;
+            Settings.Global.ExcludeTag = set;
         }
 
         private void ExceptTagTextBox_OnLostFocus(object sender, RoutedEventArgs e)
         {
             var text = ExceptTagTextBox.Text.Split(" ");
-            Settings.Global.ExceptTags = new HashSet<string>(text);
+            Settings.Global.ExcludeTag = new HashSet<string>(text);
         }
 
         private void ContainsTagTextBox_OnLostFocus(object sender, RoutedEventArgs e)
         {
             var text = ContainsTagTextBox.Text.Split(" ");
-            Settings.Global.ContainsTags = new HashSet<string>(text);
+            Settings.Global.IncludeTag = new HashSet<string>(text);
         }
 
         private void ChangeCachingPolicyToggleButton_OnChecked(object sender, RoutedEventArgs e)

@@ -14,22 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Threading.Tasks;
-using Pixeval.Data.Web.Request;
-using Pixeval.Data.Web.Response;
-using Refit;
-
-namespace Pixeval.Data.Web.Protocol
+namespace Pixeval.Core
 {
-    [Headers("User-Agent: PixivAndroidApp/5.0.64 (Android 6.0)", "Content-Type: application/x-www-form-urlencoded")]
-    public interface ITokenProtocol
+    public interface IQualifier<in T, in P>
     {
-        [Post("/auth/token")]
-        Task<TokenResponse> GetTokenByPassword([Body(BodySerializationMethod.UrlEncoded)]
-            PasswordTokenRequest body, [Header("X-Client-Time")] string clientTime, [Header("X-Client-Hash")] string clientHash);
-
-        [Post("/auth/token")]
-        Task<TokenResponse> RefreshToken([Body(BodySerializationMethod.UrlEncoded)]
-            RefreshTokenRequest body);
+        public bool Qualified(T condition, P pattern);
     }
 }

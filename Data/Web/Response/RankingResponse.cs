@@ -133,10 +133,7 @@ namespace Pixeval.Data.Web.Response
                             page.Large = p.ImageUrls.Large;
                             return page;
                         }).ToArray();
-                        foreach (var illustration in i.MangaMetadata)
-                        {
-                            illustration.MangaMetadata = i.MangaMetadata;
-                        }
+                        foreach (var illustration in i.MangaMetadata) illustration.MangaMetadata = i.MangaMetadata;
                     }
                 });
             }

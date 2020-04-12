@@ -14,22 +14,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Threading.Tasks;
-using Pixeval.Data.Web.Request;
-using Pixeval.Data.Web.Response;
-using Refit;
+using System.Windows.Controls;
+using System.Windows.Input;
 
-namespace Pixeval.Data.Web.Protocol
+namespace Pixeval.UI.UserControls
 {
-    [Headers("User-Agent: PixivAndroidApp/5.0.64 (Android 6.0)", "Content-Type: application/x-www-form-urlencoded")]
-    public interface ITokenProtocol
+    /// <summary>
+    ///     Interaction logic for InputBoxWindow.xaml
+    /// </summary>
+    public partial class InputBoxControl : UserControl
     {
-        [Post("/auth/token")]
-        Task<TokenResponse> GetTokenByPassword([Body(BodySerializationMethod.UrlEncoded)]
-            PasswordTokenRequest body, [Header("X-Client-Time")] string clientTime, [Header("X-Client-Hash")] string clientHash);
+        public InputBoxControl()
+        {
+            InitializeComponent();
+        }
 
-        [Post("/auth/token")]
-        Task<TokenResponse> RefreshToken([Body(BodySerializationMethod.UrlEncoded)]
-            RefreshTokenRequest body);
+        private void ConditionTextBox_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Oem5)
+                e.Handled = true;
+        }
     }
 }

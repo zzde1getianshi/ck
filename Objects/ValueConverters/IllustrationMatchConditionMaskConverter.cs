@@ -16,28 +16,26 @@
 
 using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
+using Pixeval.Core;
+using Pixeval.Data.ViewModel;
 
 namespace Pixeval.Objects.ValueConverters
 {
-    public class EnumToStringConverter : IValueConverter
+    public class IllustrationMatchConditionMaskConverter : IMultiValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Enum v)
-                try
-                {
-                    return Enum.GetName(v.GetType(), value);
-                }
-                catch
-                {
-                    return string.Empty;
-                }
+            if (values[0] is string v && values[1] is Illustration illustration)
+                return AppContext.DefaultQualifier.Qualified(illustration, IllustrationQualification.Parse(v))
+                    ? Visibility.Visible
+                    : Visibility.Hidden;
 
-            return string.Empty;
+            return Visibility.Hidden;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -33,6 +33,8 @@ namespace Pixeval.Data.ViewModel
         [DoNotNotify]
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
+        private bool modifiable = true;
+
         private bool retried;
 
         public DownloadableIllustration(Illustration downloadContent, bool isFromManga, int mangaIndex = -1)
@@ -59,20 +61,18 @@ namespace Pixeval.Data.ViewModel
 
         public string DownloadPath { get; private set; }
 
-        private bool modifiable = true;
-        
         private void GetPath()
         {
             if (DownloadContent.IsUgoira)
-                DownloadPath = Path.Combine(Directory.CreateDirectory(AppContext.DownloadPathProvider.GetIllustrationPath()).FullName, AppContext.FileNameFormatter.FormatGif(DownloadContent));
+                DownloadPath = Path.Combine(Directory.CreateDirectory(DownloadManager.DownloadPathProvider.GetIllustrationPath()).FullName, DownloadManager.FileNameFormatter.FormatGif(DownloadContent));
             else if (DownloadContent.FromSpotlight)
                 DownloadPath = IsFromManga
-                    ? Path.Combine(Directory.CreateDirectory(AppContext.DownloadPathProvider.GetSpotlightPath(DownloadContent.SpotlightTitle)).FullName, DownloadContent.Id, AppContext.FileNameFormatter.FormatManga(DownloadContent, MangaIndex))
-                    : Path.Combine(Directory.CreateDirectory(AppContext.DownloadPathProvider.GetSpotlightPath(DownloadContent.SpotlightTitle)).FullName, AppContext.FileNameFormatter.Format(DownloadContent));
+                    ? Path.Combine(Directory.CreateDirectory(DownloadManager.DownloadPathProvider.GetSpotlightPath(DownloadContent.SpotlightTitle)).FullName, DownloadContent.Id, DownloadManager.FileNameFormatter.FormatManga(DownloadContent, MangaIndex))
+                    : Path.Combine(Directory.CreateDirectory(DownloadManager.DownloadPathProvider.GetSpotlightPath(DownloadContent.SpotlightTitle)).FullName, DownloadManager.FileNameFormatter.Format(DownloadContent));
             else if (IsFromManga)
-                DownloadPath = Path.Combine(Directory.CreateDirectory(AppContext.DownloadPathProvider.GetMangaPath(DownloadContent.Id)).FullName, AppContext.FileNameFormatter.FormatManga(DownloadContent, MangaIndex));
+                DownloadPath = Path.Combine(Directory.CreateDirectory(DownloadManager.DownloadPathProvider.GetMangaPath(DownloadContent.Id)).FullName, DownloadManager.FileNameFormatter.FormatManga(DownloadContent, MangaIndex));
             else
-                DownloadPath = Path.Combine(Directory.CreateDirectory(AppContext.DownloadPathProvider.GetIllustrationPath()).FullName, AppContext.FileNameFormatter.Format(DownloadContent));
+                DownloadPath = Path.Combine(Directory.CreateDirectory(DownloadManager.DownloadPathProvider.GetIllustrationPath()).FullName, DownloadManager.FileNameFormatter.Format(DownloadContent));
         }
 
 
@@ -117,6 +117,7 @@ namespace Pixeval.Data.ViewModel
                 DownloadGif();
                 return;
             }
+
             try
             {
                 await using var memory = await PixivIO.Download(DownloadContent.GetDownloadUrl(), new Progress<double>(d => Progress = d), cancellationTokenSource.Token);
@@ -189,6 +190,10 @@ namespace Pixeval.Data.ViewModel
     [Flags]
     public enum DownloadStatEnum
     {
-        Queue, Downloading, Exceptional, Finished, Canceled
+        Queue,
+        Downloading,
+        Exceptional,
+        Finished,
+        Canceled
     }
 }

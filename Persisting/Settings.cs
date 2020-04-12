@@ -58,9 +58,9 @@ namespace Pixeval.Persisting
 
         public int SpotlightQueryStart { get; set; } = 1;
 
-        public ISet<string> ExceptTags { get; set; } = new HashSet<string>();
+        public ISet<string> ExcludeTag { get; set; } = new HashSet<string>();
 
-        public ISet<string> ContainsTags { get; set; } = new HashSet<string>();
+        public ISet<string> IncludeTag { get; set; } = new HashSet<string>();
 
         public override string ToString()
         {
@@ -88,8 +88,8 @@ namespace Pixeval.Persisting
             Global.downloadLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             Global.DownloadLocation = string.Empty;
             Global.SortOnInserting = false;
-            Global.ContainsTags = new HashSet<string>();
-            Global.ExceptTags = new HashSet<string>();
+            Global.IncludeTag = new HashSet<string>();
+            Global.ExcludeTag = new HashSet<string>();
             Global.DirectConnect = false;
             Global.MinBookmark = 0;
             Global.QueryPages = 1;

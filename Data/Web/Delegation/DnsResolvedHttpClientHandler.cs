@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -78,7 +77,7 @@ namespace Pixeval.Data.Web.Delegation
                 var token = request.Headers.Authorization;
                 if (token != null)
                     request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, Identity.Global.AccessToken);
-                
+
                 return await base.SendAsync(request, cancellationToken);
             }
 

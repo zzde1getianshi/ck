@@ -93,7 +93,7 @@ namespace Pixeval.Core
 
                 if (illust is Illustration i)
                 {
-                    if (IllustNotMatchCondition(Settings.Global.ExceptTags, Settings.Global.ContainsTags, i))
+                    if (IllustNotMatchCondition(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, i))
                         continue;
 
                     if (container is Collection<Illustration> illustrationContainer)

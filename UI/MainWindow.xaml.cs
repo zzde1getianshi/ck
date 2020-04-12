@@ -165,7 +165,7 @@ namespace Pixeval.UI
         private void TryQueryUser(string keyword)
         {
             QueryStartUp();
-            AppContext.EnqueueSearchHistory(keyword);
+            SearchingHistoryManager.EnqueueSearchHistory(keyword);
             PixivHelper.Iterate(new UserPreviewAsyncEnumerable(keyword), NewItemsSource<User>(UserPreviewListView));
         }
 
@@ -192,7 +192,7 @@ namespace Pixeval.UI
         private void QueryWorks(string keyword)
         {
             QueryStartUp();
-            AppContext.EnqueueSearchHistory(keyword);
+            SearchingHistoryManager.EnqueueSearchHistory(keyword);
             PixivHelper.Iterate(new QueryAsyncEnumerable(keyword, Settings.Global.SortOnInserting ? SortOption.Popularity : SortOption.PublishDate, Settings.Global.QueryStart), NewItemsSource<Illustration>(ImageListView), Settings.Global.QueryPages);
         }
 
@@ -250,17 +250,25 @@ namespace Pixeval.UI
             OpenUserBrowser();
         }
 
-        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        private async void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            switch (e.Key)
             {
-                if (IllustBrowserDialogHost.IsOpen)
-                {
+                case Key.Oem5:
+                    var inputBoxControl = BrowsingUser() ? UserBrowserConditionInputBox : ConditionInputBox;
+                    inputBoxControl.Visibility = ConditionInputBox.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+                    await Task.Delay(100);
+                    if (inputBoxControl.Visibility == Visibility.Visible)
+                        inputBoxControl.ConditionTextBox.Focus();
+                    else
+                        inputBoxControl.Focus();
+                    return;
+                case Key.Escape when IllustBrowserDialogHost.IsOpen:
                     IllustBrowserDialogHost.CurrentSession.Close();
                     return;
-                }
-
-                if (PixevalSettingDialog.IsOpen) PixevalSettingDialog.CurrentSession.Close();
+                case Key.Escape:
+                    if (PixevalSettingDialog.IsOpen) PixevalSettingDialog.CurrentSession.Close();
+                    break;
             }
         }
 
@@ -368,6 +376,8 @@ namespace Pixeval.UI
 
         private void DeactivateControl()
         {
+            ConditionInputBox.Visibility = Visibility.Hidden;
+            UserBrowserConditionInputBox.Visibility = Visibility.Hidden;
             ToLoseFocus.Focus();
             CloseControls(TrendingTagPopup, AutoCompletionPopup);
             DownloadListTab.IsSelected = false;
@@ -460,8 +470,21 @@ namespace Pixeval.UI
                     IteratingSchedule.CancelCurrent();
                     HomeContainerMoveUp();
                 }
-                else if (current != MenuTab && translateTransform.Y.Equals(0)) HomeContainerMoveDown();
+                else if (current != MenuTab && translateTransform.Y.Equals(0))
+                {
+                    HomeContainerMoveDown();
+                }
             }
+        }
+
+        private void NavigatorList_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void ExternalNavigatorList_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
         }
 
         private void HomeContainerMoveDown()
@@ -558,7 +581,7 @@ namespace Pixeval.UI
 
         private void DownloadNowMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
-            AppContext.EnqueueDownloadItem(sender.GetDataContext<Illustration>());
+            DownloadManager.EnqueueDownloadItem(sender.GetDataContext<Illustration>());
             MessageQueue.Enqueue("已添加到下载队列");
         }
 
@@ -566,13 +589,18 @@ namespace Pixeval.UI
         {
             foreach (var illustration in GetImageSourceCopy())
                 if (illustration != null)
-                    AppContext.EnqueueDownloadItem(illustration);
+                    DownloadManager.EnqueueDownloadItem(illustration);
             MessageQueue.Enqueue("已全部添加到下载队列");
         }
 
         #endregion
 
         #region 用户预览
+
+        private void UserBrowserPageScrollViewer_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DeactivateControl();
+        }
 
         private void UserIllustsImageListView_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -712,7 +740,7 @@ namespace Pixeval.UI
 
             if (context.IsManga)
             {
-                if (context.MangaMetadata.IsNullOrEmpty()) 
+                if (context.MangaMetadata.IsNullOrEmpty())
                     context = await PixivHelper.IllustrationInfo(context.Id);
                 list.AddRange(context.MangaMetadata.Select(InitTransitionerSlide));
             }
@@ -777,7 +805,7 @@ namespace Pixeval.UI
 
         private void DownloadButton_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            AppContext.EnqueueDownloadItem(sender.GetDataContext<Illustration>());
+            DownloadManager.EnqueueDownloadItem(sender.GetDataContext<Illustration>());
             MessageQueue.Enqueue("已添加到下载队列");
         }
 

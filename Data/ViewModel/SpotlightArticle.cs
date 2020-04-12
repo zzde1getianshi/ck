@@ -63,7 +63,7 @@ namespace Pixeval.Data.ViewModel
                 .Construct()
                 .WhenAll();
 
-            foreach (var illustration in result) AppContext.EnqueueDownloadItem(illustration);
+            foreach (var illustration in result) DownloadManager.EnqueueDownloadItem(illustration);
         }
 
         public string GetCover()

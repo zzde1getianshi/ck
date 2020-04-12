@@ -32,7 +32,7 @@ namespace Pixeval.UI.UserControls
         {
             InitializeComponent();
             TrendingTagListBox.ItemsSource = AppContext.TrendingTags;
-            SearchingHistoryListBox.ItemsSource = AppContext.GetSearchingHistory();
+            SearchingHistoryListBox.ItemsSource = SearchingHistoryManager.GetSearchingHistory();
         }
 
         private void TrendingTagControl_OnInitialized(object sender, EventArgs e)
