@@ -22,6 +22,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 using MaterialDesignThemes.Wpf.Transitions;
 using Pixeval.Core;
 using Pixeval.Data.ViewModel;
@@ -133,6 +134,11 @@ namespace Pixeval.UI.UserControls
         private void IllustPresenter_OnUnloaded(object sender, RoutedEventArgs e)
         {
             cancellationToken.Cancel();
+        }
+
+        private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetImage((BitmapImage) ImgSource);
         }
     }
 }

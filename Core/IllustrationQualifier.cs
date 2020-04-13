@@ -24,14 +24,12 @@ namespace Pixeval.Core
     {
         public bool Qualified(Illustration condition, IllustrationQualification pattern)
         {
-            if (pattern == null) return false;
-            return pattern.Type switch
+            return pattern switch
             {
-                ConditionType.Name       => !condition.Title.Contains(pattern.Condition),
-                ConditionType.Id         => !condition.Id.Contains(pattern.Condition),
-                ConditionType.Tag        => !(condition.Tags != null && condition.Tags.Any(tag => tag?.Name != null && tag.Name.Contains(pattern.Condition) || tag?.TranslatedName != null && tag.TranslatedName.Contains(pattern.Condition))),
-                ConditionType.ExcludeTag => condition.Tags != null && condition.Tags.Any(tag => tag?.Name != null && tag.Name.Contains(pattern.Condition[1..]) || tag?.TranslatedName != null && tag.TranslatedName.Contains(pattern.Condition[1..])),
-                _                        => throw new ArgumentOutOfRangeException()
+                { Type: ConditionType.Id }         => !condition.Id.Contains(pattern.Condition),
+                { Type: ConditionType.Tag }        => !condition.Title.Contains(pattern.Condition) && !(condition.Tags != null && condition.Tags.Any(tag => tag?.Name != null && tag.Name.Contains(pattern.Condition) || tag?.TranslatedName != null && tag.TranslatedName.Contains(pattern.Condition))),
+                { Type: ConditionType.ExcludeTag } => condition.Tags != null && condition.Tags.Any(tag => tag?.Name != null && tag.Name.Contains(pattern.Condition[1..]) || tag?.TranslatedName != null && tag.TranslatedName.Contains(pattern.Condition[1..])),
+                _                                  => false
             };
         }
     }

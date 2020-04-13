@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -71,15 +72,6 @@ namespace Pixeval.UI
         {
             Instance = this;
             InitializeComponent();
-
-            AppContext.UpdateAvailable().ContinueWith(task =>
-            {
-                if (task.Result && MessageBox.Show("有更新可用, 是否现在更新?", "更新可用", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
-                {
-                    Process.Start(@"updater\Pixeval.AutoUpdater.exe");
-                    Environment.Exit(0);
-                }
-            });
 
             NavigatorList.SelectedItem = MenuTab;
             MainWindowSnackBar.MessageQueue = MessageQueue;
@@ -206,9 +198,16 @@ namespace Pixeval.UI
         {
             e.Handled = true;
         }
-
-        private async void MainWindow_OnInitialized(object sender, EventArgs e)
+        private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
+            if (await AppContext.UpdateAvailable())
+            {
+                if (MessageBox.Show("有更新可用, 是否现在更新?", "更新可用", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                {
+                    Process.Start(@"updater\Pixeval.AutoUpdater.exe");
+                    Environment.Exit(0);
+                }
+            }
             await AddUserNameAndAvatar();
         }
 

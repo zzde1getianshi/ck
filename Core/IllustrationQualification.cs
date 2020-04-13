@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System.Text.RegularExpressions;
+using Pixeval.Objects;
 
 namespace Pixeval.Core
 {
@@ -32,30 +33,21 @@ namespace Pixeval.Core
 
         public static IllustrationQualification Parse(string input)
         {
-            var match = Regex.Match(input, @"#(?<type>(?i)id|name|tag(?-i)):(?<content>.+)");
-            if (match.Success)
+            return new IllustrationQualification(input switch
             {
-                var header = match.Groups["type"].Value.ToLower();
-                var content = match.Groups["content"].Value;
-                return header switch
-                {
-                    "id"                               => new IllustrationQualification(ConditionType.Id, content),
-                    "name"                             => new IllustrationQualification(ConditionType.Name, content),
-                    "tag" when content.StartsWith("!") => new IllustrationQualification(ConditionType.ExcludeTag, content),
-                    "tag"                              => new IllustrationQualification(ConditionType.Tag, content),
-                    _                                  => null
-                };
-            }
-
-            return null;
+                _ when input.IsNumber()       => ConditionType.Id,
+                _ when input.StartsWith("!")  => ConditionType.ExcludeTag,
+                _ when !input.IsNullOrEmpty() => ConditionType.Tag,
+                _                             => ConditionType.None
+            }, input);
         }
     }
 
     public enum ConditionType
     {
-        Name,
         Id,
         Tag,
-        ExcludeTag
+        ExcludeTag,
+        None
     }
 }
