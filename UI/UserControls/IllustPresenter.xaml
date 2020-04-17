@@ -71,11 +71,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                     Grid.Column="0"
                     Height="{Binding ElementName=ContentImage, Path=ActualHeight}"
                     Click="MovePrevButton_OnClick"
+                    PreviewMouseRightButtonDown="MovePrevButton_OnPreviewMouseRightButtonDown"
                     Style="{DynamicResource MaterialDesignToolButton}" />
             <Button x:Name="MoveNextButton"
                     Grid.Column="1"
                     Height="{Binding ElementName=ContentImage, Path=ActualHeight}"
                     Click="MoveNextButton_OnClick"
+                    PreviewMouseRightButtonDown="MoveNextButton_OnPreviewMouseRightButtonDown"
                     Style="{DynamicResource MaterialDesignToolButton}" />
         </Grid>
         <Grid Visibility="{Binding Illust.IsUgoira, Converter={StaticResource VisibleIfTrueConverter}}">

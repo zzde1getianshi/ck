@@ -140,5 +140,17 @@ namespace Pixeval.UI.UserControls
         {
             Clipboard.SetImage((BitmapImage) ImgSource);
         }
+
+        private void MovePrevButton_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ContentImage.ContextMenu != null) ContentImage.ContextMenu.IsOpen = true;
+            e.Handled = true;
+        }
+
+        private void MoveNextButton_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ContentImage.ContextMenu != null) ContentImage.ContextMenu.IsOpen = true;
+            e.Handled = true;
+        }
     }
 }
