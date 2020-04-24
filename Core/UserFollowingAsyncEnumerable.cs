@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,14 +28,11 @@ using Pixeval.Objects.Exceptions;
 
 namespace Pixeval.Core
 {
-    public class UserFollowingAsyncEnumerable : AbstractPixivAsyncEnumerable<User>
+    public abstract class AbstractUserFollowingAsyncEnumerable : AbstractPixivAsyncEnumerable<User>
     {
-        private readonly string uid;
+        protected abstract string Uid { get; }
 
-        public UserFollowingAsyncEnumerable(string userId)
-        {
-            uid = userId;
-        }
+        protected abstract RestrictPolicy RestrictPolicy { get; }
 
         public override SortOption SortOption { get; } = SortOption.None;
 
@@ -42,20 +40,32 @@ namespace Pixeval.Core
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            return new UserFollowingAsyncEnumerator(this, uid);
+            return new UserFollowingAsyncEnumerator(this, Uid, RestrictPolicy);
+        }
+
+        public static AbstractUserFollowingAsyncEnumerable Of(string uid, RestrictPolicy restrictPolicy)
+        {
+            return restrictPolicy switch
+            {
+                RestrictPolicy.Public => new PublicUserFollowingAsyncEnumerable(uid),
+                RestrictPolicy.Private => new PrivateUserFollowingAsyncEnumerable(uid),
+                _ => throw new ArgumentOutOfRangeException(nameof(restrictPolicy), restrictPolicy, null)
+            };
         }
 
         private class UserFollowingAsyncEnumerator : AbstractPixivAsyncEnumerator<User>
         {
             private readonly string userId;
+            private readonly RestrictPolicy restrictPolicy;
 
             private FollowingResponse entity;
 
             private IEnumerator<User> followerEnumerator;
 
-            public UserFollowingAsyncEnumerator(IPixivAsyncEnumerable<User> enumerable, string userId) : base(enumerable)
+            public UserFollowingAsyncEnumerator(IPixivAsyncEnumerable<User> enumerable, string userId, RestrictPolicy restrictPolicy) : base(enumerable)
             {
                 this.userId = userId;
+                this.restrictPolicy = restrictPolicy;
             }
 
             public override User Current => followerEnumerator.Current;
@@ -75,7 +85,12 @@ namespace Pixeval.Core
             {
                 if (entity == null)
                 {
-                    if (await TryGetResponse($"https://app-api.pixiv.net/v1/user/following?user_id={userId}&restrict=public") is (true, var model))
+                    if (await TryGetResponse(restrictPolicy switch
+                    {
+                        RestrictPolicy.Public => $"/v1/user/following?user_id={userId}&restrict=public",
+                        RestrictPolicy.Private => $"/v1/user/following?user_id={userId}&restrict=private",
+                        _ => throw new ArgumentOutOfRangeException()
+                    }) is (true, var model))
                     {
                         entity = model;
                         UpdateEnumerator();
@@ -111,5 +126,27 @@ namespace Pixeval.Core
                 return HttpResponse<FollowingResponse>.Wrap(false);
             }
         }
+    }
+
+    public class PublicUserFollowingAsyncEnumerable : AbstractUserFollowingAsyncEnumerable
+    {
+        public PublicUserFollowingAsyncEnumerable(string uid)
+        {
+            Uid = uid;
+        }
+        protected override string Uid { get; }
+
+        protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Public;
+    }
+
+    public class PrivateUserFollowingAsyncEnumerable : AbstractUserFollowingAsyncEnumerable
+    {
+        public PrivateUserFollowingAsyncEnumerable(string uid)
+        {
+            Uid = uid;
+        }
+        protected override string Uid { get; }
+
+        protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Private;
     }
 }

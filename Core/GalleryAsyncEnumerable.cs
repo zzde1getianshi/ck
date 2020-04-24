@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -27,14 +28,11 @@ using Pixeval.Objects.Exceptions;
 
 namespace Pixeval.Core
 {
-    public class GalleryAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
+    public abstract class AbstractGalleryAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
-        private readonly string uid;
+        protected abstract string Uid { get; }
 
-        public GalleryAsyncEnumerable(string uid)
-        {
-            this.uid = uid;
-        }
+        protected abstract RestrictPolicy RestrictPolicy { get; }
 
         public override int RequestedPages { get; protected set; }
 
@@ -42,19 +40,28 @@ namespace Pixeval.Core
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            return new GalleryAsyncEnumerator(uid, this);
+            return new GalleryAsyncEnumerator(Uid, this, RestrictPolicy);
         }
+
+        public static AbstractGalleryAsyncEnumerable Of(string uid, RestrictPolicy restrictPolicy) => restrictPolicy switch
+        {
+            RestrictPolicy.Public => new PublicGalleryAsyncEnumerable(uid),
+            RestrictPolicy.Private => new PrivateGalleryAsyncEnumerable(uid),
+            _ => throw new ArgumentOutOfRangeException(nameof(restrictPolicy), restrictPolicy, null)
+        };
 
         private class GalleryAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
         {
             private readonly string uid;
             private GalleryResponse entity;
+            private readonly RestrictPolicy restrictPolicy;
 
             private IEnumerator<Illustration> illustrationsEnumerator;
 
-            public GalleryAsyncEnumerator(string uid, IPixivAsyncEnumerable<Illustration> outerInstance) : base(outerInstance)
+            public GalleryAsyncEnumerator(string uid, IPixivAsyncEnumerable<Illustration> outerInstance, RestrictPolicy restrictPolicy) : base(outerInstance)
             {
                 this.uid = uid;
+                this.restrictPolicy = restrictPolicy;
             }
 
             public override Illustration Current => illustrationsEnumerator.Current;
@@ -68,7 +75,12 @@ namespace Pixeval.Core
             {
                 if (entity == null)
                 {
-                    if (await TryGetResponse($"/v1/user/bookmarks/illust?user_id={uid}&restrict=public&filter=for_ios") is (true, var model))
+                    if (await TryGetResponse(restrictPolicy switch
+                    {
+                        RestrictPolicy.Public => $"/v1/user/bookmarks/illust?user_id={uid}&restrict=public&filter=for_ios",
+                        RestrictPolicy.Private => $"/v1/user/bookmarks/illust?user_id={uid}&restrict=private&filter=for_ios",
+                        _ => throw new ArgumentOutOfRangeException()
+                    }) is (true, var model))
                     {
                         entity = model;
                         UpdateEnumerator();
@@ -104,5 +116,27 @@ namespace Pixeval.Core
                 return HttpResponse<GalleryResponse>.Wrap(false);
             }
         }
+    }
+
+    public class PublicGalleryAsyncEnumerable : AbstractGalleryAsyncEnumerable
+    {
+        public PublicGalleryAsyncEnumerable(string uid)
+        {
+            Uid = uid;
+        }
+        protected override string Uid { get; }
+
+        protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Public;
+    }
+
+    public class PrivateGalleryAsyncEnumerable : AbstractGalleryAsyncEnumerable
+    {
+        public PrivateGalleryAsyncEnumerable(string uid)
+        {
+            Uid = uid;
+        }
+        protected override string Uid { get; }
+
+        protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Private;
     }
 }

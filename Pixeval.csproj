@@ -50,9 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\dqueue.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\dqueue.ttf" />
     <Resource Include="Resources\iconfont.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

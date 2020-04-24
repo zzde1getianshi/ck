@@ -28,10 +28,16 @@ namespace Pixeval.Core
 {
     public static class PixivClientExtension
     {
-        public static async void PostFavoriteAsync(this PixivClient _, Illustration illustration)
+        public static async void PostFavoriteAsync(this PixivClient _, Illustration illustration, RestrictPolicy restrictPolicy)
         {
             illustration.IsLiked = true;
-            await HttpClientFactory.AppApiService().AddBookmark(new AddBookmarkRequest {Id = illustration.Id});
+            await HttpClientFactory.AppApiService().AddBookmark(new AddBookmarkRequest
+            {
+                Id = illustration.Id, 
+                Restrict = restrictPolicy == RestrictPolicy.Public 
+                    ? "public" 
+                    : "private"
+            });
         }
 
         public static async void RemoveFavoriteAsync(this PixivClient _, Illustration illustration)
@@ -52,10 +58,10 @@ namespace Pixeval.Core
                 .Select(url => Regex.Match(url, "https://www.pixiv.net/artworks/(?<Id>\\d+)").Groups["Id"].Value);
         }
 
-        public static async Task FollowArtist(this PixivClient _, User user)
+        public static async Task FollowArtist(this PixivClient _, User user, RestrictPolicy policy)
         {
             user.IsFollowed = true;
-            await HttpClientFactory.AppApiService().FollowArtist(new FollowArtistRequest {Id = user.Id});
+            await HttpClientFactory.AppApiService().FollowArtist(new FollowArtistRequest {Id = user.Id, Restrict = policy == RestrictPolicy.Private ? "private" : "public"});
         }
 
         public static async Task UnFollowArtist(this PixivClient _, User user)

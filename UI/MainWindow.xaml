@@ -588,7 +588,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                                      RadiusY="75" />
                                 </Image.Clip>
                             </Image>
-                            <StackPanel Width="300"
+                            <StackPanel Width="330"
                                         Margin="20,30,0,30"
                                         Orientation="Vertical">
                                 <TextBlock Margin="0,20,0,0"
@@ -608,7 +608,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                         <StackPanel Width="660"
                                     Margin="0,0,50,0"
                                     HorizontalAlignment="Right"
-                                    VerticalAlignment="Stretch"
+                                    VerticalAlignment="Center"
                                     Grid.ZIndex="0"
                                     Orientation="Horizontal">
                             <materialDesign:Card Margin="10,5"
@@ -761,7 +761,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                                        FontWeight="Bold" />
                                             </StackPanel>
                                         </ListViewItem>
-                                        <ListViewItem Height="55"
+                                        <ListViewItem x:Name="GalleryTab"
+                                                      Height="55"
                                                       Selected="GalleryTab_OnSelected">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Margin="20,0,0,0"
@@ -1130,7 +1131,39 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                 </materialDesign:Card>
             </Grid>
             <Grid x:Name="ContentDisplay"
-                  Margin="250,0,0,0">
+                  Margin="250,0,0,0"
+                  MouseMove="ContentDisplay_OnMouseMove">
+                <Grid x:Name="RestrictPolicySelector"
+                      Height="40"
+                      VerticalAlignment="Top"
+                      ZIndex="3">
+                    <materialDesign:Card Height="40">
+                        <StackPanel Margin="80,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal">
+                            <TextBlock FontFamily="Microsoft YaHei Light"
+                                       FontSize="12"
+                                       Text="隐私策略: " />
+                            <RadioButton x:Name="PrivateRestrictPolicy"
+                                         Margin="20,0,0,0"
+                                         Background="#66CCFF"
+                                         Checked="PrivateRestrictPolicy_OnChecked"
+                                         Content="私人"
+                                         Style="{DynamicResource MaterialDesignRadioButton}" />
+                            <RadioButton x:Name="PublicRestrictPolicy"
+                                         Margin="20,0,0,0"
+                                         Background="#66CCFF"
+                                         Checked="PublicRestrictPolicy_OnChecked"
+                                         Content="公开"
+                                         IsChecked="True"
+                                         Style="{DynamicResource MaterialDesignRadioButton}" />
+                        </StackPanel>
+                    </materialDesign:Card>
+                    <Grid.RenderTransform>
+                        <TranslateTransform X="0" Y="-40" />
+                    </Grid.RenderTransform>
+                </Grid>
                 <Grid>
                     <Grid x:Name="HomeDisplayContainer"
                           ZIndex="1">
@@ -1817,40 +1850,52 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                                    Text="&#xe606;" />
                                     </Button>
                                 </StackPanel>
-                                <Border Grid.Row="0"
-                                        Grid.RowSpan="2"
-                                        Width="120"
-                                        Height="40"
-                                        HorizontalAlignment="Right"
-                                        Background="#66CCFF"
-                                        CornerRadius="10"
-                                        Visibility="{Binding IsFollowed, Converter={StaticResource VisibleIfFalseConverter}}">
-                                    <Button x:Name="FollowButton"
-                                            Width="120"
-                                            Height="40"
-                                            Padding="30,0"
-                                            Click="FollowButton_OnClick"
-                                            Style="{DynamicResource MaterialDesignToolButton}">
-                                        <TextBlock>关  注</TextBlock>
-                                    </Button>
-                                </Border>
-                                <Border Grid.Row="0"
-                                        Grid.RowSpan="2"
-                                        Width="120"
-                                        Height="40"
-                                        HorizontalAlignment="Right"
-                                        Background="#FFCBCBCB"
-                                        CornerRadius="10"
-                                        Visibility="{Binding IsFollowed, Converter={StaticResource VisibleIfTrueConverter}}">
-                                    <Button x:Name="UnFollowButton"
-                                            Width="120"
-                                            Height="40"
-                                            Padding="30,0"
-                                            Click="UnFollowButton_OnClick"
-                                            Style="{DynamicResource MaterialDesignToolButton}">
-                                        <TextBlock>已  关  注</TextBlock>
-                                    </Button>
-                                </Border>
+                                <StackPanel Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            HorizontalAlignment="Right"
+                                            Orientation="Horizontal">
+                                    <Grid Width="120"
+                                          Height="40">
+                                        <Border Background="#66CCFF"
+                                                CornerRadius="10"
+                                                Visibility="{Binding IsFollowed, Converter={StaticResource VisibleIfFalseConverter}}">
+                                            <Button x:Name="FollowButton"
+                                                    Width="120"
+                                                    Height="40"
+                                                    Padding="30,0"
+                                                    Click="FollowButton_OnClick"
+                                                    Style="{DynamicResource MaterialDesignToolButton}">
+                                                <TextBlock>关  注</TextBlock>
+                                            </Button>
+                                        </Border>
+                                        <Border Background="#FFCBCBCB"
+                                                CornerRadius="10"
+                                                Visibility="{Binding IsFollowed, Converter={StaticResource VisibleIfTrueConverter}}">
+                                            <Button x:Name="UnFollowButton"
+                                                    Width="120"
+                                                    Height="40"
+                                                    Padding="30,0"
+                                                    Click="UnFollowButton_OnClick"
+                                                    Style="{DynamicResource MaterialDesignToolButton}">
+                                                <TextBlock>已  关  注</TextBlock>
+                                            </Button>
+                                        </Border>
+                                    </Grid>
+                                    <materialDesign:PopupBox IsEnabled="{Binding IsFollowed, Converter={StaticResource InverseBooleanConverter}}"
+                                                             PopupMode="Click">
+                                        <materialDesign:PopupBox.PopupContent>
+                                            <Menu>
+                                                <Menu.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <StackPanel />
+                                                    </ItemsPanelTemplate>
+                                                </Menu.ItemsPanel>
+                                                <MenuItem Click="PrivateFollow_OnClick"
+                                                          Header="悄悄关注" />
+                                            </Menu>
+                                        </materialDesign:PopupBox.PopupContent>
+                                    </materialDesign:PopupBox>
+                                </StackPanel>
                             </Grid>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock MaxWidth="600"
@@ -2199,6 +2244,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                                                        Text="&#xe60a;"
                                                        ToolTip="下载" />
                                         </Grid>
+                                        <TextBlock x:Name="IllustBrowserPrivateFavorButton"
+                                                   FontFamily="/Resources/#dqueue"
+                                                   IsEnabled="{Binding IsLiked, Converter={StaticResource InverseBooleanConverter}}"
+                                                   Style="{StaticResource TextBlockStyle}"
+                                                   MouseLeftButtonDown="IllustBrowserPrivateFavorButton_OnMouseLeftButtonDown"
+                                                   Text="&#xebc2;"
+                                                   ToolTip="悄悄收藏" />
                                         <Grid>
                                             <TextBlock x:Name="IllustBrowserFavorButton"
                                                        MouseLeftButtonDown="IllustBrowserFavorButton_OnMouseLeftButtonDown"
