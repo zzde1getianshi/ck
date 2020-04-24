@@ -33,9 +33,9 @@ namespace Pixeval.Core
             illustration.IsLiked = true;
             await HttpClientFactory.AppApiService().AddBookmark(new AddBookmarkRequest
             {
-                Id = illustration.Id, 
-                Restrict = restrictPolicy == RestrictPolicy.Public 
-                    ? "public" 
+                Id = illustration.Id,
+                Restrict = restrictPolicy == RestrictPolicy.Public
+                    ? "public"
                     : "private"
             });
         }

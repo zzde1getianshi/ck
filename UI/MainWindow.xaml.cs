@@ -46,7 +46,6 @@ using Pixeval.UI.UserControls;
 using Refit;
 using Xceed.Wpf.AvalonDock.Controls;
 using static Pixeval.Objects.UiHelper;
-
 #if RELEASE
 using System.Net.Http;
 using Pixeval.Objects.Exceptions;
@@ -197,16 +196,16 @@ namespace Pixeval.UI
         {
             e.Handled = true;
         }
+
         private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             if (await AppContext.UpdateAvailable())
-            {
                 if (MessageBox.Show("有更新可用, 是否现在更新?", "更新可用", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
                 {
                     Process.Start(@"updater\Pixeval.AutoUpdater.exe");
                     Environment.Exit(0);
                 }
-            }
+
             await AddUserNameAndAvatar();
         }
 
@@ -441,9 +440,9 @@ namespace Pixeval.UI
             QueryStartUp();
             MessageQueue.Enqueue("正在获取关注列表...");
 
-            PixivHelper.Iterate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id, 
-                PublicRestrictPolicy.IsChecked is true 
-                    ? RestrictPolicy.Public 
+            PixivHelper.Iterate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id,
+                PublicRestrictPolicy.IsChecked is true
+                    ? RestrictPolicy.Public
                     : RestrictPolicy.Private), NewItemsSource<User>(UserPreviewListView));
         }
 
@@ -613,7 +612,7 @@ namespace Pixeval.UI
         private void ContentDisplay_OnMouseMove(object sender, MouseEventArgs e)
         {
             if (!(Navigating(GalleryTab) || Navigating(FollowingTab)) || animating) return;
-            var transform = (TranslateTransform)RestrictPolicySelector.RenderTransform;
+            var transform = (TranslateTransform) RestrictPolicySelector.RenderTransform;
             if (e.GetPosition(this).Y <= RestrictPolicySelector.Height && transform.Y < 0)
             {
                 var animation = new DoubleAnimation(transform.Y, 0, TimeSpan.FromMilliseconds(300))
@@ -971,6 +970,7 @@ namespace Pixeval.UI
         {
             return NavigatorList.SelectedItem?.Equals(item) is true;
         }
+
         #endregion
     }
 }

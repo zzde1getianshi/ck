@@ -47,16 +47,16 @@ namespace Pixeval.Core
         {
             return restrictPolicy switch
             {
-                RestrictPolicy.Public => new PublicUserFollowingAsyncEnumerable(uid),
+                RestrictPolicy.Public  => new PublicUserFollowingAsyncEnumerable(uid),
                 RestrictPolicy.Private => new PrivateUserFollowingAsyncEnumerable(uid),
-                _ => throw new ArgumentOutOfRangeException(nameof(restrictPolicy), restrictPolicy, null)
+                _                      => throw new ArgumentOutOfRangeException(nameof(restrictPolicy), restrictPolicy, null)
             };
         }
 
         private class UserFollowingAsyncEnumerator : AbstractPixivAsyncEnumerator<User>
         {
-            private readonly string userId;
             private readonly RestrictPolicy restrictPolicy;
+            private readonly string userId;
 
             private FollowingResponse entity;
 
@@ -87,9 +87,9 @@ namespace Pixeval.Core
                 {
                     if (await TryGetResponse(restrictPolicy switch
                     {
-                        RestrictPolicy.Public => $"/v1/user/following?user_id={userId}&restrict=public",
+                        RestrictPolicy.Public  => $"/v1/user/following?user_id={userId}&restrict=public",
                         RestrictPolicy.Private => $"/v1/user/following?user_id={userId}&restrict=private",
-                        _ => throw new ArgumentOutOfRangeException()
+                        _                      => throw new ArgumentOutOfRangeException()
                     }) is (true, var model))
                     {
                         entity = model;
@@ -134,6 +134,7 @@ namespace Pixeval.Core
         {
             Uid = uid;
         }
+
         protected override string Uid { get; }
 
         protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Public;
@@ -145,6 +146,7 @@ namespace Pixeval.Core
         {
             Uid = uid;
         }
+
         protected override string Uid { get; }
 
         protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Private;

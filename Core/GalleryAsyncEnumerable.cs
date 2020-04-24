@@ -43,18 +43,21 @@ namespace Pixeval.Core
             return new GalleryAsyncEnumerator(Uid, this, RestrictPolicy);
         }
 
-        public static AbstractGalleryAsyncEnumerable Of(string uid, RestrictPolicy restrictPolicy) => restrictPolicy switch
+        public static AbstractGalleryAsyncEnumerable Of(string uid, RestrictPolicy restrictPolicy)
         {
-            RestrictPolicy.Public => new PublicGalleryAsyncEnumerable(uid),
-            RestrictPolicy.Private => new PrivateGalleryAsyncEnumerable(uid),
-            _ => throw new ArgumentOutOfRangeException(nameof(restrictPolicy), restrictPolicy, null)
-        };
+            return restrictPolicy switch
+            {
+                RestrictPolicy.Public  => new PublicGalleryAsyncEnumerable(uid),
+                RestrictPolicy.Private => new PrivateGalleryAsyncEnumerable(uid),
+                _                      => throw new ArgumentOutOfRangeException(nameof(restrictPolicy), restrictPolicy, null)
+            };
+        }
 
         private class GalleryAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
         {
+            private readonly RestrictPolicy restrictPolicy;
             private readonly string uid;
             private GalleryResponse entity;
-            private readonly RestrictPolicy restrictPolicy;
 
             private IEnumerator<Illustration> illustrationsEnumerator;
 
@@ -77,9 +80,9 @@ namespace Pixeval.Core
                 {
                     if (await TryGetResponse(restrictPolicy switch
                     {
-                        RestrictPolicy.Public => $"/v1/user/bookmarks/illust?user_id={uid}&restrict=public&filter=for_ios",
+                        RestrictPolicy.Public  => $"/v1/user/bookmarks/illust?user_id={uid}&restrict=public&filter=for_ios",
                         RestrictPolicy.Private => $"/v1/user/bookmarks/illust?user_id={uid}&restrict=private&filter=for_ios",
-                        _ => throw new ArgumentOutOfRangeException()
+                        _                      => throw new ArgumentOutOfRangeException()
                     }) is (true, var model))
                     {
                         entity = model;
@@ -124,6 +127,7 @@ namespace Pixeval.Core
         {
             Uid = uid;
         }
+
         protected override string Uid { get; }
 
         protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Public;
@@ -135,6 +139,7 @@ namespace Pixeval.Core
         {
             Uid = uid;
         }
+
         protected override string Uid { get; }
 
         protected override RestrictPolicy RestrictPolicy { get; } = RestrictPolicy.Private;
