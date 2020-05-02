@@ -24,7 +24,7 @@ namespace Pixeval.Core
     {
         public string GetSpotlightPath(string title)
         {
-            return Path.Combine(Settings.Global.DownloadLocation, "Spotlight", Texts.FormatPath(title));
+            return Path.Combine(Settings.Global.DownloadLocation, "Spotlight", Strings.FormatPath(title));
         }
 
         public string GetIllustrationPath()

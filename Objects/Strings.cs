@@ -18,12 +18,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 
 namespace Pixeval.Objects
 {
-    public static class Texts
+    public static class Strings
     {
         public static byte[] GetBytes(this string str, Encoding encoding = null)
         {
@@ -89,6 +90,13 @@ namespace Pixeval.Objects
                 "gif"  => "image/gif",
                 _      => "image/jpeg"
             };
+        }
+
+        public static string Hash<T>(this string str) where T : HashAlgorithm, new()
+        {
+            using var crypt = new T();
+            var hashBytes = crypt.ComputeHash(str.GetBytes());
+            return hashBytes.Select(b => b.ToString("x2")).Aggregate((s1, s2) => s1 + s2);
         }
     }
 }

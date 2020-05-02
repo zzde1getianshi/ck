@@ -131,7 +131,7 @@ namespace Pixeval.UI
         {
             if (!userId.IsNumber())
             {
-                MessageQueue.Enqueue(StringResources.InputIllegal("单个用户"));
+                MessageQueue.Enqueue(StringResources.UserIdIllegal);
                 return;
             }
 
@@ -163,7 +163,7 @@ namespace Pixeval.UI
         {
             if (!int.TryParse(illustId, out _))
             {
-                MessageQueue.Enqueue(StringResources.InputIllegal("单个作品"));
+                MessageQueue.Enqueue(StringResources.IdIllegal);
                 return;
             }
 

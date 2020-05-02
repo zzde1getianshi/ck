@@ -96,7 +96,7 @@ namespace Pixeval.UI.UserControls
         {
             await using var memoryStream = new MemoryStream(await File.ReadAllBytesAsync(UploadFileTextBox.Text), false);
             var sauceResponse = await RestService.For<ISauceNAOProtocol>(ProtocolBase.SauceNAOUrl)
-                .GetSauce(new StreamPart(memoryStream, Path.GetFileName(fileName), Texts.AssumeImageContentType(fileName)));
+                .GetSauce(new StreamPart(memoryStream, Path.GetFileName(fileName), Strings.AssumeImageContentType(fileName)));
             var content = await sauceResponse.Content.ReadAsStringAsync();
             return await ParseSauce(content);
         }

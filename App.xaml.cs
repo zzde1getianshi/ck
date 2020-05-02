@@ -23,6 +23,8 @@ using Pixeval.Core;
 using Pixeval.Data.ViewModel;
 using Pixeval.Objects.Caching;
 using Pixeval.Persisting;
+using Refit;
+
 #if RELEASE
 using Pixeval.Objects.Exceptions.Logger;
 

@@ -15,11 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Pixeval.Data.Web;
 using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Protocol;
 using Pixeval.Data.Web.Request;
+using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
 using Refit;
@@ -41,14 +44,14 @@ namespace Pixeval.Persisting
         public static async Task Authenticate(string name, string pwd)
         {
             var time = UtcTimeNow;
-            var hash = Cipher.Md5Hex(time + ClientHash);
+            var hash = (time + ClientHash).Hash<MD5CryptoServiceProvider>();
 
             try
             {
                 var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
                     .GetTokenByPassword(new PasswordTokenRequest {Name = name, Password = pwd}, time, hash);
-
-                Identity.Global = Identity.Parse(pwd, token);
+                var c = token;
+                Identity.Global = Identity.Parse(pwd, (await token.Content.ReadAsStringAsync()).FromJson<TokenResponse>());
             }
             catch (TaskCanceledException)
             {

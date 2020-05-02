@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Net.Http;
 using System.Threading.Tasks;
 using Pixeval.Data.Web.Request;
 using Pixeval.Data.Web.Response;
@@ -25,7 +26,7 @@ namespace Pixeval.Data.Web.Protocol
     public interface ITokenProtocol
     {
         [Post("/auth/token")]
-        Task<TokenResponse> GetTokenByPassword([Body(BodySerializationMethod.UrlEncoded)]
+        Task<HttpResponseMessage> GetTokenByPassword([Body(BodySerializationMethod.UrlEncoded)]
             PasswordTokenRequest body, [Header("X-Client-Time")] string clientTime, [Header("X-Client-Hash")] string clientHash);
 
         [Post("/auth/token")]
