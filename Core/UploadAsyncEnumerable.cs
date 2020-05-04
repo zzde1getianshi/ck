@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
+using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
@@ -36,10 +38,17 @@ namespace Pixeval.Core
             this.uid = uid;
         }
 
-        public override SortOption SortOption { get; } = SortOption.PublishDate;
-
         public override int RequestedPages { get; protected set; }
 
+        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
+        {
+            if (item != null) collection.AddSorted(item, IllustrationPublishDateComparator.Instance);
+        }
+
+        public override bool VerifyRational(Illustration item, IList<Illustration> collection)
+        {
+            return item != null && collection.All(t => t.Id != item.Id) && PixivHelper.VerifyIllustRational(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, Settings.Global.MinBookmark, item);
+        }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {

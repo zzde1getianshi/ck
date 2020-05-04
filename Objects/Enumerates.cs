@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Pixeval.Objects
@@ -34,7 +33,7 @@ namespace Pixeval.Objects
             foreach (var t in src) dst.Add(t);
         }
 
-        public static void AddSorted<T>(this Collection<T> list, T item, IComparer<T> comparer)
+        public static void AddSorted<T>(this IList<T> list, T item, IComparer<T> comparer)
         {
             if (comparer == null)
             {

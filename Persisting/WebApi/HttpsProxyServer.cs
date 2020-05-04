@@ -35,6 +35,13 @@ namespace Pixeval.Persisting.WebApi
         private readonly string ip;
         private readonly TcpListener tcpListener;
 
+        /// <summary>
+        ///     Create an <see cref="HttpsProxyServer"/> with specified host, port, target and certificate 
+        /// </summary>
+        /// <param name="host">proxy server host</param>
+        /// <param name="port">proxy server port to listen</param>
+        /// <param name="targetIP">the ip need to be forwarding to</param>
+        /// <param name="x509Certificate2">server certificate</param>
         private HttpsProxyServer(string host, int port, string targetIP, X509Certificate2 x509Certificate2)
         {
             ip = targetIP;
@@ -66,6 +73,7 @@ namespace Pixeval.Persisting.WebApi
                 {
                     var clientStream = client.GetStream();
                     var content = await new StreamReader(clientStream).ReadLineAsync();
+                    // content starts with "CONNECT" means it's trying to establish an HTTPS connection
                     if (!content.StartsWith("CONNECT")) return;
                     var writer = new StreamWriter(clientStream);
                     await writer.WriteLineAsync("HTTP/1.1 200 Connection established");
@@ -74,9 +82,12 @@ namespace Pixeval.Persisting.WebApi
                     await writer.WriteLineAsync();
                     await writer.FlushAsync();
                     var clientSsl = new SslStream(clientStream, false);
+                    // use specify certificate to establish the HTTPS connection
                     await clientSsl.AuthenticateAsServerAsync(certificate, false, SslProtocols.Tls | SslProtocols.Tls13 | SslProtocols.Tls12 | SslProtocols.Tls11, false);
+                    // create an HTTP connection to the target IP
                     var serverSsl = await CreateConnection(ip);
 
+                    // forwarding the HTTPS connection without SNI
                     var request = Task.Run(() =>
                     {
                         try

@@ -24,18 +24,22 @@ using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
+using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
     public class UserUpdateAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
-        public override SortOption SortOption { get; } = SortOption.None;
-
         public override int RequestedPages { get; protected set; }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
             return new UserUpdateAsyncEnumerator(this);
+        }
+
+        public override bool VerifyRational(Illustration item, IList<Illustration> collection)
+        {
+            return item != null && collection.All(t => t.Id != item.Id) && PixivHelper.VerifyIllustRational(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, Settings.Global.MinBookmark, item);
         }
 
         private class UserUpdateAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>

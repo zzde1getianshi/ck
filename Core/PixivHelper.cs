@@ -16,9 +16,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Pixeval.Data.ViewModel;
 using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Response;
@@ -81,49 +81,36 @@ namespace Pixeval.Core
             return illust;
         }
 
-        public static async void Iterate<T>(IPixivAsyncEnumerable<T> pixivIterator, ICollection<T> container, int limit = -1)
+        public static async void Enumerate<T>(IPixivAsyncEnumerable<T> pixivIterator, IList<T> container, int limit = -1)
         {
-            var hashTable = new Dictionary<string, Illustration>();
+            EnumeratingSchedule.StartNewInstance(pixivIterator);
+            var enumerator = EnumeratingSchedule.GetCurrentEnumerator<T>();
 
-            IteratingSchedule.StartNewInstance(pixivIterator);
-
-            await foreach (T illust in IteratingSchedule.CurrentItr)
+            await foreach (var illust in enumerator)
             {
-                if (IteratingSchedule.CurrentItr.IsCancellationRequested() || limit != -1 && pixivIterator.RequestedPages > limit) break;
-
-                if (illust is Illustration i)
-                {
-                    if (IllustNotMatchCondition(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, i))
-                        continue;
-
-                    if (container is Collection<Illustration> illustrationContainer)
-                    {
-                        if (hashTable.ContainsKey(i.Id)) continue;
-
-                        hashTable[i.Id] = i;
-                        IComparer<Illustration> comparer = IteratingSchedule.CurrentItr.SortOption switch
-                        {
-                            SortOption.None        => null,
-                            SortOption.PublishDate => IllustrationPublishDateComparator.Instance,
-                            SortOption.Popularity  => IllustrationPopularityComparator.Instance,
-                            _                      => null
-                        };
-                        illustrationContainer.AddSorted(i, comparer);
-                    }
-                }
-                else
-                {
-                    if (illust != null) container.Add(illust);
-                }
+                if (enumerator.IsCancellationRequested() || limit != -1 && pixivIterator.RequestedPages > limit) 
+                    break;
+                if (pixivIterator.VerifyRational(illust, container))
+                    pixivIterator.InsertionPolicy(illust, container);
             }
         }
 
-        public static bool IllustNotMatchCondition(ISet<string> exceptTag, ISet<string> containsTag, Illustration illustration)
+        public static bool VerifyIllustRational(ISet<string> excludeTag, ISet<string> includeTag, int minBookmark, Illustration illustration)
         {
             if (illustration == null) return false;
-            return !exceptTag.IsNullOrEmpty() && exceptTag.Any(x => !x.IsNullOrEmpty() && illustration.Tags.Any(i => i.Name.EqualsIgnoreCase(x))) ||
-                   !containsTag.IsNullOrEmpty() && containsTag.Any(x => !x.IsNullOrEmpty() && !illustration.Tags.Any(i => i.Name.EqualsIgnoreCase(x))) ||
-                   illustration.Bookmark < Settings.Global.MinBookmark;
+            bool excludeMatch = true, includeMatch = true;
+            if (!excludeTag.IsNullOrEmpty())
+            {
+                excludeMatch = excludeTag.All(x => x.IsNullOrEmpty() || illustration.Tags.All(i => !i.Name.EqualsIgnoreCase(x)));
+            }
+
+            if (!includeTag.IsNullOrEmpty())
+            {
+                includeMatch = includeTag.All(x => x.IsNullOrEmpty() || illustration.Tags.Any(i => i.Name.EqualsIgnoreCase(x)));
+            }
+
+            var minBookmarkMatch = illustration.Bookmark > minBookmark;
+            return excludeMatch && includeMatch && minBookmarkMatch;
         }
     }
 }

@@ -34,8 +34,6 @@ namespace Pixeval.Core
 
         protected abstract RestrictPolicy RestrictPolicy { get; }
 
-        public override SortOption SortOption { get; } = SortOption.None;
-
         public override int RequestedPages { get; protected set; }
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default)

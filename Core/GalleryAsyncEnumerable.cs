@@ -19,12 +19,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using Pixeval.Data.ViewModel;
 using Pixeval.Data.Web;
 using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
+using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
@@ -36,7 +38,10 @@ namespace Pixeval.Core
 
         public override int RequestedPages { get; protected set; }
 
-        public override SortOption SortOption { get; } = SortOption.None;
+        public override bool VerifyRational(Illustration item, IList<Illustration> collection)
+        {
+            return item != null && collection.All(t => t.Id != item.Id) && PixivHelper.VerifyIllustRational(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, Settings.Global.MinBookmark, item);
+        }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {

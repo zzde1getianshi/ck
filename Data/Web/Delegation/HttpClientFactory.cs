@@ -31,6 +31,11 @@ namespace Pixeval.Data.Web.Delegation
             return PixivApi(ProtocolBase.AppApiBaseUrl, Settings.Global.DirectConnect).Apply(h => h.DefaultRequestHeaders.Add("Authorization", "Bearer"));
         }
 
+        public static HttpClient WebApiHttpClient()
+        {
+            return PixivApi(ProtocolBase.WebApiBaseUrl, Settings.Global.DirectConnect).Apply(h => h.DefaultRequestHeaders.Add("Cookie", $"PHPSESSID={Identity.Global.PhpSessionId}"));
+        }
+
         public static IAppApiProtocol AppApiService()
         {
             return RestService.For<IAppApiProtocol>(PixivApi(ProtocolBase.AppApiBaseUrl, Settings.Global.DirectConnect));

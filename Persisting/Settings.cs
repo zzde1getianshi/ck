@@ -26,6 +26,9 @@ using PropertyChanged;
 
 namespace Pixeval.Persisting
 {
+    /// <summary>
+    ///     A class represents user preference
+    /// </summary>
     [AddINotifyPropertyChangedInterface]
     public class Settings
     {
@@ -34,35 +37,68 @@ namespace Pixeval.Persisting
         private string downloadLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
         /// <summary>
-        /// Insert illustration to the sorted list, order by it's Bookmark property
+        ///     Insert illustration to the sorted list, order by it's Bookmark property
         /// </summary>
         public bool SortOnInserting { get; set; }
 
+        /// <summary>
+        ///     The minimum bookmark to be filter
+        /// </summary>
         public int MinBookmark { get; set; } = 1;
 
+        /// <summary>
+        ///     Determines whether Pixeval should recommend illustrators or not
+        /// </summary>
         public bool RecommendIllustrator { get; set; }
 
+        /// <summary>
+        ///     The default download location
+        /// </summary>
         public string DownloadLocation
         {
             get => downloadLocation.IsNullOrEmpty() ? Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) : downloadLocation;
             set => downloadLocation = value;
         }
 
+        /// <summary>
+        ///     Determines whether Pixeval should use cache
+        /// </summary>
         public bool UseCache { get; set; }
 
+        /// <summary>
+        ///     Set the caching policy of Pixeval, accept values are Memory and File
+        /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         public CachingPolicy CachingPolicy { get; set; }
 
+        /// <summary>
+        ///     How many pages need to be queried once, minimum is 1, maximum is 10
+        /// </summary>
         public int QueryPages { get; set; } = 1;
 
+        /// <summary>
+        ///     The page number of the query start
+        /// </summary>
         public int QueryStart { get; set; } = 1;
 
+        /// <summary>
+        ///     Determines whether Pixeval should use direct connect(bypass SNI)
+        /// </summary>
         public bool DirectConnect { get; set; }
 
+        /// <summary>
+        ///     The spotlight page number of the query start
+        /// </summary>
         public int SpotlightQueryStart { get; set; } = 1;
 
+        /// <summary>
+        ///     Tags to be exclude
+        /// </summary>
         public ISet<string> ExcludeTag { get; set; } = new HashSet<string>();
 
+        /// <summary>
+        ///     Tags to be include
+        /// </summary>
         public ISet<string> IncludeTag { get; set; } = new HashSet<string>();
 
         public override string ToString()
@@ -70,11 +106,19 @@ namespace Pixeval.Persisting
             return this.ToJson();
         }
 
+        /// <summary>
+        ///     Save current settings to local
+        /// </summary>
+        /// <returns></returns>
         public async Task Store()
         {
             await File.WriteAllTextAsync(Path.Combine(AppContext.SettingsFolder, "settings.json"), Global.ToString());
         }
 
+        /// <summary>
+        ///     Load settings from local
+        /// </summary>
+        /// <returns></returns>
         public static async Task Restore()
         {
             if (File.Exists(Path.Combine(AppContext.SettingsFolder, "settings.json")))
@@ -83,6 +127,9 @@ namespace Pixeval.Persisting
                 Initialize();
         }
 
+        /// <summary>
+        ///     Initialize the default value of settings
+        /// </summary>
         public static void Initialize()
         {
             if (File.Exists(Path.Combine(AppContext.SettingsFolder, "settings.json")))

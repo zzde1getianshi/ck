@@ -23,11 +23,19 @@ namespace Pixeval.Core
     {
         protected bool IsCancelled { get; private set; }
 
-        public abstract SortOption SortOption { get; }
-
         public abstract int RequestedPages { get; protected set; }
 
         public abstract IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default);
+
+        public virtual bool VerifyRational(T item, IList<T> collection)
+        {
+            return item != null && !collection.Contains(item);
+        }
+
+        public virtual void InsertionPolicy(T item, IList<T> collection)
+        {
+            if (item != null) collection.Add(item);
+        }
 
         public void Cancel()
         {

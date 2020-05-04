@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,24 +25,29 @@ using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
+using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
-    public class QueryAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
+    public abstract class AbstractQueryAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
         private readonly int start;
         private readonly string tag;
 
-        public QueryAsyncEnumerable(string tag, SortOption sortOption, int start = 1)
+        protected AbstractQueryAsyncEnumerable(string tag, int start = 1)
         {
             this.start = start < 1 ? 1 : start;
             this.tag = tag;
-            SortOption = sortOption;
         }
 
-        public override SortOption SortOption { get; }
-
         public override int RequestedPages { get; protected set; }
+
+        public abstract override void InsertionPolicy(Illustration item, IList<Illustration> collection);
+
+        public override bool VerifyRational(Illustration item, IList<Illustration> collection)
+        {
+            return item != null && collection.All(t => t.Id != item.Id) && PixivHelper.VerifyIllustRational(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, Settings.Global.MinBookmark, item);
+        }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
@@ -109,6 +115,26 @@ namespace Pixeval.Core
 
                 return HttpResponse<QueryWorksResponse>.Wrap(false);
             }
+        }
+    }
+
+    public class PopularityQueryAsyncEnumerable : AbstractQueryAsyncEnumerable
+    {
+        public PopularityQueryAsyncEnumerable(string tag, int start = 1) : base(tag, start) { }
+
+        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
+        {
+            if (item != null) collection.AddSorted(item, IllustrationPopularityComparator.Instance);
+        }
+    }
+
+    public class PublishDateQueryAsyncEnumerable : AbstractQueryAsyncEnumerable
+    {
+        public PublishDateQueryAsyncEnumerable(string tag, int start = 1) : base(tag, start) { }
+
+        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
+        {
+            if (item != null) collection.AddSorted(item, IllustrationPublishDateComparator.Instance);
         }
     }
 }

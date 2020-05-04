@@ -24,12 +24,12 @@ using Pixeval.Objects;
 namespace Pixeval.Persisting.WebApi
 {
     /// <summary>
-    /// This class is for web-API login usage only, the private key of the CA Root Certificate
-    /// is personally guaranteed to be absolutely secure. However, if you see any warning or any
-    /// website is using the certificate which is issued by "Dylech30th Do Not Trust Certificate
-    /// Authority", <strong>PLEASE NEVER TRUST THEM</strong>. Suppress this warning may lead into
-    /// a Man-In-The-Middle attack, and I personally will not be responsible for any consequence
-    /// that caused by suppressing this warning. USE AT YOUR OWN RISK
+    ///     This class is for web-API login usage only, the private key of the CA Root Certificate
+    ///     is personally guaranteed to be absolutely secure. However, if you see any warning or any
+    ///     website is using the certificate which is issued by "Dylech30th Do Not Trust Certificate
+    ///     Authority", <strong>PLEASE NEVER TRUST THEM</strong>. Suppress this warning may lead into
+    ///     a Man-In-The-Middle attack, and I personally will not be responsible for any consequence
+    ///     that caused by suppressing this warning. USE AT YOUR OWN RISK
     /// </summary>
     public class CertificateManager
     {
@@ -38,11 +38,19 @@ namespace Pixeval.Persisting.WebApi
 
         private readonly X509Certificate2 cert;
 
+        /// <summary>
+        ///     Create a <see cref="CertificateManager"/> with specified <see cref="X509Certificate2"/>
+        /// </summary>
+        /// <param name="certificate">certificate to be managed</param>
         public CertificateManager(X509Certificate2 certificate)
         {
             cert = certificate;
         }
 
+        /// <summary>
+        ///     Get the fake CA root certificate of Pixeval
+        /// </summary>
+        /// <returns></returns>
         public static async Task<X509Certificate2> GetFakeCaRootCertificate()
         {
             if (_fakeCa != null) return _fakeCa;
@@ -54,6 +62,10 @@ namespace Pixeval.Persisting.WebApi
             throw new FileNotFoundException("Cannot find certificate specified");
         }
 
+        /// <summary>
+        ///     Get the server certificate of Pixeval
+        /// </summary>
+        /// <returns></returns>
         public static async Task<X509Certificate2> GetFakeServerCertificate()
         {
             if (_fakeCa != null) return _serverCert;
@@ -65,6 +77,11 @@ namespace Pixeval.Persisting.WebApi
             throw new FileNotFoundException("Cannot find certificate specified");
         }
 
+        /// <summary>
+        ///     Install a certificate to specified location
+        /// </summary>
+        /// <param name="storeName"></param>
+        /// <param name="storeLocation"></param>
         public void Install(StoreName storeName, StoreLocation storeLocation)
         {
             using var store = new X509Store(storeName, storeLocation);
@@ -72,6 +89,11 @@ namespace Pixeval.Persisting.WebApi
             store.Add(cert);
         }
 
+        /// <summary>
+        ///     Uninstall a certificate from specified location
+        /// </summary>
+        /// <param name="storeName"></param>
+        /// <param name="storeLocation"></param>
         public void Uninstall(StoreName storeName, StoreLocation storeLocation)
         {
             using var store = new X509Store(storeName, storeLocation);
@@ -79,6 +101,12 @@ namespace Pixeval.Persisting.WebApi
             store.Remove(cert);
         }
 
+        /// <summary>
+        ///     Query a certificate from specified location
+        /// </summary>
+        /// <param name="storeName"></param>
+        /// <param name="storeLocation"></param>
+        /// <returns>true if the certificate is present</returns>
         public bool Query(StoreName storeName, StoreLocation storeLocation)
         {
             using var store = new X509Store(storeName, storeLocation);

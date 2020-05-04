@@ -24,19 +24,20 @@ using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
+using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
-    public class RankingAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
+    public abstract class AbstractRankingAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
-        public RankingAsyncEnumerable(SortOption sortOption)
-        {
-            SortOption = sortOption;
-        }
-
-        public override SortOption SortOption { get; }
-
         public override int RequestedPages { get; protected set; }
+
+        public abstract override void InsertionPolicy(Illustration item, IList<Illustration> collection);
+
+        public override bool VerifyRational(Illustration item, IList<Illustration> collection)
+        {
+            return item != null && collection.All(t => t.Id != item.Id) && PixivHelper.VerifyIllustRational(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, Settings.Global.MinBookmark, item);
+        }
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
@@ -97,6 +98,22 @@ namespace Pixeval.Core
 
                 return HttpResponse<RankingResponse>.Wrap(false);
             }
+        }
+    }
+
+    public class PopularityRankingAsyncEnumerable : AbstractRankingAsyncEnumerable
+    {
+        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
+        {
+            if (item != null) collection.AddSorted(item, IllustrationPopularityComparator.Instance);
+        }
+    }
+
+    public class PublishDateRankingAsyncEnumerable : AbstractRankingAsyncEnumerable
+    {
+        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
+        {
+            if (item != null) collection.AddSorted(item, IllustrationPublishDateComparator.Instance);
         }
     }
 }

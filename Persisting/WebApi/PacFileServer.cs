@@ -19,6 +19,9 @@ using EmbedIO;
 
 namespace Pixeval.Persisting.WebApi
 {
+    /// <summary>
+    ///     A small server in order to represent the proxy-auto-configuration file
+    /// </summary>
     public static class PacFileServer
     {
         public static WebServer Create(string hostname, int port)

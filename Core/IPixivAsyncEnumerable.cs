@@ -14,48 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections.Generic;
 
 namespace Pixeval.Core
 {
-    public interface IPixivAsyncEnumerable<out T> : IAsyncEnumerable<T>
+    public interface IPixivAsyncEnumerable<T> : IAsyncEnumerable<T>, ICancellable
     {
-        SortOption SortOption { get; }
-
         int RequestedPages { get; }
 
-        void Cancel();
-
-        bool IsCancellationRequested();
-
         void ReportRequestedPages();
-    }
 
-    public class IteratingSchedule
-    {
-        public static IPixivAsyncEnumerable<object> CurrentItr;
+        void InsertionPolicy(T item, IList<T> collection);
 
-        public static void StartNewInstance<T>(IPixivAsyncEnumerable<T> itr)
-        {
-            CurrentItr?.Cancel();
-            GC.Collect();
-            AppContext.DefaultCacheProvider.Clear();
-            CurrentItr = itr as IPixivAsyncEnumerable<object>;
-        }
-
-        public static void CancelCurrent()
-        {
-            CurrentItr?.Cancel();
-            GC.Collect();
-            AppContext.DefaultCacheProvider.Clear();
-        }
-    }
-
-    public enum SortOption
-    {
-        Popularity,
-        PublishDate,
-        None
+        bool VerifyRational(T item, IList<T> collection);
     }
 }

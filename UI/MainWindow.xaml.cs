@@ -157,7 +157,7 @@ namespace Pixeval.UI
         {
             QueryStartUp();
             SearchingHistoryManager.EnqueueSearchHistory(keyword);
-            PixivHelper.Iterate(new UserPreviewAsyncEnumerable(keyword), NewItemsSource<User>(UserPreviewListView));
+            PixivHelper.Enumerate(new UserPreviewAsyncEnumerable(keyword), NewItemsSource<User>(UserPreviewListView));
         }
 
         private async void TryQuerySingle(string illustId)
@@ -184,7 +184,7 @@ namespace Pixeval.UI
         {
             QueryStartUp();
             SearchingHistoryManager.EnqueueSearchHistory(keyword);
-            PixivHelper.Iterate(new QueryAsyncEnumerable(keyword, Settings.Global.SortOnInserting ? SortOption.Popularity : SortOption.PublishDate, Settings.Global.QueryStart), NewItemsSource<Illustration>(ImageListView), Settings.Global.QueryPages);
+            PixivHelper.Enumerate(Settings.Global.SortOnInserting ? (AbstractQueryAsyncEnumerable) new PopularityQueryAsyncEnumerable(keyword, Settings.Global.QueryStart) : new PublishDateQueryAsyncEnumerable(keyword, Settings.Global.QueryStart), NewItemsSource<Illustration>(ImageListView), Settings.Global.QueryPages);
         }
 
         private void IllustrationContainer_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -406,7 +406,7 @@ namespace Pixeval.UI
             QueryStartUp();
             MessageQueue.Enqueue("正在获取关注用户的最新作品...");
 
-            PixivHelper.Iterate(new UserUpdateAsyncEnumerable(), NewItemsSource<Illustration>(ImageListView));
+            PixivHelper.Enumerate(new UserUpdateAsyncEnumerable(), NewItemsSource<Illustration>(ImageListView));
         }
 
         private void GalleryTab_OnSelected(object sender, RoutedEventArgs e)
@@ -414,7 +414,7 @@ namespace Pixeval.UI
             QueryStartUp();
             MessageQueue.Enqueue("正在获取收藏夹...");
 
-            PixivHelper.Iterate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id,
+            PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id,
                 PublicRestrictPolicy.IsChecked is true
                     ? RestrictPolicy.Public
                     : RestrictPolicy.Private), NewItemsSource<Illustration>(ImageListView));
@@ -425,7 +425,7 @@ namespace Pixeval.UI
             QueryStartUp();
             MessageQueue.Enqueue("正在获取每日推荐的作品...");
 
-            PixivHelper.Iterate(new RankingAsyncEnumerable(Settings.Global.SortOnInserting ? SortOption.Popularity : SortOption.PublishDate), NewItemsSource<Illustration>(ImageListView), 10);
+            PixivHelper.Enumerate(Settings.Global.SortOnInserting ? (AbstractRankingAsyncEnumerable) new PopularityRankingAsyncEnumerable() : new PublishDateRankingAsyncEnumerable(), NewItemsSource<Illustration>(ImageListView), 10);
         }
 
         private void SpotlightTab_OnSelected(object sender, RoutedEventArgs e)
@@ -433,7 +433,7 @@ namespace Pixeval.UI
             QueryStartUp();
 
             var iterator = new SpotlightQueryAsyncEnumerable(Settings.Global.SpotlightQueryStart);
-            PixivHelper.Iterate(iterator, NewItemsSource<SpotlightArticle>(SpotlightListView), 10);
+            PixivHelper.Enumerate(iterator, NewItemsSource<SpotlightArticle>(SpotlightListView), 10);
         }
 
         private void FollowingTab_OnSelected(object sender, RoutedEventArgs e)
@@ -441,7 +441,7 @@ namespace Pixeval.UI
             QueryStartUp();
             MessageQueue.Enqueue("正在获取关注列表...");
 
-            PixivHelper.Iterate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id,
+            PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id,
                 PublicRestrictPolicy.IsChecked is true
                     ? RestrictPolicy.Public
                     : RestrictPolicy.Private), NewItemsSource<User>(UserPreviewListView));
@@ -472,7 +472,7 @@ namespace Pixeval.UI
                     ReleaseItemsSource(SpotlightListView);
                     ReleaseItemsSource(ImageListView);
                     ReleaseItemsSource(UserPreviewListView);
-                    IteratingSchedule.CancelCurrent();
+                    EnumeratingSchedule.CancelCurrent();
                     HomeContainerMoveUp();
                 }
                 else if (current != MenuTab && translateTransform.Y.Equals(0))
@@ -642,12 +642,12 @@ namespace Pixeval.UI
             if (Navigating(GalleryTab))
             {
                 MessageQueue.Enqueue("正在获取收藏夹...");
-                PixivHelper.Iterate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Private), NewItemsSource<Illustration>(ImageListView));
+                PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Private), NewItemsSource<Illustration>(ImageListView));
             }
             else if (Navigating(FollowingTab))
             {
                 MessageQueue.Enqueue("正在获取关注列表...");
-                PixivHelper.Iterate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Private), NewItemsSource<User>(UserPreviewListView));
+                PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Private), NewItemsSource<User>(UserPreviewListView));
             }
         }
 
@@ -657,12 +657,12 @@ namespace Pixeval.UI
             if (Navigating(GalleryTab))
             {
                 MessageQueue.Enqueue("正在获取收藏夹...");
-                PixivHelper.Iterate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Public), NewItemsSource<Illustration>(ImageListView));
+                PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Public), NewItemsSource<Illustration>(ImageListView));
             }
             else if (Navigating(FollowingTab))
             {
                 MessageQueue.Enqueue("正在获取关注列表...");
-                PixivHelper.Iterate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Public), NewItemsSource<User>(UserPreviewListView));
+                PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Public), NewItemsSource<User>(UserPreviewListView));
             }
         }
 
@@ -685,12 +685,12 @@ namespace Pixeval.UI
 
         private void SetupUserUploads(string id)
         {
-            PixivHelper.Iterate(new UploadAsyncEnumerable(id), NewItemsSource<Illustration>(UserIllustsImageListView));
+            PixivHelper.Enumerate(new UploadAsyncEnumerable(id), NewItemsSource<Illustration>(UserIllustsImageListView));
         }
 
         private void SetupUserGallery(string id)
         {
-            PixivHelper.Iterate(AbstractGalleryAsyncEnumerable.Of(id, RestrictPolicy.Public), NewItemsSource<Illustration>(UserIllustsImageListView));
+            PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(id, RestrictPolicy.Public), NewItemsSource<Illustration>(UserIllustsImageListView));
         }
 
         private void SetUserBanner(string id)

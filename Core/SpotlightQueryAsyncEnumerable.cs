@@ -35,8 +35,6 @@ namespace Pixeval.Core
             this.start = start < 1 ? 1 : start;
         }
 
-        public override SortOption SortOption { get; } = SortOption.None;
-
         public override int RequestedPages { get; protected set; }
 
         public override IAsyncEnumerator<SpotlightArticle> GetAsyncEnumerator(CancellationToken cancellationToken = default)

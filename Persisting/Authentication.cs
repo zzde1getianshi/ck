@@ -37,12 +37,21 @@ using Refit;
 
 namespace Pixeval.Persisting
 {
+    /// <summary>
+    ///     A helper class to process the Pixiv authentication
+    /// </summary>
     public class Authentication
     {
         private const string ClientHash = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c";
 
         private static string UtcTimeNow => DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
 
+        /// <summary>
+        ///     App-API authentication process using account and password
+        /// </summary>
+        /// <param name="name">account</param>
+        /// <param name="pwd">password</param>
+        /// <returns></returns>
         public static async Task AppApiAuthenticate(string name, string pwd)
         {
             var time = UtcTimeNow;
@@ -61,8 +70,27 @@ namespace Pixeval.Persisting
         }
 
         /// <summary>
-        /// Authentication process to pixiv web api, which is driven by <a href="https://github.com/cefsharp/CefSharp">CefSharp</a>
-        /// This method is for login usage only, USE AT YOUR OWN RISK
+        ///     App-API authentication process using specified refresh token
+        /// </summary>
+        /// <param name="refreshToken">refresh token</param>
+        /// <returns></returns>
+        public static async Task AppApiAuthenticate(string refreshToken)
+        {
+            try
+            {
+                var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
+                    .RefreshToken(new RefreshTokenRequest { RefreshToken = refreshToken });
+                Identity.Global = Identity.Parse(Identity.Global.Password, token);
+            }
+            catch (TaskCanceledException)
+            {
+                throw new AuthenticateFailedException(StringResources.AppApiAuthenticateTimeout);
+            }
+        }
+
+        /// <summary>
+        ///     Authentication process to pixiv web api, which is driven by <a href="https://github.com/cefsharp/CefSharp">CefSharp</a>
+        ///     This method is for login usage only, USE AT YOUR OWN RISK
         /// </summary>
         /// <param name="name">user name</param>
         /// <param name="pwd">user password</param>
@@ -137,20 +165,6 @@ namespace Pixeval.Persisting
 
             chrome.Dispose();
             throw new AuthenticateFailedException(StringResources.WebApiAuthenticateTimeout);
-        }
-
-        public static async Task AppApiAuthenticate(string refreshToken)
-        {
-            try
-            {
-                var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
-                    .RefreshToken(new RefreshTokenRequest {RefreshToken = refreshToken});
-                Identity.Global = Identity.Parse(Identity.Global.Password, token);
-            }
-            catch (TaskCanceledException)
-            {
-                throw new AuthenticateFailedException(StringResources.AppApiAuthenticateTimeout);
-            }
         }
     }
 }

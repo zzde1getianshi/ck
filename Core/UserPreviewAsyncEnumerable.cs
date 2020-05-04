@@ -36,8 +36,6 @@ namespace Pixeval.Core
             this.keyword = keyword;
         }
 
-        public override SortOption SortOption { get; } = SortOption.None;
-
         public override int RequestedPages { get; protected set; }
 
         public override IAsyncEnumerator<User> GetAsyncEnumerator(CancellationToken cancellationToken = default)

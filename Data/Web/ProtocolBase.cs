@@ -27,5 +27,7 @@ namespace Pixeval.Data.Web
         public const string SauceNAOUrl = "https://saucenao.com/";
 
         public const string OAuthBaseUrl = "https://oauth.secure.pixiv.net";
+
+        public const string WebApiBaseUrl = "https://www.pixiv.net";
     }
 }
