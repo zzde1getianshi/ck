@@ -73,7 +73,7 @@ namespace Pixeval.Data.Web.Delegation
             {
                 using var semaphore = new SemaphoreSlim(1);
                 await semaphore.WaitAsync(cancellationToken);
-                await Authentication.Authenticate(Identity.Global.Account, Identity.Global.Password);
+                await Authentication.AppApiAuthenticate(Identity.Global.Account, Identity.Global.Password);
                 var token = request.Headers.Authorization;
                 if (token != null)
                     request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, Identity.Global.AccessToken);

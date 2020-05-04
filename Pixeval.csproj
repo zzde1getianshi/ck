@@ -8,9 +8,14 @@
     <Description>A Strong, Fast and Flexible Pixiv Client</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <StartupObject>Pixeval.App</StartupObject>
-    <ApplicationIcon>pxlogo.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\pxlogo.ico</ApplicationIcon>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
     <Win32Resource />
+    <Platforms>x64</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,12 +26,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\0.jpg" />
+    <Reference Update="CefSharp">
+      <Private>true</Private>
+    </Reference>
+    <Reference Update="CefSharp.Core">
+      <Private>true</Private>
+    </Reference>
+    <Reference Update="CefSharp.OffScreen">
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\dqueue.ttf" />
     <None Remove="Resources\iconfont.ttf" />
     <None Remove="Resources\iconfontex.ttf" />
     <None Remove="Resources\logo-only.svg" />
-    <None Remove="Resources\logo-with-text.svg" />
+    <None Remove="Resources\PixevalFakeCert.pfx" />
     <None Remove="Resources\pxlogo.ico" />
     <None Remove="Resources\SauceNAO.png" />
   </ItemGroup>
@@ -34,7 +50,9 @@
   <ItemGroup>
     <PackageReference Include="AdysTech.CredentialManager.Core" Version="1.9.0" />
     <PackageReference Include="AngleSharp" Version="0.13.0" />
+    <PackageReference Include="CefSharp.OffScreen" Version="79.1.360" />
     <PackageReference Include="Dragablz" Version="0.0.3.203" />
+    <PackageReference Include="EmbedIO" Version="3.4.3" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.7.0" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="7.14.5" />
     <PackageReference Include="MahApps.Metro" Version="1.6.5" />
@@ -58,6 +76,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\logo-only.svg" />
+    <Resource Include="Resources\PixevalFakeCA.cer" />
+    <Resource Include="Resources\PixevalFakeCert.pfx" />
     <Resource Include="Resources\pxlogo.ico" />
     <Resource Include="Resources\SauceNAO.png" />
   </ItemGroup>

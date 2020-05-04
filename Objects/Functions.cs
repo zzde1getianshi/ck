@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Threading.Tasks;
 
 namespace Pixeval.Objects
 {
@@ -24,6 +25,20 @@ namespace Pixeval.Objects
         {
             action(receiver);
             return receiver;
+        }
+
+        public static Task AwaitAsync<T>(this T obj, Func<T, Task<bool>> on, int interval = 0, TimeSpan timeout = default)
+        {
+            var timer = DateTime.Now;
+            return Task.Run(async () =>
+            {
+                while (!await on(obj))
+                {
+                    if (timeout != default && DateTime.Now - timer >= timeout)
+                        break;
+                    if (interval != 0) await Task.Delay(interval);
+                }
+            });
         }
     }
 }

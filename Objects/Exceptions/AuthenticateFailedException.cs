@@ -14,19 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Net.Http;
+using System;
+using System.Runtime.Serialization;
 
-namespace Pixeval.Data.Web.Delegation
+namespace Pixeval.Objects.Exceptions
 {
-    public class PixivApiHttpClientHandler : DnsResolvedHttpClientHandler
+    public class AuthenticateFailedException : Exception
     {
-        private PixivApiHttpClientHandler(bool directConnect) : base(PixivAuthenticationHttpRequestHandler.Instance, directConnect) { }
-
-        protected override DnsResolver DnsResolver { get; set; } = PixivApiDnsResolver.Instance;
-
-        public static HttpMessageHandler Instance(bool directConnect)
-        {
-            return new PixivApiHttpClientHandler(directConnect);
-        }
+        public AuthenticateFailedException() { }
+        protected AuthenticateFailedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        public AuthenticateFailedException(string message) : base(message) { }
+        public AuthenticateFailedException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

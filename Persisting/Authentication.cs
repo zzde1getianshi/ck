@@ -15,9 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using CefSharp;
+using CefSharp.OffScreen;
+using EmbedIO;
 using Pixeval.Data.Web;
 using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Protocol;
@@ -25,6 +32,7 @@ using Pixeval.Data.Web.Request;
 using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
+using Pixeval.Persisting.WebApi;
 using Refit;
 
 namespace Pixeval.Persisting
@@ -35,13 +43,7 @@ namespace Pixeval.Persisting
 
         private static string UtcTimeNow => DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
 
-        /// <summary>
-        ///     Authorize
-        /// </summary>
-        /// <param name="name">user account</param>
-        /// <param name="pwd">user password</param>
-        /// <returns>the <see cref="Task" />> of the auth process</returns>
-        public static async Task Authenticate(string name, string pwd)
+        public static async Task AppApiAuthenticate(string name, string pwd)
         {
             var time = UtcTimeNow;
             var hash = (time + ClientHash).Hash<MD5CryptoServiceProvider>();
@@ -50,16 +52,94 @@ namespace Pixeval.Persisting
             {
                 var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
                     .GetTokenByPassword(new PasswordTokenRequest {Name = name, Password = pwd}, time, hash);
-                var c = token;
                 Identity.Global = Identity.Parse(pwd, (await token.Content.ReadAsStringAsync()).FromJson<TokenResponse>());
             }
             catch (TaskCanceledException)
             {
-                throw new TokenNotFoundException("请求超时, 请仔细检查您的网络环境");
+                throw new AuthenticateFailedException(StringResources.AppApiAuthenticateTimeout);
             }
         }
 
-        public static async Task Authenticate(string refreshToken)
+        /// <summary>
+        /// Authentication process to pixiv web api, which is driven by <a href="https://github.com/cefsharp/CefSharp">CefSharp</a>
+        /// This method is for login usage only, USE AT YOUR OWN RISK
+        /// </summary>
+        /// <param name="name">user name</param>
+        /// <param name="pwd">user password</param>
+        /// <returns></returns>
+        public static async Task WebApiAuthenticate(string name, string pwd)
+        {
+            // create x.509 certificate object for intercepting https traffic, USE AT YOUR OWN RISK
+            X509Certificate2 certificate;
+            if (Application.GetResourceStream(new Uri("pack://application:,,,/Resources/PixevalFakeCert.pfx")) is { } streamResource)
+                await using (streamResource.Stream) certificate = new X509Certificate2(await streamResource.Stream.ToBytes(), "pixeval");
+            else throw new FileNotFoundException("Cannot find certificate specified"); // throw exception if we cannot locate it
+
+            // create https reverse proxy server for intercepting and forwarding https traffic,
+            // default port is 1234
+            using var proxyServer = HttpsProxyServer.Create("127.0.0.1", 1234, (await new PixivApiDnsResolver().Lookup("pixiv.net"))[0].ToString(), certificate);
+            // create pac file server for providing the proxy-auto-configuration file,
+            // which is driven by EmbedIO, this is because CefSharp do not accept file uri,
+            // default port is 4321
+            using var pacServer = PacFileServer.Create("127.0.0.1", 4321);
+            pacServer.Start();
+            const string loginUrl = "https://accounts.pixiv.net/login";
+            var chrome = new ChromiumWebBrowser(loginUrl) {RequestHandler = new BypassProxyRequestHandler()};
+            chrome.FrameLoadEnd += (sender, args) =>
+            {
+                // when the login page is loaded, we will execute the following js snippet
+                // which is going to fill and submit the form
+                if (args.Url == loginUrl)
+                    // ReSharper disable once AccessToDisposedClosure
+                    chrome.ExecuteScriptAsync(
+                        $@"
+                                var container_login = document.getElementById('container-login');
+                                var fields = container_login.getElementsByClassName('input-field');
+                                var account = fields[0].getElementsByTagName('input')[0]
+                                var password = fields[1].getElementsByTagName('input')[0]
+                                account.value = '{name}';
+                                password.value = '{pwd}';
+                                document.getElementById('container-login').getElementsByClassName('signup-form__submit')[0].click()  
+                        ");
+            };
+
+            // polling to check we have got the correct Cookie, which names PHPSESSID and
+            // has a form like "numbers_hash"
+            static bool PixivCookieRecorded(Cookie cookie)
+            {
+                return Regex.IsMatch(cookie.Domain, ".*\\.pixiv\\.net")
+                       && cookie.Name == "PHPSESSID"
+                       && Regex.IsMatch(cookie.Value, "\\d+_.*");
+            }
+
+            // create an asynchronous polling task while the authenticate process is running,
+            // it will check the Cookie
+            await chrome.AwaitAsync(async c =>
+            {
+                var visitor = new TaskCookieVisitor();
+                Cef.GetGlobalCookieManager().VisitAllCookies(visitor);
+                return (await visitor.Task).Any(PixivCookieRecorded);
+            }, 500, TimeSpan.FromSeconds(20));
+
+            // check if we have got the Cookie when the time limit is exceeded, return successfully
+            // if it does, otherwise throw an exception
+            var completionVisitor = new TaskCookieVisitor();
+            Cef.GetGlobalCookieManager().VisitAllCookies(completionVisitor);
+
+            // finalizing objects and save the cookie to user identity
+            if ((await completionVisitor.Task).FirstOrDefault(PixivCookieRecorded) is { } cookie)
+            {
+                chrome.Dispose();
+                Identity.Global.PhpSessionId = cookie.Value;
+                Identity.Global.CookieCreation = cookie.Creation.ToLocalTime();
+                return;
+            }
+
+            chrome.Dispose();
+            throw new AuthenticateFailedException(StringResources.WebApiAuthenticateTimeout);
+        }
+
+        public static async Task AppApiAuthenticate(string refreshToken)
         {
             try
             {
@@ -69,8 +149,7 @@ namespace Pixeval.Persisting
             }
             catch (TaskCanceledException)
             {
-                Console.WriteLine();
-                throw;
+                throw new AuthenticateFailedException(StringResources.AppApiAuthenticateTimeout);
             }
         }
     }

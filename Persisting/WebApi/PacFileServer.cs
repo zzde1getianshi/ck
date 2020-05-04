@@ -14,19 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Net.Http;
+using System.IO;
+using EmbedIO;
 
-namespace Pixeval.Data.Web.Delegation
+namespace Pixeval.Persisting.WebApi
 {
-    public class PixivApiHttpClientHandler : DnsResolvedHttpClientHandler
+    public static class PacFileServer
     {
-        private PixivApiHttpClientHandler(bool directConnect) : base(PixivAuthenticationHttpRequestHandler.Instance, directConnect) { }
-
-        protected override DnsResolver DnsResolver { get; set; } = PixivApiDnsResolver.Instance;
-
-        public static HttpMessageHandler Instance(bool directConnect)
+        public static WebServer Create(string hostname, int port)
         {
-            return new PixivApiHttpClientHandler(directConnect);
+            var asm = Path.GetDirectoryName(typeof(PacFileServer).Assembly.Location);
+            var server = new WebServer(o => o
+                .WithUrlPrefix($"http://{hostname}:{port}")
+                .WithMode(HttpListenerMode.EmbedIO)
+            ).WithStaticFolder("/", Path.Combine(asm, "Resource"), false);
+            return server;
         }
     }
 }

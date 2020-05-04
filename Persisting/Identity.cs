@@ -50,6 +50,10 @@ namespace Pixeval.Persisting
         [JsonIgnore]
         public string Password { get; set; }
 
+        public string PhpSessionId { get; set; }
+
+        public DateTime CookieCreation { get; set; }
+
         public static Identity Parse(string password, TokenResponse token)
         {
             var response = token.ToResponse;
@@ -92,22 +96,39 @@ namespace Pixeval.Persisting
             return File.Exists(path) && new FileInfo(path).Length != 0 && CredentialManager.GetCredentials(AppContext.AppIdentifier) != null;
         }
 
-        public static async ValueTask<bool> RefreshRequired()
+        public static bool AppApiRefreshRequired(Identity identity)
         {
-            return (await File.ReadAllTextAsync(Path.Combine(AppContext.ConfFolder, AppContext.ConfigurationFileName), Encoding.UTF8)).FromJson<Identity>().ExpireIn <= DateTime.Now;
+            return identity.ExpireIn <= DateTime.Now;
+        }
+
+        public static bool WebApiRefreshRequired(Identity identity)
+        {
+            return (DateTime.Now - identity.CookieCreation).Days >= 7;
         }
 
         public static async Task RefreshIfRequired()
         {
             if (Global == null) await Restore();
 
-            if (await RefreshRequired())
+            var conf = (await File.ReadAllTextAsync(Path.Combine(AppContext.ConfFolder, AppContext.ConfigurationFileName), Encoding.UTF8)).FromJson<Identity>();
+
+            async Task RefreshAppApi()
             {
-                if (Global?.RefreshToken.IsNullOrEmpty() is true)
-                    await Authentication.Authenticate(Global?.MailAddress, Global?.Password);
-                else
-                    await Authentication.Authenticate(Global?.RefreshToken);
+                if (AppApiRefreshRequired(conf))
+                {
+                    if (Global?.RefreshToken.IsNullOrEmpty() is true)
+                        await Authentication.AppApiAuthenticate(Global?.MailAddress, Global?.Password);
+                    else
+                        await Authentication.AppApiAuthenticate(Global?.RefreshToken);
+                }
             }
+
+            async Task RefreshWebApi()
+            {
+                if (WebApiRefreshRequired(conf)) await Authentication.WebApiAuthenticate(Global?.MailAddress, Global?.Password);
+            }
+
+            await Task.WhenAll(RefreshAppApi(), RefreshWebApi());
         }
 
         public static void Clear()

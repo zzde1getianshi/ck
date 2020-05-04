@@ -33,5 +33,21 @@ namespace Pixeval.Objects
         public const string IdIllegal = "搜索ID时必须输入纯数字哟~";
 
         public const string UserIdIllegal = "搜索用户ID时必须输入纯数字哟~";
+
+        public const string AppApiAuthenticateTimeout = "AppApi登录请求超时, 请仔细检查您的网络环境";
+
+        public const string WebApiAuthenticateTimeout = "WebApi登录请求超时, 请仔细检查您的网络环境";
+
+        public const string MultiplePixevalInstanceDetected = "已经有一个Pixeval实例在运行了";
+
+        public const string MultiplePixevalInstanceDetectedTitle = "不能同时运行两个Pixeval实例!";
+
+        public const string CppRedistributableRequired = "Pixeval运行需要Visual C++ Redistributable 2015/2017/2019 x64支持, 否则部分功能将会受到影响, 请前往https://support.microsoft.com/zh-cn/help/2977003/the-latest-supported-visual-c-downloads下载最新的Visual C++ Redistributable, 链接已经复制到剪切板";
+
+        public const string CppRedistributableRequiredTitle = "未检测到版本大于2015的64位VC++ Redistributable";
+
+        public const string CertificateInstallationIsRequired = "检测到本机尚未安装证书, 若不安装该证书则会导致WebApi登录无法使用, 接下来将会执行安装证书进程, 过程中也许会有弹窗, 请点击确定/OK, 该证书私钥将不会被泄露和分发";
+
+        public const string CertificateInstallationIsRequiredTitle = "安装根证书";
     }
 }

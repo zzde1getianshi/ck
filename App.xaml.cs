@@ -16,13 +16,21 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using CefSharp;
+using CefSharp.OffScreen;
+using Microsoft.Win32;
 using Pixeval.Core;
 using Pixeval.Data.ViewModel;
+using Pixeval.Objects;
 using Pixeval.Objects.Caching;
 using Pixeval.Persisting;
+using Pixeval.Persisting.WebApi;
 using Refit;
 
 #if RELEASE
@@ -53,22 +61,110 @@ namespace Pixeval
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            CheckCppRedistributable();
+            CheckMultipleProcess();
+            await InstallFakeCaCertificate();
+            await WritePac();
+            CefSharpInitialize();
+            await RestoreSettings();
+
+            base.OnStartup(e);
+        }
+
+        private static void CheckMultipleProcess()
+        {
             if (Process.GetProcessesByName(AppContext.AppIdentifier).Length > 1)
             {
-                MessageBox.Show("已经有一个Pixeval实例在运行了", "不能同时运行两个Pixeval实例!", MessageBoxButton.OK);
-                Environment.Exit(0);
+                MessageBox.Show(StringResources.MultiplePixevalInstanceDetected, StringResources.MultiplePixevalInstanceDetectedTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(-1);
+            }
+        }
+
+        private static void CheckCppRedistributable()
+        {
+            if (!CppRedistributableInstalled())
+            {
+                MessageBox.Show(StringResources.CppRedistributableRequired, StringResources.CppRedistributableRequiredTitle, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                Clipboard.SetText("https: //support.microsoft.com/zh-cn/help/2977003/the-latest-supported-visual-c-downloads");
+                Environment.Exit(-1);
+            }
+        }
+
+        /// <summary>
+        /// Check if the required Visual C++ Redistributable is installed on the computer
+        /// </summary>
+        /// <returns>Cpp redistributable is installed</returns>
+        private static bool CppRedistributableInstalled()
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x64");
+            if (key == null)
+            {
+                return false;
             }
 
+            var success = int.TryParse(key.GetValue("Bld").ToString(), out var version);
+            // visual C++ redistributable Bld table: 
+            // version   v2015    v2017    v2019
+            // ----------------------------------
+            //   Bid     23026    26020    27820
+            const int vc2015Bld = 23026;
+            return success && version >= vc2015Bld;
+        }
+
+        private static void CefSharpInitialize()
+        {
+            Cef.Initialize(new CefSettings
+            {
+                CefCommandLineArgs =
+                {
+                    {"proxy-pac-url", "http://127.0.0.1:4321/pixeval_pac.pac"}
+                }
+            }, true, browserProcessHandler: null);
+        }
+
+        private static async Task InstallFakeCaCertificate()
+        {
+            var certificateManager = new CertificateManager(await CertificateManager.GetFakeCaRootCertificate());
+            if (!certificateManager.Query(StoreName.Root, StoreLocation.CurrentUser))
+            {
+                if (MessageBox.Show(StringResources.CertificateInstallationIsRequired, StringResources.CertificateInstallationIsRequiredTitle, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                    certificateManager.Install(StoreName.Root, StoreLocation.CurrentUser);
+                else Environment.Exit(-1);
+            } 
+        }
+
+        private static async Task RestoreSettings()
+        {
             await Settings.Restore();
             AppContext.DefaultCacheProvider = Settings.Global.CachingPolicy == CachingPolicy.Memory
-                ? (IWeakCacheProvider<BitmapImage, Illustration>) MemoryCache<BitmapImage, Illustration>.Shared
+                ? (IWeakCacheProvider<BitmapImage, Illustration>)MemoryCache<BitmapImage, Illustration>.Shared
                 : new FileCache<BitmapImage, Illustration>(AppContext.CacheFolder, image => image.ToStream(), PixivIO.FromStream);
             AppContext.DefaultCacheProvider.Clear();
-            base.OnStartup(e);
+        }
+
+        /// <summary>
+        /// Write Proxy-Auto-Configuration file to ..\{Directory to Pixeval.dll}\Resource\pixeval_pac.pac,
+        /// this method is for login usage only, USE AT YOUR OWN RISK
+        /// </summary>
+        private static async Task WritePac()
+        {
+            var dir = Path.Combine(Path.GetDirectoryName(typeof(App).Assembly.Location), "Resource");
+            Directory.CreateDirectory(dir);
+            var scriptBuilder = new StringBuilder();
+            scriptBuilder.AppendLine("function FindProxyForURL(url, host) {");
+            // only *.pixiv.net will request bypass proxy
+            scriptBuilder.AppendLine("    if (shExpMatch(host, \"*.pixiv.net\")) {");
+            scriptBuilder.AppendLine("        return 'PROXY 127.0.0.1:1234';");
+            scriptBuilder.AppendLine("    }");
+            scriptBuilder.AppendLine("    return \"DIRECT\";");
+            scriptBuilder.AppendLine("}");
+            await File.WriteAllTextAsync(Path.Combine(dir, "pixeval_pac.pac"), scriptBuilder.ToString());
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
+            CertificateManager.GetFakeCaRootCertificate().Dispose();
+            CertificateManager.GetFakeServerCertificate().Dispose();
             await Settings.Global.Store();
             AppContext.DefaultCacheProvider.Clear();
             if (!AppContext.LogoutExit && Identity.Global.AccessToken != null) await Identity.Global.Store();

@@ -33,6 +33,9 @@ namespace Pixeval.Persisting
 
         private string downloadLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
+        /// <summary>
+        /// Insert illustration to the sorted list, order by it's Bookmark property
+        /// </summary>
         public bool SortOnInserting { get; set; }
 
         public int MinBookmark { get; set; } = 1;

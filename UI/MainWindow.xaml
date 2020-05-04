@@ -1608,7 +1608,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                             </ListView.ItemsPanel>
                         </ListView>
                         <ListView x:Name="ImageListView"
-                                  Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}, AncestorLevel=1}}"
+                                  Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}, AncestorLevel=1}, Path=Width}"
                                   Grid.ZIndex="1"
                                   ItemTemplate="{StaticResource IllustrationTemplate}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"

@@ -14,19 +14,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Net.Http;
+using System;
+using CefSharp;
+using CefSharp.Handler;
 
-namespace Pixeval.Data.Web.Delegation
+namespace Pixeval.Persisting.WebApi
 {
-    public class PixivApiHttpClientHandler : DnsResolvedHttpClientHandler
+    public class BypassProxyResourceRequestHandler : ResourceRequestHandler
     {
-        private PixivApiHttpClientHandler(bool directConnect) : base(PixivAuthenticationHttpRequestHandler.Instance, directConnect) { }
-
-        protected override DnsResolver DnsResolver { get; set; } = PixivApiDnsResolver.Instance;
-
-        public static HttpMessageHandler Instance(bool directConnect)
+        protected override CefReturnValue OnBeforeResourceLoad(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, IRequestCallback callback)
         {
-            return new PixivApiHttpClientHandler(directConnect);
+            if (request.Url.Contains("Twitter", StringComparison.Ordinal) || request.Url.EndsWith("png") || request.Url.EndsWith("jpg"))
+            {
+                callback.Continue(false);
+                return CefReturnValue.Cancel;
+            }
+
+            return CefReturnValue.Continue;
         }
     }
 }

@@ -14,19 +14,24 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Net.Http;
+using System.IO;
+using System.Threading.Tasks;
 
-namespace Pixeval.Data.Web.Delegation
+namespace Pixeval.Objects
 {
-    public class PixivApiHttpClientHandler : DnsResolvedHttpClientHandler
+    // ReSharper disable once InconsistentNaming
+    public static class IO
     {
-        private PixivApiHttpClientHandler(bool directConnect) : base(PixivAuthenticationHttpRequestHandler.Instance, directConnect) { }
-
-        protected override DnsResolver DnsResolver { get; set; } = PixivApiDnsResolver.Instance;
-
-        public static HttpMessageHandler Instance(bool directConnect)
+        public static async Task<byte[]> ToBytes(this Stream stream)
         {
-            return new PixivApiHttpClientHandler(directConnect);
+            if (stream is MemoryStream ms)
+            {
+                return ms.ToArray();
+            }
+
+            var mStream = new MemoryStream();
+            await stream.CopyToAsync(mStream);
+            return mStream.ToArray();
         }
     }
 }

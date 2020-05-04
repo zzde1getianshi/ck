@@ -26,8 +26,11 @@ namespace Pixeval.UI
 {
     public partial class SignIn
     {
+        public static SignIn Instance;
+
         public SignIn()
         {
+            Instance = this;
             InitializeComponent();
         }
 
@@ -53,7 +56,7 @@ namespace Pixeval.UI
 
             try
             {
-                await Authentication.Authenticate(Email.Text, Password.Password);
+                await Task.WhenAll(Authentication.AppApiAuthenticate(Email.Text, Password.Password), Authentication.WebApiAuthenticate(Email.Text, Password.Password));
             }
             catch (Exception exception)
             {
@@ -77,7 +80,7 @@ namespace Pixeval.UI
                     DialogHost.OpenControl();
                     await Identity.RefreshIfRequired();
                 }
-                catch (ApiException exception)
+                catch (Exception exception)
                 {
                     SetErrorHint(exception);
 

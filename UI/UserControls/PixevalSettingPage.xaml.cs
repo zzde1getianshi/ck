@@ -64,15 +64,15 @@ namespace Pixeval.UI.UserControls
             Settings.Global.ExcludeTag = set;
         }
 
-        private void ExceptTagTextBox_OnLostFocus(object sender, RoutedEventArgs e)
+        private void ExcludeTagTextBox_OnLostFocus(object sender, RoutedEventArgs e)
         {
-            var text = ExceptTagTextBox.Text.Split(" ");
+            var text = ExcludeTagTextBox.Text.Split(" ");
             Settings.Global.ExcludeTag = new HashSet<string>(text);
         }
 
-        private void ContainsTagTextBox_OnLostFocus(object sender, RoutedEventArgs e)
+        private void IncludeTagTextBox_OnLostFocus(object sender, RoutedEventArgs e)
         {
-            var text = ContainsTagTextBox.Text.Split(" ");
+            var text = IncludeTagTextBox.Text.Split(" ");
             Settings.Global.IncludeTag = new HashSet<string>(text);
         }
 
