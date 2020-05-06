@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Pixeval.Objects;
@@ -30,13 +32,24 @@ namespace Pixeval.Data.Web.Delegation
 
         public virtual void Handle(HttpRequestMessage httpRequestMessage)
         {
-            var token = httpRequestMessage.Headers.Authorization;
-            if (token != null)
+            switch (httpRequestMessage.RequestUri.DnsSafeHost)
             {
-                if (Identity.Global.AccessToken.IsNullOrEmpty()) throw new TokenNotFoundException($"{nameof(Identity.Global.AccessToken)} is empty, this exception should never be thrown, if you see this message, please send issue on github or contact me (decem0730@gmail.com)");
+                case "app-api.pixiv.net":
+                    var token = httpRequestMessage.Headers.Authorization;
+                    if (token != null)
+                    {
+                        if (Session.Global.AccessToken.IsNullOrEmpty()) throw new TokenNotFoundException($"{nameof(Session.Global.AccessToken)} is empty, this exception should never be thrown, if you see this message, please send issue on github or contact me (decem0730@gmail.com)");
 
-                httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, Identity.Global.AccessToken);
+                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, Session.Global.AccessToken);
+                    }
+                    break;
+                case var x when x == "pixiv.net" || x == "www.pixiv.net":
+                    if (Session.Global.PhpSessionId.IsNullOrEmpty()) throw new TokenNotFoundException($"{nameof(Session.Global.PhpSessionId)} is empty, this exception should never be thrown, if you see this message, please send issue on github or contact me (decem0730@gmail.com)");
+
+                    httpRequestMessage.Headers.TryAddWithoutValidation("Cookie", $"PHPSESSID={Session.Global.PhpSessionId}");
+                    break;
             }
+            
         }
     }
 }

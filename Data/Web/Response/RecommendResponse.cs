@@ -23,7 +23,7 @@ using Pixeval.Objects;
 
 namespace Pixeval.Data.Web.Response
 {
-    public class RankingResponse
+    public class RecommendResponse
     {
         [JsonProperty("illusts")]
         public List<Illust> Illusts { get; set; }

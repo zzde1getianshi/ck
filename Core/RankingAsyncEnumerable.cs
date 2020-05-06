@@ -28,7 +28,7 @@ using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
-    public abstract class AbstractRankingAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
+    public abstract class AbstractRecommendAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
         public override int RequestedPages { get; protected set; }
 
@@ -41,16 +41,16 @@ namespace Pixeval.Core
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            return new RankingAsyncEnumerator(this);
+            return new RecommendAsyncEnumerator(this);
         }
 
-        private class RankingAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
+        private class RecommendAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
         {
-            private RankingResponse entity;
+            private RecommendResponse entity;
 
             private IEnumerator<Illustration> illustrationEnumerator;
 
-            public RankingAsyncEnumerator(IPixivAsyncEnumerable<Illustration> enumerable) : base(enumerable) { }
+            public RecommendAsyncEnumerator(IPixivAsyncEnumerable<Illustration> enumerable) : base(enumerable) { }
 
             public override Illustration Current => illustrationEnumerator.Current;
 
@@ -91,17 +91,17 @@ namespace Pixeval.Core
                 return false;
             }
 
-            private static async Task<HttpResponse<RankingResponse>> TryGetResponse(string url)
+            private static async Task<HttpResponse<RecommendResponse>> TryGetResponse(string url)
             {
-                var res = (await HttpClientFactory.AppApiHttpClient().Apply(h => h.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "zh-cn")).GetStringAsync(url)).FromJson<RankingResponse>();
-                if (res is { } response && !response.Illusts.IsNullOrEmpty()) return HttpResponse<RankingResponse>.Wrap(true, response);
+                var res = (await HttpClientFactory.AppApiHttpClient().Apply(h => h.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "zh-cn")).GetStringAsync(url)).FromJson<RecommendResponse>();
+                if (res is { } response && !response.Illusts.IsNullOrEmpty()) return HttpResponse<RecommendResponse>.Wrap(true, response);
 
-                return HttpResponse<RankingResponse>.Wrap(false);
+                return HttpResponse<RecommendResponse>.Wrap(false);
             }
         }
     }
 
-    public class PopularityRankingAsyncEnumerable : AbstractRankingAsyncEnumerable
+    public class PopularityRecommendAsyncEnumerable : AbstractRecommendAsyncEnumerable
     {
         public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
         {
@@ -109,7 +109,7 @@ namespace Pixeval.Core
         }
     }
 
-    public class PublishDateRankingAsyncEnumerable : AbstractRankingAsyncEnumerable
+    public class PublishDateRecommendAsyncEnumerable : AbstractRecommendAsyncEnumerable
     {
         public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
         {

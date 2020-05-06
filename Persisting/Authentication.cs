@@ -61,7 +61,7 @@ namespace Pixeval.Persisting
             {
                 var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
                     .GetTokenByPassword(new PasswordTokenRequest {Name = name, Password = pwd}, time, hash);
-                Identity.Global = Identity.Parse(pwd, (await token.Content.ReadAsStringAsync()).FromJson<TokenResponse>());
+                Session.Global = Session.Parse(pwd, token);
             }
             catch (TaskCanceledException)
             {
@@ -80,7 +80,7 @@ namespace Pixeval.Persisting
             {
                 var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
                     .RefreshToken(new RefreshTokenRequest { RefreshToken = refreshToken });
-                Identity.Global = Identity.Parse(Identity.Global.Password, token);
+                Session.Global = Session.Parse(Session.Global.Password, token);
             }
             catch (TaskCanceledException)
             {
@@ -147,7 +147,7 @@ namespace Pixeval.Persisting
                 var visitor = new TaskCookieVisitor();
                 Cef.GetGlobalCookieManager().VisitAllCookies(visitor);
                 return (await visitor.Task).Any(PixivCookieRecorded);
-            }, 500, TimeSpan.FromSeconds(20));
+            }, 500, TimeSpan.FromSeconds(30));
 
             // check if we have got the Cookie when the time limit is exceeded, return successfully
             // if it does, otherwise throw an exception
@@ -158,8 +158,8 @@ namespace Pixeval.Persisting
             if ((await completionVisitor.Task).FirstOrDefault(PixivCookieRecorded) is { } cookie)
             {
                 chrome.Dispose();
-                Identity.Global.PhpSessionId = cookie.Value;
-                Identity.Global.CookieCreation = cookie.Creation.ToLocalTime();
+                Session.Global.PhpSessionId = cookie.Value;
+                Session.Global.CookieCreation = cookie.Creation.ToLocalTime();
                 return;
             }
 

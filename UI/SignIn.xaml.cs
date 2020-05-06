@@ -36,7 +36,7 @@ namespace Pixeval.UI
 
         private async void SignIn_OnClosing(object sender, CancelEventArgs e)
         {
-            if (Identity.Global == null || Identity.Global.AccessToken == null)
+            if (Session.Global == null || Session.Global.AccessToken == null)
             {
                 AppContext.LogoutExit = true;
                 await Settings.Global.Store();
@@ -73,12 +73,12 @@ namespace Pixeval.UI
 
         private async void SignIn_OnInitialized(object sender, EventArgs e)
         {
-            if (Identity.ConfExists())
+            if (Session.ConfExists())
             {
                 try
                 {
                     DialogHost.OpenControl();
-                    await Identity.RefreshIfRequired();
+                    await Session.RefreshIfRequired();
                 }
                 catch (Exception exception)
                 {

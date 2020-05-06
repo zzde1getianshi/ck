@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using AngleSharp.Html.Parser;
 using Pixeval.Data.ViewModel;
 using Pixeval.Data.Web.Delegation;
@@ -70,17 +72,34 @@ namespace Pixeval.Core
             await HttpClientFactory.AppApiService().UnFollowArtist(new UnFollowArtistRequest {UserId = user.Id});
         }
 
-        public static async void GetTrendingTags(this PixivClient _)
+        public static async Task<List<TrendingTag>> GetTrendingTags(this PixivClient _)
         {
             var result = await HttpClientFactory.AppApiService().GetTrendingTags();
-            if (result is { } res)
-                foreach (var tag in res.TrendTags)
-                    AppContext.TrendingTags.Add(new TrendingTag
-                    {
-                        Tag = tag.TagStr,
-                        TranslatedName = tag.TranslatedName,
-                        Thumbnail = tag.Illust.ImageUrls.SquareMedium
-                    });
+            var list = new List<TrendingTag>();
+            if (result is { } res) list.AddRange(res.TrendTags.Select(tag => new TrendingTag {Tag = tag.TagStr, TranslatedName = tag.TranslatedName, Thumbnail = tag.Illust.ImageUrls.SquareMedium}));
+            return list;
+        }
+
+        public static async ValueTask<bool> ToggleWebApiR18State(this PixivClient _,  bool isR18On)
+        {
+            try
+            {
+                var html = await HttpClientFactory.WebApiHttpClient().GetStringAsync("https://www.pixiv.net/setting_user.php");
+                var doc = await new HtmlParser().ParseDocumentAsync(html);
+
+                var tt = doc.QuerySelectorAll(".settingContent form input")[1].GetAttribute("value");
+                await HttpClientFactory.WebApiService().ToggleR18State(new ToggleR18StateRequest
+                {
+                    R18 = isR18On ? "show" : "hide",
+                    R18G = isR18On ? "2" : "1",
+                    Tt = tt
+                });
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

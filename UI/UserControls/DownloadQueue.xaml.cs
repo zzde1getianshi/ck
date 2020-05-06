@@ -64,7 +64,7 @@ namespace Pixeval.UI.UserControls
             var model = sender.GetDataContext<DownloadableIllustration>();
             if (!model.DownloadPath.IsNullOrEmpty() && Path.GetDirectoryName(model.DownloadPath) is var p)
                 Process.Start("explorer.exe", p);
-            else MainWindow.MessageQueue.Enqueue("找不到目录, 请检查文件是否已经被删除");
+            else MainWindow.MessageQueue.Enqueue(StringResources.PathNotExist);
         }
 
         private void ShowDownloadIllustration(object sender, RoutedEventArgs e)

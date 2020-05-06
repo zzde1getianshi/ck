@@ -59,7 +59,7 @@ namespace Pixeval.Objects.ValueConverters
         {
             var val = values.Cast<bool>().ToArray();
 
-            if (!(val[0] || val[1] || val[2])) return Visibility.Visible;
+            if (!(val[0] || val[1] || val[2] || val[3])) return Visibility.Visible;
 
             return Visibility.Hidden;
         }
@@ -76,7 +76,7 @@ namespace Pixeval.Objects.ValueConverters
         {
             var val = values.Cast<bool>().ToArray();
 
-            if (!val[0] || val[1]) return Visibility.Visible;
+            if (!val[0] && !val[1] || val[2]) return Visibility.Visible;
 
             return Visibility.Hidden;
         }

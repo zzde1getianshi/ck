@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Pixeval.Core;
@@ -39,7 +40,7 @@ namespace Pixeval.UI.UserControls
 
         private void OpenFileDialogButton_OnClick(object sender, RoutedEventArgs e)
         {
-            using var fileDialog = new CommonOpenFileDialog("选择存储位置")
+            using var fileDialog = new CommonOpenFileDialog(StringResources.PleaseSelectLocation)
             {
                 InitialDirectory = Settings.Global.DownloadLocation ?? Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                 IsFolderPicker = true
@@ -87,6 +88,12 @@ namespace Pixeval.UI.UserControls
         {
             AppContext.DefaultCacheProvider.Clear();
             AppContext.DefaultCacheProvider = MemoryCache<BitmapImage, Illustration>.Shared;
+        }
+
+        private async void OpenWebApiR18Button_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            MainWindow.MessageQueue.Enqueue(StringResources.TryingToToggleR18Switch);
+            MainWindow.MessageQueue.Enqueue(await PixivClient.Instance.ToggleWebApiR18State(true) ? StringResources.ToggleR18OnSuccess : StringResources.ToggleR18OnFailed);
         }
     }
 }

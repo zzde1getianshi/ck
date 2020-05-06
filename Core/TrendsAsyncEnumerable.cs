@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -43,6 +44,7 @@ namespace Pixeval.Core
                     if (await GetResponse(BuildRequestUrl()) is (true, var result))
                     {
                         tt = Regex.Match(result, "tt: \"(?<tt>.*)\"").Groups["tt"].Value;
+                        Debug.WriteLine(tt);
                         trendsEnumerable = (await ParsePreloadJsonFromHtml(result)).NonNull().GetEnumerator();
                         requestContext = ExtractRequestParametersFromHtml(result);
                     } else throw new QueryNotRespondingException();
@@ -130,29 +132,49 @@ namespace Pixeval.Core
                         var trendsObj = new Trends
                         {
                             PostDate = DateTime.Parse(statusObjProp["post_date"].Value<string>(), CultureInfo.CurrentCulture),
-                            PostUser = statusObjProp["post_user"]["id"].Value<string>(),
+                            PostUserId = statusObjProp["post_user"]["id"].Value<string>(),
                             TrendObjectId = statusObjProp["type"].Value<string>() switch
                             {
                                 var type when type == "add_illust" || type == "add_bookmark" => statusObjProp["ref_illust"]["id"].Value<string>(),
-                                "add_favorite" => statusObjProp["ref_user"]["id"].Value<string>(),
-                                _ => null
+                                "add_favorite"                                               => statusObjProp["ref_user"]["id"].Value<string>(),
+                                _                                                            => null
                             }
                         };
-                        trendsObj.PostUserThumbnail = user.FirstOrDefault(uChild => uChild.First["id"].Value<string>() == trendsObj.PostUser)?.First["profile_image"].First.First["url"]["m"].Value<string>();
+                        var matchingPostUser = user.FirstOrDefault(uChild => uChild.First["id"].Value<string>() == trendsObj.PostUserId);
+                        if (matchingPostUser != null)
+                        {
+                            trendsObj.PostUserThumbnail = matchingPostUser.First["profile_image"].First.First["url"]["m"].Value<string>();
+                            trendsObj.PostUserName = matchingPostUser.First["name"].Value<string>();
+                        }
+                        else return null;
                         trendsObj.Type = statusObjProp["type"].Value<string>() switch
                         {
-                            "add_illust" => TrendType.AddIllust,
+                            "add_illust"   => TrendType.AddIllust,
                             "add_bookmark" => TrendType.AddBookmark,
                             "add_favorite" => TrendType.AddFavorite,
-                            _ => (TrendType)(-1)
+                            _              => (TrendType) (-1)
                         };
-                        trendsObj.TrendObjectThumbnails = trendsObj.Type switch
+                        trendsObj.TrendObjectThumbnail = trendsObj.Type switch
                         {
-                            var type when type == TrendType.AddBookmark || type == TrendType.AddIllust => illust.FirstOrDefault(iChild => iChild.First["id"].Value<string>() == trendsObj.TrendObjectId)?.First["url"]["s"].Value<string>(),
-                            TrendType.AddFavorite => user.FirstOrDefault(uChild => uChild.First["id"].Value<string>() == trendsObj.TrendObjectId)?.First["profile_image"].First.First["url"]["m"].Value<string>(),
-                            (TrendType)(-1) => null,
-                            _ => throw new ArgumentOutOfRangeException()
+                            var type when type == TrendType.AddBookmark || type == TrendType.AddIllust => illust.FirstOrDefault(iChild => iChild.First["id"].Value<string>() == trendsObj.TrendObjectId)?.First["url"]["m"].Value<string>(),
+                            TrendType.AddFavorite                                                      => user.FirstOrDefault(uChild => uChild.First["id"].Value<string>() == trendsObj.TrendObjectId)?.First["profile_image"].First.First["url"]["s"].Value<string>(),
+                            (TrendType) (-1)                                                           => null,
+                            _                                                                          => throw new ArgumentOutOfRangeException()
                         };
+                        if (trendsObj.Type != TrendType.AddFavorite)
+                        {
+                            var illustration = illust.FirstOrDefault(iChild => iChild.First["id"].Value<string>() == trendsObj.TrendObjectId);
+                            if (illustration != null)
+                            {
+                                trendsObj.ByName = user.FirstOrDefault(uChild => uChild.First["id"].Value<string>() == illustration.First["post_user"]["id"].Value<string>())?.First["name"].Value<string>();
+                                trendsObj.TrendObjName = illustration.First["title"].Value<string>();
+                            }
+                        }
+                        else
+                        {
+                            trendsObj.TrendObjName = user.FirstOrDefault(uChild => uChild.First["id"].Value<string>() == trendsObj.TrendObjectId)?.First["name"].Value<string>();
+                            trendsObj.IsReferToUser = true;
+                        }
                         return trendsObj;
                     });
                     tasks.Add(task);

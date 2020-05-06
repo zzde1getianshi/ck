@@ -146,7 +146,7 @@ namespace Pixeval.Core
             using var response = await HttpClientFactory.GetResponseHeader(HttpClientFactory.PixivImage().Apply(_ => _.Timeout = TimeSpan.FromSeconds(30)), url);
 
             var contentLength = response.Content.Headers.ContentLength;
-            if (!contentLength.HasValue) throw new InvalidOperationException("cannot retrieve the content length of the request uri");
+            if (!contentLength.HasValue) throw new InvalidOperationException(StringResources.CannotRetrieveContentLengthHeader);
 
             response.EnsureSuccessStatusCode();
 

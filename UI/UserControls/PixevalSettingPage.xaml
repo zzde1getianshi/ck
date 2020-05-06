@@ -229,10 +229,23 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
                              Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
                              Text="{Binding Path=IncludeTag, Converter={StaticResource StringSplitConverter}, Mode=OneWay}" />
                 </Grid>
-                <TextBlock Margin="0,30,0,0"
-                           VerticalAlignment="Bottom"
-                           FontSize="12"
-                           Text="注: 特辑一页搜索10条, 图片一页搜索30张" />
+                <Grid>
+                    <TextBlock Margin="0,30,0,0"
+                               VerticalAlignment="Bottom"
+                               FontSize="12"
+                               Text="注: 特辑一页搜索10条, 图片一页搜索30张" />
+                    <TextBlock x:Name="OpenWebApiR18Button"
+                               Margin="0,30,0,0"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Bottom"
+                               Cursor="Hand"
+                               FontFamily="/Pixeval;component/Resources/#dqueue"
+                               FontSize="15"
+                               Foreground="#66CCFF"
+                               MouseLeftButtonDown="OpenWebApiR18Button_OnMouseLeftButtonDown"
+                               Text="&#xe70b;"
+                               ToolTip="一键开启网页端R18/R18G" />
+                </Grid>
             </StackPanel>
         </Grid>
     </materialDesign:Card>

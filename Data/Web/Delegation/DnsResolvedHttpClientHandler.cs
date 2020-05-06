@@ -45,6 +45,8 @@ namespace Pixeval.Data.Web.Delegation
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            requestHandler?.Handle(request);
+
             if (directConnect)
             {
                 var host = request.RequestUri.DnsSafeHost;
@@ -54,8 +56,6 @@ namespace Pixeval.Data.Web.Delegation
                 request.RequestUri = new Uri($"{(isSslSession ? "https://" : "http://")}{(await DnsResolver.Lookup(host))[0]}{request.RequestUri.PathAndQuery}");
                 request.Headers.Host = host;
             }
-
-            requestHandler?.Handle(request);
 
             HttpResponseMessage result;
             try
@@ -73,10 +73,10 @@ namespace Pixeval.Data.Web.Delegation
             {
                 using var semaphore = new SemaphoreSlim(1);
                 await semaphore.WaitAsync(cancellationToken);
-                await Authentication.AppApiAuthenticate(Identity.Global.Account, Identity.Global.Password);
+                await Authentication.AppApiAuthenticate(Session.Global.Account, Session.Global.Password);
                 var token = request.Headers.Authorization;
                 if (token != null)
-                    request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, Identity.Global.AccessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, Session.Global.AccessToken);
 
                 return await base.SendAsync(request, cancellationToken);
             }

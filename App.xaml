@@ -13,8 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
+along with this program.  If not, see <https://www.gnu.org/licenses/>.-->
 
 <Application x:Class="Pixeval.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -27,14 +26,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <system:Double x:Key="Two">
                 2
@@ -51,6 +46,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
             <valueConverters:BoolToCachingPolicyConverter x:Key="BoolToCachingPolicyConverter" />
             <valueConverters:IllustrationMatchConditionMaskConverter x:Key="IllustrationMatchConditionMaskConverter" />
             <valueConverters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <valueConverters:TrendsStatConverter x:Key="TrendsStatConverter" />
+            <valueConverters:DateTimeConverter x:Key="DateTimeConverter" />
             <Style x:Key="RoundedCornerProgressBar"
                    TargetType="{x:Type ProgressBar}">
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkBrush}" />
@@ -179,8 +176,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="IsVisible" Value="True" />
-                                        <Condition Property="materialDesign:TransitionAssist.DisableTransitions"
-                                                   Value="False" />
+                                        <Condition Property="materialDesign:TransitionAssist.DisableTransitions" Value="False" />
                                     </MultiTrigger.Conditions>
                                     <MultiTrigger.EnterActions>
                                         <BeginStoryboard Name="BeginStoryboardOnLoaded"
@@ -274,12 +270,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
                             </Grid>
                             <ControlTemplate.Triggers>
                                 <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
-                                    <Setter TargetName="Thumb" Property="Background"
-                                            Value="{DynamicResource ButtonSelectBrush}" />
+                                    <Setter TargetName="Thumb" Property="Background" Value="{DynamicResource ButtonSelectBrush}" />
                                 </Trigger>
                                 <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
-                                    <Setter TargetName="Thumb" Property="Background"
-                                            Value="{DynamicResource DarkBrush}" />
+                                    <Setter TargetName="Thumb" Property="Background" Value="{DynamicResource DarkBrush}" />
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="false">
                                     <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />

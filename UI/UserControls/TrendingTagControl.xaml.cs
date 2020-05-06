@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Input;
 using Pixeval.Core;
 using Pixeval.Data.ViewModel;
+using Pixeval.Objects;
 using static Pixeval.Objects.UiHelper;
 
 namespace Pixeval.UI.UserControls
@@ -35,9 +36,9 @@ namespace Pixeval.UI.UserControls
             SearchingHistoryListBox.ItemsSource = SearchingHistoryManager.GetSearchingHistory();
         }
 
-        private void TrendingTagControl_OnInitialized(object sender, EventArgs e)
+        private async void TrendingTagControl_OnInitialized(object sender, EventArgs e)
         {
-            PixivClient.Instance.GetTrendingTags();
+            AppContext.TrendingTags.AddRange(await PixivClient.Instance.GetTrendingTags());
         }
 
         private async void TrendingTagThumbnail_OnLoaded(object sender, RoutedEventArgs e)

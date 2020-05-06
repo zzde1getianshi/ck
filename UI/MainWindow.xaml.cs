@@ -29,6 +29,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Threading;
@@ -71,7 +72,6 @@ namespace Pixeval.UI
         {
             Instance = this;
             InitializeComponent();
-
             NavigatorList.SelectedItem = MenuTab;
             MainWindowSnackBar.MessageQueue = MessageQueue;
 
@@ -212,10 +212,10 @@ namespace Pixeval.UI
 
         private async Task AddUserNameAndAvatar()
         {
-            if (!Identity.Global.AvatarUrl.IsNullOrEmpty() && !Identity.Global.Name.IsNullOrEmpty())
+            if (!Session.Global.AvatarUrl.IsNullOrEmpty() && !Session.Global.Name.IsNullOrEmpty())
             {
-                UserName.Text = Identity.Global.Name;
-                UserAvatar.Source = await PixivIO.FromUrl(Identity.Global.AvatarUrl);
+                UserName.Text = Session.Global.Name;
+                UserAvatar.Source = await PixivIO.FromUrl(Session.Global.AvatarUrl);
             }
         }
 
@@ -290,9 +290,10 @@ namespace Pixeval.UI
             SetImageSource(sender, await PixivIO.FromUrl(context.Avatar));
         }
 
-        private void KeywordTextBox_OnGotFocus(object sender, RoutedEventArgs e)
+        private async void KeywordTextBox_OnGotFocus(object sender, RoutedEventArgs e)
         {
-            if (AppContext.TrendingTags.IsNullOrEmpty()) PixivClient.Instance.GetTrendingTags();
+            if (AppContext.TrendingTags.IsNullOrEmpty()) 
+                AppContext.TrendingTags.AddRange(await PixivClient.Instance.GetTrendingTags());
             TrendingTagPopup.OpenControl();
         }
 
@@ -404,7 +405,7 @@ namespace Pixeval.UI
         private void UpdateIllustTab_OnSelected(object sender, RoutedEventArgs e)
         {
             QueryStartUp();
-            MessageQueue.Enqueue("正在获取关注用户的最新作品...");
+            MessageQueue.Enqueue(StringResources.SearchingUserUpdates);
 
             PixivHelper.Enumerate(new UserUpdateAsyncEnumerable(), NewItemsSource<Illustration>(ImageListView));
         }
@@ -412,20 +413,20 @@ namespace Pixeval.UI
         private void GalleryTab_OnSelected(object sender, RoutedEventArgs e)
         {
             QueryStartUp();
-            MessageQueue.Enqueue("正在获取收藏夹...");
+            MessageQueue.Enqueue(StringResources.SearchingGallery);
 
-            PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id,
+            PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Session.Global.Id,
                 PublicRestrictPolicy.IsChecked is true
                     ? RestrictPolicy.Public
                     : RestrictPolicy.Private), NewItemsSource<Illustration>(ImageListView));
         }
 
-        private void RankingTab_OnSelected(object sender, RoutedEventArgs e)
+        private void RecommendTab_OnSelected(object sender, RoutedEventArgs e)
         {
             QueryStartUp();
-            MessageQueue.Enqueue("正在获取每日推荐的作品...");
+            MessageQueue.Enqueue(StringResources.SearchingRecommend);
 
-            PixivHelper.Enumerate(Settings.Global.SortOnInserting ? (AbstractRankingAsyncEnumerable) new PopularityRankingAsyncEnumerable() : new PublishDateRankingAsyncEnumerable(), NewItemsSource<Illustration>(ImageListView), 10);
+            PixivHelper.Enumerate(Settings.Global.SortOnInserting ? (AbstractRecommendAsyncEnumerable) new PopularityRecommendAsyncEnumerable() : new PublishDateRecommendAsyncEnumerable(), NewItemsSource<Illustration>(ImageListView), 10);
         }
 
         private void SpotlightTab_OnSelected(object sender, RoutedEventArgs e)
@@ -439,9 +440,9 @@ namespace Pixeval.UI
         private void FollowingTab_OnSelected(object sender, RoutedEventArgs e)
         {
             QueryStartUp();
-            MessageQueue.Enqueue("正在获取关注列表...");
+            MessageQueue.Enqueue(StringResources.SearchingFollower);
 
-            PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id,
+            PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Session.Global.Id,
                 PublicRestrictPolicy.IsChecked is true
                     ? RestrictPolicy.Public
                     : RestrictPolicy.Private), NewItemsSource<User>(UserPreviewListView));
@@ -454,7 +455,7 @@ namespace Pixeval.UI
 
         private void SignOutTab_OnSelected(object sender, RoutedEventArgs e)
         {
-            Identity.Clear();
+            Session.Clear();
             Settings.Initialize();
             var login = new SignIn();
             login.Show();
@@ -495,13 +496,15 @@ namespace Pixeval.UI
         private void HomeContainerMoveDown()
         {
             DoQueryButton.Disable();
-            HomeDisplayContainer.GetResources<Storyboard>("MoveDownAnimation").Begin();
+            if (((TranslateTransform)HomeDisplayContainer.RenderTransform).Y.Equals(0))
+                HomeDisplayContainer.GetResources<Storyboard>("MoveDownAnimation").Begin();
         }
 
         private void HomeContainerMoveUp()
         {
             DoQueryButton.Enable();
-            HomeDisplayContainer.GetResources<Storyboard>("MoveUpAnimation")?.Begin();
+            if (!((TranslateTransform)HomeDisplayContainer.RenderTransform).Y.Equals(0))
+                HomeDisplayContainer.GetResources<Storyboard>("MoveUpAnimation")?.Begin();
         }
 
         #endregion
@@ -556,7 +559,7 @@ namespace Pixeval.UI
 
         private async void SpotlightContainer_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            MessageQueue.Enqueue("正在搜索Pixivision...");
+            MessageQueue.Enqueue(StringResources.SearchingSpotlight);
 
             var article = sender.GetDataContext<SpotlightArticle>();
 
@@ -577,7 +580,7 @@ namespace Pixeval.UI
         private void DownloadSpotlightItem_OnClick(object sender, RoutedEventArgs e)
         {
             sender.GetDataContext<SpotlightArticle>().Download();
-            MessageQueue.Enqueue("已添加到下载队列");
+            MessageQueue.Enqueue(StringResources.QueuedDownload);
         }
 
         #endregion
@@ -587,7 +590,7 @@ namespace Pixeval.UI
         private void DownloadNowMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             DownloadManager.EnqueueDownloadItem(sender.GetDataContext<Illustration>());
-            MessageQueue.Enqueue("已添加到下载队列");
+            MessageQueue.Enqueue(StringResources.QueuedDownload);
         }
 
         private void DownloadAllNowMenuItem_OnClick(object sender, RoutedEventArgs e)
@@ -595,7 +598,7 @@ namespace Pixeval.UI
             foreach (var illustration in GetImageSourceCopy())
                 if (illustration != null)
                     DownloadManager.EnqueueDownloadItem(illustration);
-            MessageQueue.Enqueue("已全部添加到下载队列");
+            MessageQueue.Enqueue(StringResources.QueuedAllToDownload);
         }
 
         #endregion
@@ -641,13 +644,13 @@ namespace Pixeval.UI
             if (!IsLoaded) return;
             if (Navigating(GalleryTab))
             {
-                MessageQueue.Enqueue("正在获取收藏夹...");
-                PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Private), NewItemsSource<Illustration>(ImageListView));
+                MessageQueue.Enqueue(StringResources.SearchingGallery);
+                PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Session.Global.Id, RestrictPolicy.Private), NewItemsSource<Illustration>(ImageListView));
             }
             else if (Navigating(FollowingTab))
             {
-                MessageQueue.Enqueue("正在获取关注列表...");
-                PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Private), NewItemsSource<User>(UserPreviewListView));
+                MessageQueue.Enqueue(StringResources.SearchingFollower);
+                PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Session.Global.Id, RestrictPolicy.Private), NewItemsSource<User>(UserPreviewListView));
             }
         }
 
@@ -656,13 +659,13 @@ namespace Pixeval.UI
             if (!IsLoaded) return;
             if (Navigating(GalleryTab))
             {
-                MessageQueue.Enqueue("正在获取收藏夹...");
-                PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Public), NewItemsSource<Illustration>(ImageListView));
+                MessageQueue.Enqueue(StringResources.SearchingGallery);
+                PixivHelper.Enumerate(AbstractGalleryAsyncEnumerable.Of(Session.Global.Id, RestrictPolicy.Public), NewItemsSource<Illustration>(ImageListView));
             }
             else if (Navigating(FollowingTab))
             {
-                MessageQueue.Enqueue("正在获取关注列表...");
-                PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Identity.Global.Id, RestrictPolicy.Public), NewItemsSource<User>(UserPreviewListView));
+                MessageQueue.Enqueue(StringResources.SearchingFollower);
+                PixivHelper.Enumerate(AbstractUserFollowingAsyncEnumerable.Of(Session.Global.Id, RestrictPolicy.Public), NewItemsSource<User>(UserPreviewListView));
             }
         }
 
@@ -785,7 +788,7 @@ namespace Pixeval.UI
         private void ShareUserButton_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Clipboard.SetText($"https://www.pixiv.net/member.php?id={sender.GetDataContext<User>().Id}");
-            MessageQueue.Enqueue("链接已复制到剪切板");
+            MessageQueue.Enqueue(StringResources.ShareLinkCopiedToClipboard);
         }
 
 
@@ -857,7 +860,7 @@ namespace Pixeval.UI
         private void ShareButton_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Clipboard.SetText($"https://www.pixiv.net/artworks/{sender.GetDataContext<Illustration>().Id}");
-            MessageQueue.Enqueue("作品链接已经复制到剪贴板");
+            MessageQueue.Enqueue(StringResources.ShareLinkCopiedToClipboard);
         }
 
         private void ImageBrowserUserAvatar_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -875,7 +878,7 @@ namespace Pixeval.UI
         private void DownloadButton_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DownloadManager.EnqueueDownloadItem(sender.GetDataContext<Illustration>());
-            MessageQueue.Enqueue("已添加到下载队列");
+            MessageQueue.Enqueue(StringResources.QueuedDownload);
         }
 
         private void IllustBrowserFavorButton_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -973,5 +976,61 @@ namespace Pixeval.UI
         }
 
         #endregion
+
+        private async void ReferImage_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var trend = sender.GetDataContext<Trends>();
+            var img = (Image) sender;
+            if (trend.IsReferToUser)
+            {
+                img.Effect = new BlurEffect
+                {
+                    KernelType = KernelType.Gaussian,
+                    Radius = 50,
+                    RenderingBias = RenderingBias.Quality
+                };
+            }
+
+            SetImageSource(sender, await PixivIO.FromUrl(trend.TrendObjectThumbnail));
+        }
+
+        private async void ReferUserAvatar_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var trend = sender.GetDataContext<Trends>();
+            if (trend.IsReferToUser) SetImageSource(sender, await PixivIO.FromUrl(trend.TrendObjectThumbnail));
+        }
+
+        private async void PostUserAvatar_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            SetImageSource(sender, await PixivIO.FromUrl(sender.GetDataContext<Trends>().PostUserThumbnail));
+        }
+
+        private void TrendsTab_OnSelected(object sender, RoutedEventArgs e)
+        {
+            QueryStartUp();
+            MessageQueue.Enqueue(StringResources.SearchingTrends);
+
+            PixivHelper.Enumerate(TrendsAsyncEnumerable.CurrentSession, NewItemsSource<Trends>(TrendsListView), 10);
+        }
+
+        private async void ReferImage_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            OpenIllustBrowser(await PixivHelper.IllustrationInfo(sender.GetDataContext<Trends>().TrendObjectId));
+            e.Handled = true;
+        }
+
+        private void ReferUser_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            OpenUserBrowser();
+            SetUserBrowserContext(new User {Id = sender.GetDataContext<Trends>().TrendObjectId});
+            e.Handled = true;
+        }
+
+        private void Hyperlink_OnClick(object sender, RoutedEventArgs e)
+        {
+            OpenUserBrowser();
+            SetUserBrowserContext(new User {Id = ((Trends) ((Hyperlink) sender).DataContext).PostUserId});
+            e.Handled = true;
+        }
     }
 }

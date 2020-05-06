@@ -49,5 +49,47 @@ namespace Pixeval.Objects
         public const string CertificateInstallationIsRequired = "检测到本机尚未安装证书, 若不安装该证书则会导致WebApi登录无法使用, 接下来将会执行安装证书进程, 过程中也许会有弹窗, 请点击确定/OK, 该证书私钥将不会被泄露和分发";
 
         public const string CertificateInstallationIsRequiredTitle = "安装根证书";
+
+        public const string TrendsAddIllust = "已投稿";
+
+        public const string TrendsAddBookmark = "已收藏";
+
+        public const string TrendsAddFavorite = "已关注";
+
+        public const string SearchingTrends = "正在获取动态...";
+
+        public const string SearchingUserUpdates = "正在获取关注用户的最新作品...";
+
+        public const string SearchingGallery = "正在获取收藏夹...";
+
+        public const string SearchingRecommend = "正在获取每日推荐的作品...";
+
+        public const string SearchingFollower = "正在获取关注列表...";
+
+        public const string SearchingSpotlight = "正在搜索特辑...";
+
+        public const string QueuedDownload = "已添加到下载队列";
+
+        public const string QueuedAllToDownload = "已全部添加到下载队列";
+
+        public const string ShareLinkCopiedToClipboard = "链接已复制到剪切板";
+
+        public const string PathNotExist = "找不到目录, 请检查文件是否已经被删除";
+
+        public const string SauceNAOFileCountLimit = "最多只允许上传一个文件";
+
+        public const string CannotFindResult = "找不到结果TAT";
+
+        public const string PleaseSelectFile = "选择文件";
+
+        public const string PleaseSelectLocation = "选择位置";
+
+        public const string CannotRetrieveContentLengthHeader = "找不到对应的ContentLength参数";
+
+        public const string ToggleR18OnSuccess = "成功开启WEB端R-18/R-18G开关";
+
+        public const string ToggleR18OnFailed = "开启失败";
+
+        public const string TryingToToggleR18Switch = "正在尝试开启WEB端R-18/R-18G";
     }
 }

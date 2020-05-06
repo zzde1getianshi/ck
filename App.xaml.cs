@@ -167,7 +167,7 @@ namespace Pixeval
             CertificateManager.GetFakeServerCertificate().Dispose();
             await Settings.Global.Store();
             AppContext.DefaultCacheProvider.Clear();
-            if (!AppContext.LogoutExit && Identity.Global.AccessToken != null) await Identity.Global.Store();
+            if (!AppContext.LogoutExit && Session.Global.AccessToken != null) await Session.Global.Store();
             base.OnExit(e);
         }
     }

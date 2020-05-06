@@ -46,7 +46,7 @@ namespace Pixeval.UI.UserControls
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 if (e.Data.GetData(DataFormats.FileDrop) is string[] fs)
                 {
-                    if (fs.Length > 1) MainWindow.MessageQueue.Enqueue("最多只允许上传一个文件");
+                    if (fs.Length > 1) MainWindow.MessageQueue.Enqueue(StringResources.SauceNAOFileCountLimit);
                     else
                         try
                         {
@@ -55,7 +55,7 @@ namespace Pixeval.UI.UserControls
                             UploadFileTextBox.Text = fs[0];
                             if ((await DoQuery(fs[0])).ToList() is { } sauceResults && sauceResults.Any())
                                 MainWindow.Instance.OpenIllustBrowser(await PixivHelper.IllustrationInfo(sauceResults[0]));
-                            else MainWindow.MessageQueue.Enqueue("找不到结果TAT");
+                            else MainWindow.MessageQueue.Enqueue(StringResources.CannotFindResult);
                         }
                         finally
                         {
@@ -68,7 +68,7 @@ namespace Pixeval.UI.UserControls
 
         private async void UploadFileAndQueryButton_OnClick(object sender, RoutedEventArgs e)
         {
-            using var fileDialog = new CommonOpenFileDialog("选择文件")
+            using var fileDialog = new CommonOpenFileDialog(StringResources.PleaseSelectFile)
             {
                 Multiselect = false
             };
@@ -81,7 +81,7 @@ namespace Pixeval.UI.UserControls
                     UploadFileTextBox.Text = fileDialog.FileName;
                     if ((await DoQuery(fileDialog.FileName)).ToList() is { } sauceResults && sauceResults.Any())
                         MainWindow.Instance.OpenIllustBrowser(await PixivHelper.IllustrationInfo(sauceResults[0]));
-                    else MainWindow.MessageQueue.Enqueue("找不到结果TAT");
+                    else MainWindow.MessageQueue.Enqueue(StringResources.CannotFindResult);
                 }
             }
             finally

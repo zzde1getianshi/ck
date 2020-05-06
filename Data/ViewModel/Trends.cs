@@ -6,7 +6,9 @@ namespace Pixeval.Data.ViewModel
     [AddINotifyPropertyChangedInterface]
     public class Trends
     {
-        public string PostUser { get; set; }
+        public string PostUserId { get; set; }
+
+        public string PostUserName { get; set; }
 
         public string TrendObjectId { get; set; }
 
@@ -14,7 +16,13 @@ namespace Pixeval.Data.ViewModel
 
         public TrendType Type { get; set; }
 
-        public string TrendObjectThumbnails { get; set; }
+        public string ByName { get; set; }
+
+        public bool IsReferToUser { get; set; }
+
+        public string TrendObjName { get; set; }
+
+        public string TrendObjectThumbnail { get; set; }
 
         public string PostUserThumbnail { get; set; }
     }

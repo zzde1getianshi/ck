@@ -26,7 +26,7 @@ namespace Pixeval.Data.Web.Protocol
     public interface ITokenProtocol
     {
         [Post("/auth/token")]
-        Task<HttpResponseMessage> GetTokenByPassword([Body(BodySerializationMethod.UrlEncoded)]
+        Task<TokenResponse> GetTokenByPassword([Body(BodySerializationMethod.UrlEncoded)]
             PasswordTokenRequest body, [Header("X-Client-Time")] string clientTime, [Header("X-Client-Hash")] string clientHash);
 
         [Post("/auth/token")]

@@ -19,7 +19,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using AdysTech.CredentialManager;
 using Newtonsoft.Json;
 using Pixeval.Data.Web.Response;
@@ -28,14 +27,14 @@ using Pixeval.Objects;
 namespace Pixeval.Persisting
 {
     /// <summary>
-    ///     A class which represents user identity, session, etc.
+    ///     A class which represents current session. etc.
     /// </summary>
-    public class Identity
+    public class Session
     {
         /// <summary>
         ///     Global session, contains both app-API and web-API
         /// </summary>
-        public static Identity Global;
+        public static Session Global;
 
         /// <summary>
         ///     User's display name of Pixiv
@@ -95,15 +94,15 @@ namespace Pixeval.Persisting
         public DateTime CookieCreation { get; set; }
 
         /// <summary>
-        ///     Parse a <see cref="TokenResponse"/> to an <see cref="Identity"/>
+        ///     Parse a <see cref="TokenResponse"/> to an <see cref="Session"/>
         /// </summary>
         /// <param name="password">password</param>
         /// <param name="token">to be parsed</param>
         /// <returns></returns>
-        public static Identity Parse(string password, TokenResponse token)
+        public static Session Parse(string password, TokenResponse token)
         {
             var response = token.ToResponse;
-            return new Identity
+            return new Session
             {
                 Name = response.User.Name,
                 ExpireIn = DateTime.Now + TimeSpan.FromSeconds(response.ExpiresIn),
@@ -113,7 +112,9 @@ namespace Pixeval.Persisting
                 Id = response.User.Id.ToString(),
                 MailAddress = response.User.MailAddress,
                 Account = response.User.Account,
-                Password = password
+                Password = password,
+                PhpSessionId = Global.PhpSessionId,
+                CookieCreation = Global.CookieCreation
             };
         }
 
@@ -138,7 +139,7 @@ namespace Pixeval.Persisting
         /// <returns></returns>
         public static async Task Restore()
         {
-            Global = (await File.ReadAllTextAsync(Path.Combine(AppContext.ConfFolder, AppContext.ConfigurationFileName), Encoding.UTF8)).FromJson<Identity>();
+            Global = (await File.ReadAllTextAsync(Path.Combine(AppContext.ConfFolder, AppContext.ConfigurationFileName), Encoding.UTF8)).FromJson<Session>();
             var credential = CredentialManager.GetCredentials(AppContext.AppIdentifier);
             Global.MailAddress = credential.UserName;
             Global.Password = credential.Password;
@@ -159,9 +160,12 @@ namespace Pixeval.Persisting
         /// </summary>
         /// <param name="identity">app-API session</param>
         /// <returns>true if needed</returns>
-        public static bool AppApiRefreshRequired(Identity identity)
+        public static bool AppApiRefreshRequired(Session identity)
         {
-            return identity.ExpireIn <= DateTime.Now;
+            return identity == null ||
+                   identity.AccessToken.IsNullOrEmpty() ||
+                   identity.ExpireIn == default ||
+                   identity.ExpireIn <= DateTime.Now;
         }
 
         /// <summary>
@@ -170,9 +174,12 @@ namespace Pixeval.Persisting
         /// </summary>
         /// <param name="identity">web-API session</param>
         /// <returns>true if needed</returns>
-        public static bool WebApiRefreshRequired(Identity identity)
+        public static bool WebApiRefreshRequired(Session identity)
         {
-            return (DateTime.Now - identity.CookieCreation).Days >= 7;
+            return identity == null ||
+                   identity.PhpSessionId.IsNullOrEmpty() ||
+                   identity.CookieCreation == default ||
+                   (DateTime.Now - identity.CookieCreation).Days >= 7;
         }
 
         /// <summary>
@@ -185,12 +192,10 @@ namespace Pixeval.Persisting
         {
             if (Global == null) await Restore();
 
-            var conf = (await File.ReadAllTextAsync(Path.Combine(AppContext.ConfFolder, AppContext.ConfigurationFileName), Encoding.UTF8)).FromJson<Identity>();
-
             // refresh through app-API
-            async Task RefreshAppApi()
+            static async Task RefreshAppApi()
             {
-                if (AppApiRefreshRequired(conf))
+                if (AppApiRefreshRequired(Global))
                 {
                     // we'd prefer use refresh token
                     if (Global?.RefreshToken.IsNullOrEmpty() is true)
@@ -201,9 +206,10 @@ namespace Pixeval.Persisting
             }
 
             // refresh through web-API
-            async Task RefreshWebApi()
+            static async Task RefreshWebApi()
             {
-                if (WebApiRefreshRequired(conf)) await Authentication.WebApiAuthenticate(Global?.MailAddress, Global?.Password);
+                if (WebApiRefreshRequired(Global))
+                    await Authentication.WebApiAuthenticate(Global?.MailAddress, Global?.Password);
             }
 
             // wait for both two sections to be complete
@@ -217,7 +223,7 @@ namespace Pixeval.Persisting
         {
             File.Delete(Path.Combine(AppContext.ConfFolder, AppContext.ConfigurationFileName));
             CredentialManager.RemoveCredentials(AppContext.AppIdentifier);
-            Global = new Identity();
+            Global = new Session();
         }
     }
 }
