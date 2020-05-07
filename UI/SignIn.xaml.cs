@@ -99,7 +99,6 @@ namespace Pixeval.UI
 
         private async void SetErrorHint(Exception exception)
         {
-            MessageBox.Show(exception.ToString());
             ErrorMessage.Text = exception is ApiException aException && await IsPasswordOrAccountError(aException)
                 ? StringResources.EmailOrPasswordIsWrong
                 : exception.Message;
