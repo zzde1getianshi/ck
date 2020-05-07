@@ -14,29 +14,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Refit;
+using Pixeval.Objects;
 
-namespace Pixeval.Data.Web.Request
+namespace Pixeval.Core
 {
-    public class ToggleR18StateRequest
+    public enum SearchTagMatchOption
     {
-        [AliasAs("mode")]
-        public string Mode { get; } = "mod";
+        /// <summary>
+        ///     部分一致
+        /// </summary>
+        [EnumAlias("partial_match_for_tags")]
+        [EnumName("部分一致")]
+        PartialMatchForTags,
 
-        [AliasAs("user_language")]
-        public string UserLang { get; } = "zh";
+        /// <summary>
+        ///     完全一致
+        /// </summary>
+        [EnumAlias("exact_match_for_tags")]
+        [EnumName("完全一致")]
+        ExactMatchForTags,
 
-        [AliasAs("r18")]
-
-        public string R18 { get; set; }
-
-        [AliasAs("r18g")]
-        public string R18G { get; set; }
-
-        [AliasAs("submit")]
-        public string Submit { get; } = "保存";
-
-        [AliasAs("tt")]
-        public string Tt { get; set; }
+        /// <summary>
+        ///     标题和说明文
+        /// </summary>
+        [EnumAlias("title_and_caption")]
+        [EnumName("标题与说明文")]
+        TitleAndCaption
     }
 }

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Pixeval.Objects;
@@ -42,6 +40,7 @@ namespace Pixeval.Data.Web.Delegation
 
                         httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue(token.Scheme, Session.Global.AccessToken);
                     }
+
                     break;
                 case var x when x == "pixiv.net" || x == "www.pixiv.net":
                     if (Session.Global.PhpSessionId.IsNullOrEmpty()) throw new TokenNotFoundException($"{nameof(Session.Global.PhpSessionId)} is empty, this exception should never be thrown, if you see this message, please send issue on github or contact me (decem0730@gmail.com)");
@@ -49,7 +48,6 @@ namespace Pixeval.Data.Web.Delegation
                     httpRequestMessage.Headers.TryAddWithoutValidation("Cookie", $"PHPSESSID={Session.Global.PhpSessionId}");
                     break;
             }
-            
         }
     }
 }

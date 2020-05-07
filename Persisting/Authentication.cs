@@ -29,7 +29,6 @@ using Pixeval.Data.Web;
 using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Protocol;
 using Pixeval.Data.Web.Request;
-using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions;
 using Pixeval.Persisting.WebApi;
@@ -79,7 +78,7 @@ namespace Pixeval.Persisting
             try
             {
                 var token = await RestService.For<ITokenProtocol>(HttpClientFactory.PixivApi(ProtocolBase.OAuthBaseUrl, true).Apply(h => h.Timeout = TimeSpan.FromSeconds(10)))
-                    .RefreshToken(new RefreshTokenRequest { RefreshToken = refreshToken });
+                    .RefreshToken(new RefreshTokenRequest {RefreshToken = refreshToken});
                 Session.Global = Session.Parse(Session.Global.Password, token);
             }
             catch (TaskCanceledException)
@@ -89,7 +88,8 @@ namespace Pixeval.Persisting
         }
 
         /// <summary>
-        ///     Authentication process to pixiv web api, which is driven by <a href="https://github.com/cefsharp/CefSharp">CefSharp</a>
+        ///     Authentication process to pixiv web api, which is driven by
+        ///     <a href="https://github.com/cefsharp/CefSharp">CefSharp</a>
         ///     This method is for login usage only, USE AT YOUR OWN RISK
         /// </summary>
         /// <param name="name">user name</param>
@@ -100,7 +100,10 @@ namespace Pixeval.Persisting
             // create x.509 certificate object for intercepting https traffic, USE AT YOUR OWN RISK
             X509Certificate2 certificate;
             if (Application.GetResourceStream(new Uri("pack://application:,,,/Resources/PixevalFakeCert.pfx")) is { } streamResource)
-                await using (streamResource.Stream) certificate = new X509Certificate2(await streamResource.Stream.ToBytes(), "pixeval");
+                await using (streamResource.Stream)
+                {
+                    certificate = new X509Certificate2(await streamResource.Stream.ToBytes(), "pixeval");
+                }
             else throw new FileNotFoundException("Cannot find certificate specified"); // throw exception if we cannot locate it
 
             // create https reverse proxy server for intercepting and forwarding https traffic,
@@ -158,6 +161,8 @@ namespace Pixeval.Persisting
             if ((await completionVisitor.Task).FirstOrDefault(PixivCookieRecorded) is { } cookie)
             {
                 chrome.Dispose();
+
+                if (Session.Global == null) Session.Global = new Session();
                 Session.Global.PhpSessionId = cookie.Value;
                 Session.Global.CookieCreation = cookie.Creation.ToLocalTime();
                 return;

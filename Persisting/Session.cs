@@ -94,7 +94,7 @@ namespace Pixeval.Persisting
         public DateTime CookieCreation { get; set; }
 
         /// <summary>
-        ///     Parse a <see cref="TokenResponse"/> to an <see cref="Session"/>
+        ///     Parse a <see cref="TokenResponse" /> to an <see cref="Session" />
         /// </summary>
         /// <param name="password">password</param>
         /// <param name="token">to be parsed</param>
@@ -113,8 +113,8 @@ namespace Pixeval.Persisting
                 MailAddress = response.User.MailAddress,
                 Account = response.User.Account,
                 Password = password,
-                PhpSessionId = Global.PhpSessionId,
-                CookieCreation = Global.CookieCreation
+                PhpSessionId = Global?.PhpSessionId,
+                CookieCreation = Global?.CookieCreation ?? default
             };
         }
 
@@ -156,7 +156,7 @@ namespace Pixeval.Persisting
         }
 
         /// <summary>
-        ///     Check if the app-API session need to be refresh, we just simply compare two <see cref="DateTime"/>
+        ///     Check if the app-API session need to be refresh, we just simply compare two <see cref="DateTime" />
         /// </summary>
         /// <param name="identity">app-API session</param>
         /// <returns>true if needed</returns>

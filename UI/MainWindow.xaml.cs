@@ -184,7 +184,10 @@ namespace Pixeval.UI
         {
             QueryStartUp();
             SearchingHistoryManager.EnqueueSearchHistory(keyword);
-            PixivHelper.Enumerate(Settings.Global.SortOnInserting ? (AbstractQueryAsyncEnumerable) new PopularityQueryAsyncEnumerable(keyword, Settings.Global.QueryStart) : new PublishDateQueryAsyncEnumerable(keyword, Settings.Global.QueryStart), NewItemsSource<Illustration>(ImageListView), Settings.Global.QueryPages);
+            PixivHelper.Enumerate(Settings.Global.SortOnInserting
+                    ? (AbstractQueryAsyncEnumerable) new PopularityQueryAsyncEnumerable(keyword, Settings.Global.TagMatchOption, Settings.Global.QueryStart)
+                    : new PublishDateQueryAsyncEnumerable(keyword, Settings.Global.TagMatchOption, Settings.Global.QueryStart),
+                NewItemsSource<Illustration>(ImageListView), Settings.Global.QueryPages);
         }
 
         private void IllustrationContainer_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -292,7 +295,7 @@ namespace Pixeval.UI
 
         private async void KeywordTextBox_OnGotFocus(object sender, RoutedEventArgs e)
         {
-            if (AppContext.TrendingTags.IsNullOrEmpty()) 
+            if (AppContext.TrendingTags.IsNullOrEmpty())
                 AppContext.TrendingTags.AddRange(await PixivClient.Instance.GetTrendingTags());
             TrendingTagPopup.OpenControl();
         }
@@ -464,6 +467,8 @@ namespace Pixeval.UI
 
         private void NavigatorList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            TopBarRetract((TranslateTransform) RestrictPolicySelector.RenderTransform);
+            TopBarRetract((TranslateTransform) RankOptionSelector.RenderTransform);
             TrendingTagPopup.CloseControl();
             if (NavigatorList.SelectedItem is ListViewItem current)
             {
@@ -496,14 +501,14 @@ namespace Pixeval.UI
         private void HomeContainerMoveDown()
         {
             DoQueryButton.Disable();
-            if (((TranslateTransform)HomeDisplayContainer.RenderTransform).Y.Equals(0))
+            if (((TranslateTransform) HomeDisplayContainer.RenderTransform).Y.Equals(0))
                 HomeDisplayContainer.GetResources<Storyboard>("MoveDownAnimation").Begin();
         }
 
         private void HomeContainerMoveUp()
         {
             DoQueryButton.Enable();
-            if (!((TranslateTransform)HomeDisplayContainer.RenderTransform).Y.Equals(0))
+            if (!((TranslateTransform) HomeDisplayContainer.RenderTransform).Y.Equals(0))
                 HomeDisplayContainer.GetResources<Storyboard>("MoveUpAnimation")?.Begin();
         }
 
@@ -615,28 +620,11 @@ namespace Pixeval.UI
 
         private void ContentDisplay_OnMouseMove(object sender, MouseEventArgs e)
         {
-            if (!(Navigating(GalleryTab) || Navigating(FollowingTab)) || animating) return;
-            var transform = (TranslateTransform) RestrictPolicySelector.RenderTransform;
-            if (e.GetPosition(this).Y <= RestrictPolicySelector.Height && transform.Y < 0)
-            {
-                var animation = new DoubleAnimation(transform.Y, 0, TimeSpan.FromMilliseconds(300))
-                {
-                    EasingFunction = new CubicEase()
-                };
-                animation.Completed += (o, args) => animating = false;
-                animating = true;
-                transform.BeginAnimation(TranslateTransform.YProperty, animation);
-            }
-            else if (e.GetPosition(this).Y > RestrictPolicySelector.Height && transform.Y > -RestrictPolicySelector.Height)
-            {
-                var animation = new DoubleAnimation(transform.Y, -RestrictPolicySelector.Height, TimeSpan.FromMilliseconds(300))
-                {
-                    EasingFunction = new CubicEase()
-                };
-                animation.Completed += (o, args) => animating = false;
-                animating = true;
-                transform.BeginAnimation(TranslateTransform.YProperty, animation);
-            }
+            if (!(Navigating(GalleryTab) || Navigating(FollowingTab) || Navigating(RankingTab)) || animating) return;
+            var transform = (TranslateTransform) (Navigating(RankingTab) ? RankOptionSelector.RenderTransform : RestrictPolicySelector.RenderTransform);
+            if (e.GetPosition(this).Y <= 40)
+                TopBarExpand(transform);
+            else if (e.GetPosition(this).Y > 60) TopBarRetract(transform);
         }
 
         private void PrivateRestrictPolicy_OnChecked(object sender, RoutedEventArgs e)
@@ -898,7 +886,133 @@ namespace Pixeval.UI
 
         #endregion
 
+        #region 动态
+
+        private async void ReferImage_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var trend = sender.GetDataContext<Trends>();
+            var img = (Image) sender;
+            if (trend.IsReferToUser)
+                img.Effect = new BlurEffect
+                {
+                    KernelType = KernelType.Gaussian,
+                    Radius = 50,
+                    RenderingBias = RenderingBias.Quality
+                };
+
+            SetImageSource(sender, await PixivIO.FromUrl(trend.TrendObjectThumbnail));
+        }
+
+        private async void ReferUserAvatar_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            var trend = sender.GetDataContext<Trends>();
+            if (trend.IsReferToUser) SetImageSource(sender, await PixivIO.FromUrl(trend.TrendObjectThumbnail));
+        }
+
+        private async void PostUserAvatar_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            SetImageSource(sender, await PixivIO.FromUrl(sender.GetDataContext<Trends>().PostUserThumbnail));
+        }
+
+        private void TrendsTab_OnSelected(object sender, RoutedEventArgs e)
+        {
+            QueryStartUp();
+            MessageQueue.Enqueue(StringResources.SearchingTrends);
+
+            PixivHelper.Enumerate(new TrendsAsyncEnumerable(), NewItemsSource<Trends>(TrendsListView), 20);
+        }
+
+        private async void ReferImage_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            OpenIllustBrowser(await PixivHelper.IllustrationInfo(sender.GetDataContext<Trends>().TrendObjectId));
+            e.Handled = true;
+        }
+
+        private void ReferUser_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            OpenUserBrowser();
+            SetUserBrowserContext(new User {Id = sender.GetDataContext<Trends>().TrendObjectId});
+            e.Handled = true;
+        }
+
+        private void Hyperlink_OnClick(object sender, RoutedEventArgs e)
+        {
+            OpenUserBrowser();
+            SetUserBrowserContext(new User {Id = ((Trends) ((Hyperlink) sender).DataContext).PostUserId});
+            e.Handled = true;
+        }
+
+        #endregion
+
+        #region 榜单
+
+        private void RankDatePicker_OnSelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Navigating(RankingTab)) GetRanking();
+        }
+
+        private void RankOptionPicker_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Navigating(RankingTab)) GetRanking();
+        }
+
+        private void GetRanking()
+        {
+            var option = RankOptionPicker.SelectedItem.GetDataContext<RankOptionModel[]>().First(p => p.IsSelected);
+            var dateTime = RankDatePicker.SelectedDate;
+
+            if (option.Corresponding.AttributeAttached<ForR18Only>() && Settings.Global.ExcludeTag.Any(t => t.ToUpper() == "R-18" || t.ToUpper() == "R-18G"))
+            {
+                MessageQueue.Enqueue(StringResources.RankNeedR18On);
+                NewItemsSource<Illustration>(ImageListView);
+                return;
+            }
+
+            if (dateTime is { } time)
+            {
+                PixivHelper.Enumerate(new RankingAsyncEnumerable(option.Corresponding, time), NewItemsSource<Illustration>(ImageListView));
+                return;
+            }
+
+            MessageQueue.Enqueue(StringResources.RankDateCannotBeNull);
+        }
+
+        private void RankingTab_OnSelected(object sender, RoutedEventArgs e)
+        {
+            GetRanking();
+        }
+
+        #endregion
+
         #region 工具
+
+        private void TopBarRetract(TranslateTransform transform)
+        {
+            if (transform.Y > -60)
+            {
+                var animation = new DoubleAnimation(transform.Y, -60, TimeSpan.FromMilliseconds(300))
+                {
+                    EasingFunction = new CubicEase()
+                };
+                animation.Completed += (o, args) => animating = false;
+                animating = true;
+                transform.BeginAnimation(TranslateTransform.YProperty, animation);
+            }
+        }
+
+        private void TopBarExpand(TranslateTransform transform)
+        {
+            if (transform.Y < 0)
+            {
+                var animation = new DoubleAnimation(transform.Y, 0, TimeSpan.FromMilliseconds(300))
+                {
+                    EasingFunction = new CubicEase()
+                };
+                animation.Completed += (o, args) => animating = false;
+                animating = true;
+                transform.BeginAnimation(TranslateTransform.YProperty, animation);
+            }
+        }
 
         private async Task AcquireRecommendUser()
         {
@@ -976,61 +1090,5 @@ namespace Pixeval.UI
         }
 
         #endregion
-
-        private async void ReferImage_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            var trend = sender.GetDataContext<Trends>();
-            var img = (Image) sender;
-            if (trend.IsReferToUser)
-            {
-                img.Effect = new BlurEffect
-                {
-                    KernelType = KernelType.Gaussian,
-                    Radius = 50,
-                    RenderingBias = RenderingBias.Quality
-                };
-            }
-
-            SetImageSource(sender, await PixivIO.FromUrl(trend.TrendObjectThumbnail));
-        }
-
-        private async void ReferUserAvatar_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            var trend = sender.GetDataContext<Trends>();
-            if (trend.IsReferToUser) SetImageSource(sender, await PixivIO.FromUrl(trend.TrendObjectThumbnail));
-        }
-
-        private async void PostUserAvatar_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            SetImageSource(sender, await PixivIO.FromUrl(sender.GetDataContext<Trends>().PostUserThumbnail));
-        }
-
-        private void TrendsTab_OnSelected(object sender, RoutedEventArgs e)
-        {
-            QueryStartUp();
-            MessageQueue.Enqueue(StringResources.SearchingTrends);
-
-            PixivHelper.Enumerate(TrendsAsyncEnumerable.CurrentSession, NewItemsSource<Trends>(TrendsListView), 10);
-        }
-
-        private async void ReferImage_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            OpenIllustBrowser(await PixivHelper.IllustrationInfo(sender.GetDataContext<Trends>().TrendObjectId));
-            e.Handled = true;
-        }
-
-        private void ReferUser_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            OpenUserBrowser();
-            SetUserBrowserContext(new User {Id = sender.GetDataContext<Trends>().TrendObjectId});
-            e.Handled = true;
-        }
-
-        private void Hyperlink_OnClick(object sender, RoutedEventArgs e)
-        {
-            OpenUserBrowser();
-            SetUserBrowserContext(new User {Id = ((Trends) ((Hyperlink) sender).DataContext).PostUserId});
-            e.Handled = true;
-        }
     }
 }

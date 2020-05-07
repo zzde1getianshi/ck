@@ -39,7 +39,7 @@ namespace Pixeval.Persisting.WebApi
         private readonly X509Certificate2 cert;
 
         /// <summary>
-        ///     Create a <see cref="CertificateManager"/> with specified <see cref="X509Certificate2"/>
+        ///     Create a <see cref="CertificateManager" /> with specified <see cref="X509Certificate2" />
         /// </summary>
         /// <param name="certificate">certificate to be managed</param>
         public CertificateManager(X509Certificate2 certificate)
@@ -56,9 +56,14 @@ namespace Pixeval.Persisting.WebApi
             if (_fakeCa != null) return _fakeCa;
             if (Application.GetResourceStream(new Uri("pack://application:,,,/Resources/PixevalFakeCA.cer")) is { } streamResource)
             {
-                await using (streamResource.Stream) _fakeCa = new X509Certificate2(await streamResource.Stream.ToBytes());
+                await using (streamResource.Stream)
+                {
+                    _fakeCa = new X509Certificate2(await streamResource.Stream.ToBytes());
+                }
+
                 return _fakeCa;
             }
+
             throw new FileNotFoundException("Cannot find certificate specified");
         }
 
@@ -71,9 +76,14 @@ namespace Pixeval.Persisting.WebApi
             if (_fakeCa != null) return _serverCert;
             if (Application.GetResourceStream(new Uri("pack://application:,,,/Resources/PixevalFakeCert.pfx")) is { } streamResource)
             {
-                await using (streamResource.Stream) _serverCert = new X509Certificate2(await streamResource.Stream.ToBytes(), "pixeval");
+                await using (streamResource.Stream)
+                {
+                    _serverCert = new X509Certificate2(await streamResource.Stream.ToBytes(), "pixeval");
+                }
+
                 return _serverCert;
             }
+
             throw new FileNotFoundException("Cannot find certificate specified");
         }
 

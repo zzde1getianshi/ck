@@ -18,13 +18,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using Pixeval.Data.ViewModel;
 using Pixeval.Data.Web.Delegation;
 using Pixeval.Data.Web.Response;
 using Pixeval.Objects;
 using Pixeval.Objects.Exceptions.Logger;
-using Pixeval.Persisting;
 using Refit;
 
 namespace Pixeval.Core
@@ -88,7 +86,7 @@ namespace Pixeval.Core
 
             await foreach (var illust in enumerator)
             {
-                if (enumerator.IsCancellationRequested() || limit != -1 && pixivIterator.RequestedPages > limit) 
+                if (enumerator.IsCancellationRequested() || limit != -1 && pixivIterator.RequestedPages > limit)
                     break;
                 if (pixivIterator.VerifyRational(illust, container))
                     pixivIterator.InsertionPolicy(illust, container);
@@ -99,15 +97,9 @@ namespace Pixeval.Core
         {
             if (illustration == null) return false;
             bool excludeMatch = true, includeMatch = true;
-            if (!excludeTag.IsNullOrEmpty())
-            {
-                excludeMatch = excludeTag.All(x => x.IsNullOrEmpty() || illustration.Tags.All(i => !i.Name.EqualsIgnoreCase(x)));
-            }
+            if (!excludeTag.IsNullOrEmpty()) excludeMatch = excludeTag.All(x => x.IsNullOrEmpty() || illustration.Tags.All(i => !i.Name.EqualsIgnoreCase(x)));
 
-            if (!includeTag.IsNullOrEmpty())
-            {
-                includeMatch = includeTag.All(x => x.IsNullOrEmpty() || illustration.Tags.Any(i => i.Name.EqualsIgnoreCase(x)));
-            }
+            if (!includeTag.IsNullOrEmpty()) includeMatch = includeTag.All(x => x.IsNullOrEmpty() || illustration.Tags.Any(i => i.Name.EqualsIgnoreCase(x)));
 
             var minBookmarkMatch = illustration.Bookmark > minBookmark;
             return excludeMatch && includeMatch && minBookmarkMatch;

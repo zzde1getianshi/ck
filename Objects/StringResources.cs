@@ -91,5 +91,37 @@ namespace Pixeval.Objects
         public const string ToggleR18OnFailed = "开启失败";
 
         public const string TryingToToggleR18Switch = "正在尝试开启WEB端R-18/R-18G";
+
+        public const string RankOptionDay = "每日榜单";
+
+        public const string RankOptionWeek = "每周榜单";
+
+        public const string RankOptionMonth = "每月榜单";
+
+        public const string RankOptionDayMale = "男性向日榜";
+
+        public const string RankOptionDayFemale = "女性向日榜";
+
+        public const string RankOptionDayManga = "多图/漫画日榜";
+
+        public const string RankOptionWeekManga = "多图/漫画周榜";
+
+        public const string RankOptionWeekOriginal = "原创";
+
+        public const string RankOptionWeekRookie = "新人";
+
+        public const string RankOptionDayR18 = "R-18日榜";
+
+        public const string RankOptionDayMaleR18 = "男性向R-18日榜";
+
+        public const string RankOptionDayFemaleR18 = "女性向R-18日榜";
+
+        public const string RankOptionWeekR18 = "R-18周榜";
+
+        public const string RankOptionWeekR18G = "R-18G周榜";
+
+        public const string RankDateCannotBeNull = "榜单日期不能为空";
+
+        public const string RankNeedR18On = "根据您的偏好设置, Pixeval不能为您展示这些作品";
     }
 }

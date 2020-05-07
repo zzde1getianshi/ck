@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -28,29 +29,47 @@ using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
-    public abstract class AbstractRecommendAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
+    public class RankingAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
-        public override int RequestedPages { get; protected set; }
+        private readonly DateTime dateTime;
+        private readonly RankOption rankOption;
 
-        public abstract override void InsertionPolicy(Illustration item, IList<Illustration> collection);
+        public RankingAsyncEnumerable(RankOption rankOption, DateTime dateTime)
+        {
+            this.rankOption = rankOption;
+            this.dateTime = dateTime;
+        }
+
+        public override int RequestedPages { get; protected set; }
 
         public override bool VerifyRational(Illustration item, IList<Illustration> collection)
         {
             return item != null && collection.All(t => t.Id != item.Id) && PixivHelper.VerifyIllustRational(Settings.Global.ExcludeTag, Settings.Global.IncludeTag, Settings.Global.MinBookmark, item);
         }
 
-        public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
         {
-            return new RecommendAsyncEnumerator(this);
+            collection.Add(item);
         }
 
-        private class RecommendAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
+        public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            private RecommendResponse entity;
+            return new RankingAsyncEnumerator(this, rankOption, dateTime);
+        }
+
+        private class RankingAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
+        {
+            private readonly string dateTimeParameter;
+            private readonly string rankOptionParameter;
+            private RankingResponse entity;
 
             private IEnumerator<Illustration> illustrationEnumerator;
 
-            public RecommendAsyncEnumerator(IPixivAsyncEnumerable<Illustration> enumerable) : base(enumerable) { }
+            public RankingAsyncEnumerator(IPixivAsyncEnumerable<Illustration> enumerable, RankOption rankOption, DateTime dateTime) : base(enumerable)
+            {
+                rankOptionParameter = rankOption.GetEnumAttribute<EnumAlias>().AliasAs;
+                dateTimeParameter = dateTime.ToString("yyyy-MM-dd");
+            }
 
             public override Illustration Current => illustrationEnumerator.Current;
 
@@ -63,9 +82,9 @@ namespace Pixeval.Core
             {
                 if (entity == null)
                 {
-                    if (await TryGetResponse("/v1/illust/recommended") is (true, var model))
+                    if (await TryGetResponse($"/v1/illust/ranking?filter=for_android&mode={rankOptionParameter}&date={dateTimeParameter}") is (true, var result))
                     {
-                        entity = model;
+                        entity = result;
                         UpdateEnumerator();
                     }
                     else
@@ -80,9 +99,9 @@ namespace Pixeval.Core
 
                 if (entity.NextUrl.IsNullOrEmpty()) return false;
 
-                if (await TryGetResponse(entity.NextUrl) is (true, var res))
+                if (await TryGetResponse(entity.NextUrl) is (true, var model))
                 {
-                    entity = res;
+                    entity = model;
                     UpdateEnumerator();
                     Enumerable.ReportRequestedPages();
                     return true;
@@ -91,29 +110,13 @@ namespace Pixeval.Core
                 return false;
             }
 
-            private static async Task<HttpResponse<RecommendResponse>> TryGetResponse(string url)
+            private static async Task<HttpResponse<RankingResponse>> TryGetResponse(string url)
             {
-                var res = (await HttpClientFactory.AppApiHttpClient().Apply(h => h.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "zh-cn")).GetStringAsync(url)).FromJson<RecommendResponse>();
-                if (res is { } response && !response.Illusts.IsNullOrEmpty()) return HttpResponse<RecommendResponse>.Wrap(true, response);
+                var result = (await HttpClientFactory.AppApiHttpClient().Apply(h => h.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "zh-cn")).GetStringAsync(url)).FromJson<RankingResponse>();
 
-                return HttpResponse<RecommendResponse>.Wrap(false);
+                if (result is { } response && !response.Illusts.IsNullOrEmpty()) return HttpResponse<RankingResponse>.Wrap(true, response);
+                return HttpResponse<RankingResponse>.Wrap(false);
             }
-        }
-    }
-
-    public class PopularityRecommendAsyncEnumerable : AbstractRecommendAsyncEnumerable
-    {
-        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
-        {
-            if (item != null) collection.AddSorted(item, IllustrationPopularityComparator.Instance);
-        }
-    }
-
-    public class PublishDateRecommendAsyncEnumerable : AbstractRecommendAsyncEnumerable
-    {
-        public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
-        {
-            if (item != null) collection.AddSorted(item, IllustrationPublishDateComparator.Instance);
         }
     }
 }

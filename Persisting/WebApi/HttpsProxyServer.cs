@@ -36,7 +36,7 @@ namespace Pixeval.Persisting.WebApi
         private readonly TcpListener tcpListener;
 
         /// <summary>
-        ///     Create an <see cref="HttpsProxyServer"/> with specified host, port, target and certificate 
+        ///     Create an <see cref="HttpsProxyServer" /> with specified host, port, target and certificate
         /// </summary>
         /// <param name="host">proxy server host</param>
         /// <param name="port">proxy server port to listen</param>

@@ -14,29 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Refit;
+using System;
+using System.Runtime.Serialization;
 
-namespace Pixeval.Data.Web.Request
+namespace Pixeval.Objects.Exceptions
 {
-    public class ToggleR18StateRequest
+    public class AttributeNotFoundException : Exception
     {
-        [AliasAs("mode")]
-        public string Mode { get; } = "mod";
-
-        [AliasAs("user_language")]
-        public string UserLang { get; } = "zh";
-
-        [AliasAs("r18")]
-
-        public string R18 { get; set; }
-
-        [AliasAs("r18g")]
-        public string R18G { get; set; }
-
-        [AliasAs("submit")]
-        public string Submit { get; } = "保存";
-
-        [AliasAs("tt")]
-        public string Tt { get; set; }
+        public AttributeNotFoundException() { }
+        protected AttributeNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        public AttributeNotFoundException(string message) : base(message) { }
+        public AttributeNotFoundException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

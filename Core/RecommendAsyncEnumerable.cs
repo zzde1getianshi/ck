@@ -28,19 +28,8 @@ using Pixeval.Persisting;
 
 namespace Pixeval.Core
 {
-    public abstract class AbstractQueryAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
+    public abstract class AbstractRecommendAsyncEnumerable : AbstractPixivAsyncEnumerable<Illustration>
     {
-        private readonly SearchTagMatchOption matchOption;
-        private readonly int start;
-        private readonly string tag;
-
-        protected AbstractQueryAsyncEnumerable(string tag, SearchTagMatchOption matchOption, int start = 1)
-        {
-            this.start = start < 1 ? 1 : start;
-            this.tag = tag;
-            this.matchOption = matchOption;
-        }
-
         public override int RequestedPages { get; protected set; }
 
         public abstract override void InsertionPolicy(Illustration item, IList<Illustration> collection);
@@ -52,38 +41,29 @@ namespace Pixeval.Core
 
         public override IAsyncEnumerator<Illustration> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
-            return new QueryAsyncEnumerator(this, tag, matchOption, start);
+            return new RecommendAsyncEnumerator(this);
         }
 
-        private class QueryAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
+        private class RecommendAsyncEnumerator : AbstractPixivAsyncEnumerator<Illustration>
         {
-            private readonly int current;
-            private readonly string keyword;
-            private readonly SearchTagMatchOption matchOption;
+            private RecommendResponse entity;
 
-            private QueryWorksResponse entity;
+            private IEnumerator<Illustration> illustrationEnumerator;
 
-            private IEnumerator<Illustration> illustrationsEnumerator;
+            public RecommendAsyncEnumerator(IPixivAsyncEnumerable<Illustration> enumerable) : base(enumerable) { }
 
-            public QueryAsyncEnumerator(IPixivAsyncEnumerable<Illustration> enumerable, string keyword, SearchTagMatchOption matchOption, int current) : base(enumerable)
-            {
-                this.keyword = keyword;
-                this.matchOption = matchOption;
-                this.current = current;
-            }
-
-            public override Illustration Current => illustrationsEnumerator.Current;
+            public override Illustration Current => illustrationEnumerator.Current;
 
             protected override void UpdateEnumerator()
             {
-                illustrationsEnumerator = entity.Illusts.NonNull().Select(_ => _.Parse()).GetEnumerator();
+                illustrationEnumerator = entity.Illusts.NonNull().Select(_ => _.Parse()).GetEnumerator();
             }
 
             public override async ValueTask<bool> MoveNextAsync()
             {
                 if (entity == null)
                 {
-                    if (await TryGetResponse($"/v1/search/illust?search_target={matchOption.GetEnumAttribute<EnumAlias>().AliasAs}&sort=date_desc&word={keyword}&filter=for_android&offset={(current - 1) * 30}") is (true, var model))
+                    if (await TryGetResponse("/v1/illust/recommended") is (true, var model))
                     {
                         entity = model;
                         UpdateEnumerator();
@@ -96,9 +76,9 @@ namespace Pixeval.Core
                     Enumerable.ReportRequestedPages();
                 }
 
-                if (illustrationsEnumerator.MoveNext()) return true;
+                if (illustrationEnumerator.MoveNext()) return true;
 
-                if (int.Parse(entity.NextUrl[(entity.NextUrl.LastIndexOf('=') + 1)..]) >= 5000) return false;
+                if (entity.NextUrl.IsNullOrEmpty()) return false;
 
                 if (await TryGetResponse(entity.NextUrl) is (true, var res))
                 {
@@ -111,30 +91,26 @@ namespace Pixeval.Core
                 return false;
             }
 
-            private static async Task<HttpResponse<QueryWorksResponse>> TryGetResponse(string url)
+            private static async Task<HttpResponse<RecommendResponse>> TryGetResponse(string url)
             {
-                var res = (await HttpClientFactory.AppApiHttpClient().Apply(h => h.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "zh-cn")).GetStringAsync(url)).FromJson<QueryWorksResponse>();
-                if (res is { } response && !response.Illusts.IsNullOrEmpty()) return HttpResponse<QueryWorksResponse>.Wrap(true, response);
+                var res = (await HttpClientFactory.AppApiHttpClient().Apply(h => h.DefaultRequestHeaders.TryAddWithoutValidation("Accept-Language", "zh-cn")).GetStringAsync(url)).FromJson<RecommendResponse>();
+                if (res is { } response && !response.Illusts.IsNullOrEmpty()) return HttpResponse<RecommendResponse>.Wrap(true, response);
 
-                return HttpResponse<QueryWorksResponse>.Wrap(false);
+                return HttpResponse<RecommendResponse>.Wrap(false);
             }
         }
     }
 
-    public class PopularityQueryAsyncEnumerable : AbstractQueryAsyncEnumerable
+    public class PopularityRecommendAsyncEnumerable : AbstractRecommendAsyncEnumerable
     {
-        public PopularityQueryAsyncEnumerable(string tag, SearchTagMatchOption matchOption, int start = 1) : base(tag, matchOption, start) { }
-
         public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
         {
             if (item != null) collection.AddSorted(item, IllustrationPopularityComparator.Instance);
         }
     }
 
-    public class PublishDateQueryAsyncEnumerable : AbstractQueryAsyncEnumerable
+    public class PublishDateRecommendAsyncEnumerable : AbstractRecommendAsyncEnumerable
     {
-        public PublishDateQueryAsyncEnumerable(string tag, SearchTagMatchOption matchOption, int start = 1) : base(tag, matchOption, start) { }
-
         public override void InsertionPolicy(Illustration item, IList<Illustration> collection)
         {
             if (item != null) collection.AddSorted(item, IllustrationPublishDateComparator.Instance);

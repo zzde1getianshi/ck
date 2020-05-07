@@ -91,16 +91,13 @@ namespace Pixeval
         }
 
         /// <summary>
-        /// Check if the required Visual C++ Redistributable is installed on the computer
+        ///     Check if the required Visual C++ Redistributable is installed on the computer
         /// </summary>
         /// <returns>Cpp redistributable is installed</returns>
         private static bool CppRedistributableInstalled()
         {
             using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x64");
-            if (key == null)
-            {
-                return false;
-            }
+            if (key == null) return false;
 
             var success = int.TryParse(key.GetValue("Bld").ToString(), out var version);
             // visual C++ redistributable Bld table: 
@@ -130,21 +127,21 @@ namespace Pixeval
                 if (MessageBox.Show(StringResources.CertificateInstallationIsRequired, StringResources.CertificateInstallationIsRequiredTitle, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     certificateManager.Install(StoreName.Root, StoreLocation.CurrentUser);
                 else Environment.Exit(-1);
-            } 
+            }
         }
 
         private static async Task RestoreSettings()
         {
             await Settings.Restore();
             AppContext.DefaultCacheProvider = Settings.Global.CachingPolicy == CachingPolicy.Memory
-                ? (IWeakCacheProvider<BitmapImage, Illustration>)MemoryCache<BitmapImage, Illustration>.Shared
+                ? (IWeakCacheProvider<BitmapImage, Illustration>) MemoryCache<BitmapImage, Illustration>.Shared
                 : new FileCache<BitmapImage, Illustration>(AppContext.CacheFolder, image => image.ToStream(), PixivIO.FromStream);
             AppContext.DefaultCacheProvider.Clear();
         }
 
         /// <summary>
-        /// Write Proxy-Auto-Configuration file to ..\{Directory to Pixeval.dll}\Resource\pixeval_pac.pac,
-        /// this method is for login usage only, USE AT YOUR OWN RISK
+        ///     Write Proxy-Auto-Configuration file to ..\{Directory to Pixeval.dll}\Resource\pixeval_pac.pac,
+        ///     this method is for login usage only, USE AT YOUR OWN RISK
         /// </summary>
         private static async Task WritePac()
         {

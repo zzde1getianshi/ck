@@ -1,6 +1,21 @@
-﻿using System;
+﻿// Pixeval - A Strong, Fast and Flexible Pixiv Client
+// Copyright (C) 2019 Dylech30th
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+// 
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -16,12 +31,10 @@ using Pixeval.Objects.Exceptions;
 namespace Pixeval.Core
 {
     /// <summary>
-    /// This class is piece of shit
+    ///     This class is piece of shit
     /// </summary>
     public class TrendsAsyncEnumerable : AbstractPixivAsyncEnumerable<Trends>
     {
-        public static TrendsAsyncEnumerable CurrentSession = new TrendsAsyncEnumerable();
-
         public override int RequestedPages { get; protected set; }
 
         public override IAsyncEnumerator<Trends> GetAsyncEnumerator(CancellationToken cancellationToken = default)
@@ -31,11 +44,13 @@ namespace Pixeval.Core
 
         private class TrendsAsyncEnumerator : AbstractPixivAsyncEnumerator<Trends>
         {
-            private IEnumerator<Trends> trendsEnumerable;
             private TrendsRequestContext requestContext;
+            private IEnumerator<Trends> trendsEnumerable;
             private string tt;
 
             public TrendsAsyncEnumerator(IPixivAsyncEnumerable<Trends> enumerable) : base(enumerable) { }
+
+            public override Trends Current => trendsEnumerable.Current;
 
             public override async ValueTask<bool> MoveNextAsync()
             {
@@ -44,10 +59,14 @@ namespace Pixeval.Core
                     if (await GetResponse(BuildRequestUrl()) is (true, var result))
                     {
                         tt = Regex.Match(result, "tt: \"(?<tt>.*)\"").Groups["tt"].Value;
-                        Debug.WriteLine(tt);
                         trendsEnumerable = (await ParsePreloadJsonFromHtml(result)).NonNull().GetEnumerator();
                         requestContext = ExtractRequestParametersFromHtml(result);
-                    } else throw new QueryNotRespondingException();
+                    }
+                    else
+                    {
+                        throw new QueryNotRespondingException();
+                    }
+
                     Enumerable.ReportRequestedPages();
                 }
 
@@ -146,7 +165,11 @@ namespace Pixeval.Core
                             trendsObj.PostUserThumbnail = matchingPostUser.First["profile_image"].First.First["url"]["m"].Value<string>();
                             trendsObj.PostUserName = matchingPostUser.First["name"].Value<string>();
                         }
-                        else return null;
+                        else
+                        {
+                            return null;
+                        }
+
                         trendsObj.Type = statusObjProp["type"].Value<string>() switch
                         {
                             "add_illust"   => TrendType.AddIllust,
@@ -175,6 +198,7 @@ namespace Pixeval.Core
                             trendsObj.TrendObjName = user.FirstOrDefault(uChild => uChild.First["id"].Value<string>() == trendsObj.TrendObjectId)?.First["name"].Value<string>();
                             trendsObj.IsReferToUser = true;
                         }
+
                         return trendsObj;
                     });
                     tasks.Add(task);
@@ -182,8 +206,6 @@ namespace Pixeval.Core
 
                 return await Task.WhenAll(tasks);
             }
-
-            public override Trends Current => trendsEnumerable.Current;
 
             protected override void UpdateEnumerator()
             {
@@ -199,7 +221,6 @@ namespace Pixeval.Core
 
         private class TrendsRequestContext
         {
-
             public string UnifyToken { get; set; }
 
             public string Sid { get; set; }

@@ -17,21 +17,31 @@
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using Pixeval.Core;
+using Pixeval.Data.ViewModel;
 
 namespace Pixeval.Objects.ValueConverters
 {
-    public class DateTimeConverter : IValueConverter
+    public class TagMatchEnumToModelConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is DateTime d) return d.ToString("yyyy/MM/dd HH:mm:ss");
-
-            return string.Empty;
+            if (value is SearchTagMatchOption option)
+                return option switch
+                {
+                    SearchTagMatchOption.PartialMatchForTags => SearchTagMatchOptionModel.PartialMatchModel,
+                    SearchTagMatchOption.ExactMatchForTags   => SearchTagMatchOptionModel.ExactMatchModel,
+                    SearchTagMatchOption.TitleAndCaption     => SearchTagMatchOptionModel.TitleAndCaptionModel,
+                    _                                        => throw new ArgumentOutOfRangeException()
+                };
+            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (value is SearchTagMatchOptionModel model) return model.Corresponding;
+
+            return null;
         }
     }
 }

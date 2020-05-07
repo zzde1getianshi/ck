@@ -15,23 +15,26 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.Globalization;
-using System.Windows.Data;
+using System.Reflection;
+using Pixeval.Objects.Exceptions;
 
-namespace Pixeval.Objects.ValueConverters
+namespace Pixeval.Objects
 {
-    public class DateTimeConverter : IValueConverter
+    public static class Reflection
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public static T GetCustomAttribute<T>(this object obj) where T : Attribute
         {
-            if (value is DateTime d) return d.ToString("yyyy/MM/dd HH:mm:ss");
-
-            return string.Empty;
+            return CustomAttributeExtensions.GetCustomAttribute<T>(obj.GetType()) ?? throw new AttributeNotFoundException(typeof(T).ToString());
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public static T GetEnumAttribute<T>(this Enum value) where T : Attribute
         {
-            throw new NotImplementedException();
+            return value.GetType().GetField(value.ToString()).GetCustomAttribute<T>(false) ?? throw new AttributeNotFoundException(typeof(T).ToString());
+        }
+
+        public static bool AttributeAttached<T>(this Enum value) where T : Attribute
+        {
+            return value.GetType().GetField(value.ToString()).GetCustomAttribute<T>(false) != null;
         }
     }
 }

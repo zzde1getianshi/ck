@@ -20,6 +20,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Pixeval.Core;
 using Pixeval.Objects;
 using Pixeval.Objects.Caching;
 using PropertyChanged;
@@ -69,7 +70,13 @@ namespace Pixeval.Persisting
         ///     Set the caching policy of Pixeval, accept values are Memory and File
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
-        public CachingPolicy CachingPolicy { get; set; }
+        public CachingPolicy CachingPolicy { get; set; } = CachingPolicy.Memory;
+
+        /// <summary>
+        ///     Indicate the way to match tags
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SearchTagMatchOption TagMatchOption { get; set; } = SearchTagMatchOption.PartialMatchForTags;
 
         /// <summary>
         ///     How many pages need to be queried once, minimum is 1, maximum is 10
@@ -148,6 +155,7 @@ namespace Pixeval.Persisting
             Global.RecommendIllustrator = false;
             Global.UseCache = false;
             Global.CachingPolicy = CachingPolicy.Memory;
+            Global.TagMatchOption = SearchTagMatchOption.PartialMatchForTags;
         }
     }
 }

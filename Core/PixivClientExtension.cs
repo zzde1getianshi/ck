@@ -14,13 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
 using AngleSharp.Html.Parser;
 using Pixeval.Data.ViewModel;
 using Pixeval.Data.Web.Delegation;
@@ -80,7 +78,7 @@ namespace Pixeval.Core
             return list;
         }
 
-        public static async ValueTask<bool> ToggleWebApiR18State(this PixivClient _,  bool isR18On)
+        public static async ValueTask<bool> ToggleWebApiR18State(this PixivClient _, bool isR18On)
         {
             try
             {

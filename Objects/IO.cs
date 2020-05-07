@@ -24,10 +24,7 @@ namespace Pixeval.Objects
     {
         public static async Task<byte[]> ToBytes(this Stream stream)
         {
-            if (stream is MemoryStream ms)
-            {
-                return ms.ToArray();
-            }
+            if (stream is MemoryStream ms) return ms.ToArray();
 
             var mStream = new MemoryStream();
             await stream.CopyToAsync(mStream);

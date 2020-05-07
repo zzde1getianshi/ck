@@ -19,13 +19,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="LaunchWrapper\**" />
-    <EmbeddedResource Remove="LaunchWrapper\**" />
-    <None Remove="LaunchWrapper\**" />
-    <Page Remove="LaunchWrapper\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Update="CefSharp">
       <Private>true</Private>
     </Reference>

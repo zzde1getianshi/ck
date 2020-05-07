@@ -14,29 +14,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Refit;
+using System;
 
-namespace Pixeval.Data.Web.Request
+namespace Pixeval.Objects
 {
-    public class ToggleR18StateRequest
+    [AttributeUsage(AttributeTargets.Field)]
+    public class EnumAlias : Attribute
     {
-        [AliasAs("mode")]
-        public string Mode { get; } = "mod";
+        public EnumAlias(string aliasAs)
+        {
+            AliasAs = aliasAs;
+        }
 
-        [AliasAs("user_language")]
-        public string UserLang { get; } = "zh";
+        public string AliasAs { get; set; }
+    }
 
-        [AliasAs("r18")]
+    [AttributeUsage(AttributeTargets.Field)]
+    public class EnumName : Attribute
+    {
+        public EnumName(string name)
+        {
+            Name = name;
+        }
 
-        public string R18 { get; set; }
-
-        [AliasAs("r18g")]
-        public string R18G { get; set; }
-
-        [AliasAs("submit")]
-        public string Submit { get; } = "保存";
-
-        [AliasAs("tt")]
-        public string Tt { get; set; }
+        public string Name { get; set; }
     }
 }
