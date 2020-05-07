@@ -101,6 +101,7 @@
 * 自版本1.4.0开始不再使用单文件方式发布，由于单文件发布会导致一些奇怪的问题
 * 自版本1.4.0开始可以选择是否开启直连了，默认关闭，如果自己需要直连请在设置中手动开启
 * 自版本1.7.1起添加了runtime-installation.exe作为下载.NET Core Runtime的脚本，可以直接双击下载并安装
+* WebAPI的直连方案很大程度上得益于[@鱼姐姐](https://github.com/tobiichiamane)的帮助，包括HTTPS反代服务器的实现
 
 **下载：**
 </br>
@@ -112,6 +113,7 @@
 * 添加qq群815791942进行反馈
 
 **鸣谢：(排名不分先后)**
+* [@tobiichiamane](https://github.com/tobiichiamane)
 * [@Notsfsssf](https://github.com/Notsfsssf)
 * [@ControlNet](https://github.com/ControlNet)
 * [@wulunshijian](https://github.com/wulunshijian)
