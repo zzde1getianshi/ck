@@ -72,7 +72,7 @@
     <Resource Include="Resources\PixevalFakeCA.cer" />
     <Resource Include="Resources\PixevalFakeCert.pfx" />
     <Resource Include="Resources\pxlogo.ico" />
-    <Resource Include="Resources\SauceNAO.png" />
+    <Resource Include="Resources\saucenao.png" />
   </ItemGroup>
 
   <ItemGroup>
